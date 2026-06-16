@@ -78,7 +78,7 @@ body{
 .socials a:hover{color:var(--ink);transform:translateY(-2px);}
 
 /* ---- Content ---- */
-main{max-width:800px;margin:0 auto;padding:52px 30px 100px;}
+main{max-width:900px;margin:0 auto;padding:52px 30px 100px;}
 main p{margin:0 0 18px;color:var(--body);}
 main em,main i{font-style:italic;}
 .page-title{
