@@ -161,33 +161,7 @@
 
   <section id="v-drills" style="display:none">
     <h2 class="sec">Drills</h2>
-    <div class="sub">Voice reps + generators. 🎙️ needs Chrome/Edge/Safari with mic permission (use the https link). AI key (Bank → AI key…) unlocks coach feedback.</div>
-
-    <div class="card">
-      <span class="cat-chip">Voice · Recite</span>
-      <div class="term" style="font-size:22px">Shadow Reading · 跟读打分 <span id="srBadge"></span></div>
-      <div class="blk" id="shQuote"></div>
-      <div class="row">
-        <button class="btn ghost slim" onclick="shNew()">🎲 New line</button>
-        <button class="btn ghost slim" onclick="shListen()">🔊 TTS</button>
-        <button class="btn ghost slim" onclick="if(shCur&&hasOrig(shCur))window.open(origUrl(shCur));else alert('这条是课程自产内容,没有历史原声。')">▶︎ Original</button>
-        <button class="btn primary slim" id="shRecBtn" onclick="shRec()">● Record</button>
-      </div>
-      <div id="shLive" class="tip" style="display:none"></div>
-      <div id="shOut" class="blk"></div>
-    </div>
-
-    <div class="card">
-      <span class="cat-chip">Voice · Free speaking</span>
-      <div class="term" style="font-size:22px">Free Rep · 60 秒自由表达</div>
-      <div class="blk" id="frTopic"></div>
-      <div class="row">
-        <button class="btn ghost slim" onclick="frNew()">🎲 New topic</button>
-        <button class="btn primary slim" id="frRecBtn" onclick="frRec()">● Start (60s)</button>
-      </div>
-      <div id="frLive" class="tip" style="display:none"></div>
-      <div id="frOut" class="blk"></div>
-    </div>
+    <div class="sub">Generators, not flashcards — the course techniques made infinite. AI key (Bank → AI key…) unlocks coach feedback; without one they run offline.</div>
 
     <div class="card">
       <span class="cat-chip">Day 7 · two-question metaphor</span>
@@ -2842,7 +2816,6 @@ function esc(s){return (s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>'
 function ws(id){if(!state.words[id])state.words[id]={learned:false,star:false,uses:0,next:0};return state.words[id]}
 
 /* ============ AUDIO + XP ============ */
-function say(t){try{if(!t)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/…/g,'.'));u.lang='en-US';u.rate=0.95;speechSynthesis.speak(u);}catch(e){}}
 const XP_GOAL=50;
 function xpToday(){const t=today();if(state.xpDay!==t){state.xpDay=t;state.xpNow=0;}return state.xpNow||0;}
 function addXP(n){const t=today();if(state.xpDay!==t){state.xpDay=t;state.xpNow=0;}state.xpNow=(state.xpNow||0)+n;state.xp=(state.xp||0)+n;save();renderStreak();}
@@ -2890,10 +2863,10 @@ function renderLearn(){
   area.innerHTML=`<div class="card">
      <button class="starbtn ${s.star?'on':''}" onclick="toggleStar('${w.id}')" title="focus">★</button>
      <span class="cat-chip">${esc(w.cat)}</span>
-     <div class="term">${esc(w.term)}<button class="sayb" onclick="say(ALLWORDS.find(x=>x.id==='${w.id}').term)" title="listen">🔊</button></div>
+     <div class="term">${esc(w.term)}</div>
      <div class="blk"><span class="lbl">Meaning</span>${esc(w.gloss)}</div>
      ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">Word notes</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class=\"ipa\">${PRON[h[0]]}</span>`:''} — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
-     <div class="blk"><span class="lbl">Source</span><div class="quote"><span class="q">“${esc(w.quote)}”<button class="sayb" onclick="say(ALLWORDS.find(x=>x.id==='${w.id}').quote)" title="clear TTS reference">🔊</button>${hasOrig(w)?`<a class="sayb" style="text-decoration:none" href="${origUrl(w)}" target="_blank" title="hear the ORIGINAL delivery">▶︎</a>`:''}</span><span class="src">— ${esc(w.src)}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">${origLabel(w)}</a>':''}</span></div></div>
+     <div class="blk"><span class="lbl">Source</span><div class="quote"><span class="q">“${esc(w.quote)}”${hasOrig(w)?`<a class="sayb" style="text-decoration:none" href="${origUrl(w)}" target="_blank" title="hear the ORIGINAL delivery">▶︎</a>`:''}</span><span class="src">— ${esc(w.src)}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">${origLabel(w)}</a>':''}</span></div></div>
      <div class="blk"><span class="lbl">Why it matters</span>${esc(w.why)}</div>
      <div class="blk"><span class="lbl">Usage</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
      <div class="stepdots">${idx+1} / ${u.words.length}</div>
@@ -3001,14 +2974,14 @@ function renderItem(){
   }else{
     area.innerHTML=bar+`<div class="card">${starBtn}
       <span class="cat-chip">${esc(x.kind==='cur'?w.cat:(w.cat||'Words'))}</span>
-      <div class="term">${esc(w.term)}<button class="sayb" onclick="say(sess.q[sess.i].w.term)">🔊</button></div>
+      <div class="term">${esc(w.term)}</div>
       ${meter}
       <div class="prompt">Write a sentence you'd actually say:</div>
       <textarea id="answer" placeholder="In a meeting, a paper, a conversation…"></textarea>
       <div class="reveal" id="reveal">
         ${x.kind==='cur'?`
           <div class="blk"><span class="lbl">Meaning</span>${esc(w.gloss)}</div>
-          <div class="blk"><div class="quote"><span class="q">“${esc(w.quote)}”<button class="sayb" onclick="say(sess.q[sess.i].w.quote)">🔊</button></span><span class="src">— ${esc(w.src)}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">${origLabel(w)}</a>':''}</span></div></div>
+          <div class="blk"><div class="quote"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(w.src)}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">${origLabel(w)}</a>':''}</span></div></div>
           <div class="blk"><span class="lbl">Usage</span><ul class="usage">${(w.usage||[]).map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`
         :`${w.meaning?`<div class="blk"><span class="lbl">Meaning</span>${esc(w.meaning)}</div>`:''}
           ${w.example?`<div class="blk"><div class="quote"><span class="q">“${esc(w.example)}”</span>${w.source?`<span class="src">— ${esc(w.source)}</span>`:''}</div></div>`:''}
@@ -3032,7 +3005,6 @@ function answerOpt(btn,correct){
   if(correct){
     btn.classList.add('ok');
     s.uses++;state.reps++;sess.right++;addXP(x._type==='cloze'?8:5);scheduleOK(s);
-    say(x.w.term);
     bumpStreak();save();
     setTimeout(()=>{sess.i++;renderItem();},800);
   }else{
@@ -3167,50 +3139,40 @@ function toggleStar(id){
   renderStats();
 }
 
-/* ============ VOICE ============ */
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-function srSupported(){return !!SR && (location.protocol==='https:'||location.hostname==='localhost'||location.protocol==='file:');}
-function makeRec(onText,onEnd){
-  const r=new SR(); r.lang='en-US'; r.continuous=true; r.interimResults=true;
-  let fin='';
-  r.onresult=e=>{let inter='';for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=t+' ';else inter+=t;}onText(fin,inter);};
-  r.onend=()=>onEnd(fin.trim());
-  r.onerror=ev=>{if(ev.error!=='no-speech'&&ev.error!=='aborted')alert('Mic error: '+ev.error+' (voice needs the https version + mic permission)');};
-  return r;
-}
+/* ============ ORIGINAL-CLIP LINKS ============ */
 const CLIPS={
  // I Have a Dream — https://youtu.be/ARvrvJV4th4 (caption-timestamp verified 2026-07-08)
- u1w11:'https://youtu.be/ARvrvJV4th4?t=269',  // fierce urgency of now
- u1w12:'https://youtu.be/ARvrvJV4th4?t=237',  // insufficient funds
- u1w18:'https://youtu.be/ARvrvJV4th4?t=967',  // free at last
- u3w1:'https://youtu.be/ARvrvJV4th4?t=759',   // content of character
- u3w4:'https://youtu.be/ARvrvJV4th4?t=899',   // mighty mountains
- u3w6:'https://youtu.be/ARvrvJV4th4?t=296',   // dark and desolate
- u3w19:'https://youtu.be/ARvrvJV4th4?t=437',  // dignity and discipline
- u5w1:'https://youtu.be/ARvrvJV4th4?t=571',   // like a mighty stream
- u5w19:'https://youtu.be/ARvrvJV4th4?t=834',  // mountain of despair
- u8w15:'https://youtu.be/ARvrvJV4th4?t=885',  // let freedom ring
- u8w16:'https://youtu.be/ARvrvJV4th4?t=78',   // one hundred years later
- u8w1:'https://youtu.be/ARvrvJV4th4?t=289',   // now is the time
+ u1w11:'https://youtu.be/ARvrvJV4th4?t=264',  // fierce urgency of now
+ u1w12:'https://youtu.be/ARvrvJV4th4?t=232',  // insufficient funds
+ u1w18:'https://youtu.be/ARvrvJV4th4?t=962',  // free at last
+ u3w1:'https://youtu.be/ARvrvJV4th4?t=754',   // content of character
+ u3w4:'https://youtu.be/ARvrvJV4th4?t=894',   // mighty mountains
+ u3w6:'https://youtu.be/ARvrvJV4th4?t=291',   // dark and desolate
+ u3w19:'https://youtu.be/ARvrvJV4th4?t=432',  // dignity and discipline
+ u5w1:'https://youtu.be/ARvrvJV4th4?t=566',   // like a mighty stream
+ u5w19:'https://youtu.be/ARvrvJV4th4?t=829',  // mountain of despair
+ u8w15:'https://youtu.be/ARvrvJV4th4?t=880',  // let freedom ring
+ u8w16:'https://youtu.be/ARvrvJV4th4?t=73',   // one hundred years later
+ u8w1:'https://youtu.be/ARvrvJV4th4?t=284',   // now is the time
  // Batch 2 — caption-timestamp verified 2026-07-08
- u5w2:'https://youtu.be/J7GY1Xg6X20?t=118',  // machine men — Great Dictator
- u1w14:'https://youtu.be/J7GY1Xg6X20?t=50',  // more than machinery
- uSpw17:'https://youtu.be/J7GY1Xg6X20?t=130',  // fight for liberty
- u1w20:'https://youtu.be/Qa7icmqgsow?t=253',  // waved goodbye — Challenger
- uSpw5:'https://youtu.be/Qa7icmqgsow?t=152',  // belongs to the brave
- u2w9:'https://youtu.be/wupToqz1e2g?t=71',  // mote of dust — Pale Blue Dot
- uSpw11:'https://youtu.be/wupToqz1e2g?t=199',  // only home we've ever known
- u1w15:'https://youtu.be/zgVrlx68v-0?t=107',  // longevity has its place — Mountaintop
- u14w13:'https://youtu.be/zgVrlx68v-0?t=149',  // mountaintop staccato
- u4w18:'https://youtu.be/zgVrlx68v-0?t=153',  // mine eyes have seen the glory
- u2w10:'https://youtu.be/Qa7icmqgsow?t=261',  // surly bonds / face of God
- u1w13:'https://youtu.be/wupToqz1e2g?t=22',  // that's here that's home
- u2w11:'https://youtu.be/zgVrlx68v-0?t=128',  // promised land
- uSpw2:'https://youtu.be/_RujOFCHsxo?t=96',  // mad as hell — Network
- u1w23:'https://youtu.be/_RujOFCHsxo?t=75',  // my life has value
- uSpw21:'https://youtu.be/_RujOFCHsxo?t=72',  // first get mad
- u1w16:'https://youtu.be/QXqlziZV63k?t=596',  // because they are hard — JFK Rice
- uD4w8:'https://youtu.be/QXqlziZV63k?t=410',  // banner of freedom
+ u5w2:'https://youtu.be/J7GY1Xg6X20?t=113',  // machine men — Great Dictator
+ u1w14:'https://youtu.be/J7GY1Xg6X20?t=45',  // more than machinery
+ uSpw17:'https://youtu.be/J7GY1Xg6X20?t=125',  // fight for liberty
+ u1w20:'https://youtu.be/Qa7icmqgsow?t=248',  // waved goodbye — Challenger
+ uSpw5:'https://youtu.be/Qa7icmqgsow?t=147',  // belongs to the brave
+ u2w9:'https://youtu.be/wupToqz1e2g?t=66',  // mote of dust — Pale Blue Dot
+ uSpw11:'https://youtu.be/wupToqz1e2g?t=194',  // only home we've ever known
+ u1w15:'https://youtu.be/zgVrlx68v-0?t=102',  // longevity has its place — Mountaintop
+ u14w13:'https://youtu.be/zgVrlx68v-0?t=144',  // mountaintop staccato
+ u4w18:'https://youtu.be/zgVrlx68v-0?t=148',  // mine eyes have seen the glory
+ u2w10:'https://youtu.be/Qa7icmqgsow?t=256',  // surly bonds / face of God
+ u1w13:'https://youtu.be/wupToqz1e2g?t=17',  // that's here that's home
+ u2w11:'https://youtu.be/zgVrlx68v-0?t=123',  // promised land
+ uSpw2:'https://youtu.be/_RujOFCHsxo?t=91',  // mad as hell — Network
+ u1w23:'https://youtu.be/_RujOFCHsxo?t=70',  // my life has value
+ uSpw21:'https://youtu.be/_RujOFCHsxo?t=67',  // first get mad
+ u1w16:'https://youtu.be/QXqlziZV63k?t=591',  // because they are hard — JFK Rice
+ uD4w8:'https://youtu.be/QXqlziZV63k?t=405',  // banner of freedom
 };
 function hasOrig(w){return w&&w.quote&&w.src&&!/^BetterSpeak|worksheet|Index|canon supplement$/.test(w.src)&&!w.src.startsWith('BetterSpeak')&&!w.src.startsWith('Picked up');}
 function origUrl(w){
@@ -3221,127 +3183,6 @@ function origUrl(w){
 }
 function origLabel(w){return CLIPS[w.id]?'original ▶ exact moment':'original ↗ (search)';}
 function toksKeep(t){return t.replace(/[“”]/g,'').split(/\s+/).filter(Boolean);}
-function toks(t){return t.toLowerCase().replace(/[’']/g,"'").replace(/[^a-z' ]+/g,' ').split(/\s+/).filter(Boolean);}
-
-/* ---- Shadow Reading ---- */
-let shCur=null,shR=null,shOn=false;
-function shPool(){return ALLWORDS.filter(w=>{const n=toks(w.quote).length;return n>=6&&n<=26;});}
-function shNew(){
-  const p=shPool(); shCur=p[Math.floor(Math.random()*p.length)];
-  document.getElementById('shQuote').innerHTML=`<div class="quote"><span class="q">“${esc(shCur.quote)}”</span><span class="src">— ${esc(shCur.src)}${hasOrig(shCur)?' · <a href="'+origUrl(shCur)+'" target="_blank" style="color:var(--green)">'+origLabel(shCur)+'</a>':''}</span></div>
-   <div style="font-size:12px;color:var(--muted);margin-top:6px">🔊 = 清晰参照(逐词) · ▶︎ 原声 = 语感来源(节奏与气场,课程 Rewatch 的正主)</div>`;
-  document.getElementById('shOut').innerHTML='';document.getElementById('shLive').style.display='none';
-}
-function shListen(){if(shCur)say(shCur.quote);}
-function shRec(){
-  if(!srSupported()){alert('Voice needs Chrome/Edge/Safari on the https version (jiayi-liu23.github.io/speak).');return;}
-  if(!shCur)shNew();
-  const btn=document.getElementById('shRecBtn'),live=document.getElementById('shLive');
-  if(shOn){shR.stop();return;}
-  shOn=true;btn.textContent='■ Stop';btn.style.background='var(--terra)';
-  live.style.display='block';live.textContent='🎙️ listening…';
-  speechSynthesis.cancel();
-  shR=makeRec((f,i)=>{live.textContent='🎙️ '+(f+i);},(finalT)=>{shOn=false;btn.textContent='● Record';btn.style.background='';shScore(finalT);});
-  shR.start();
-}
-function shScore(saidText){
-  const target=toks(shCur.quote), said=toks(saidText);
-  if(!said.length){document.getElementById('shOut').innerHTML='<div class="tip">没听到声音——检查麦克风权限,再试一次。</div>';return;}
-  // greedy in-order match
-  let j=0; const hit=target.map(()=>false);
-  for(let i=0;i<target.length;i++){for(let k=j;k<said.length;k++){if(said[k]===target[i]){hit[i]=true;j=k+1;break;}}}
-  const n=hit.filter(Boolean).length, pct=Math.round(100*n/target.length);
-  const marked=target.map((w,i)=>hit[i]?`<span style="color:var(--green)">${esc(w)}</span>`:`<b style="color:var(--terra)">${esc(w)}</b>`).join(' ');
-  let xp=pct>=80?8:(pct>=60?5:2), extra='';
-  const s=ws(shCur.id);
-  if(pct>=80&&s.uses<38){s.uses++;extra=' · counted toward 38 ✓';}
-  addXP(xp);state.reps++;bumpStreak();save();
-  document.getElementById('shOut').innerHTML=`<span class="lbl">Score</span>
-   <div class="tip"><b style="font-size:20px">${pct}%</b> word match · +${xp} XP${extra}<br><br>${marked}<br><br>
-   ${pct>=80?'👏 clean read — try it once more from memory.':'红色 = 漏掉/没被识别的词。先 🔊 听一遍,慢一点、咬清辅音,再来。'}</div>`;
-  renderStats();
-}
-
-/* ---- Free Rep ---- */
-const FR_TOPICS=[
- 'Explain your current research to a curious neighbor.',
- 'Describe your morning — include one metaphor.',
- 'Argue for a tool you love (app, method, gadget).',
- 'Tell the story of a mistake that taught you something.',
- 'Describe your hometown to someone who will never visit.',
- 'Pitch your favorite paper in plain words.',
- 'What makes a seminar talk good? Take a position.',
- 'Describe a place in Pittsburgh you like.',
- 'Give advice to a first-year PhD student.',
- 'Describe your ideal Saturday — vary your sentence lengths.',
- 'What would you study with unlimited funding?',
- 'Retell the plot of a show you watched recently.'];
-const FR_FILLERS=['like','so','you know','i mean','actually','basically','kind of','sort of','right','okay','yeah','just','literally','stuff','whatever'];
-const FR_WEAKEND=/( so yeah| yeah| that's it| i don't know| or something| whatever| i guess| stuff like that)$/;
-let frR=null,frOn=false,frT0=0,frTimer=null;
-function frNew(){
-  const t=FR_TOPICS[Math.floor(Math.random()*FR_TOPICS.length)];
-  document.getElementById('frTopic').innerHTML=`<div class="quote"><span class="q" style="font-style:normal">${esc(t)}</span><span class="src">60 seconds · speak, don’t script · endings matter</span></div>`;
-  document.getElementById('frOut').innerHTML='';document.getElementById('frLive').style.display='none';
-}
-function frRec(){
-  if(!srSupported()){alert('Voice needs Chrome/Edge/Safari on the https version (jiayi-liu23.github.io/speak).');return;}
-  if(!document.getElementById('frTopic').textContent.trim())frNew();
-  const btn=document.getElementById('frRecBtn'),live=document.getElementById('frLive');
-  if(frOn){frR.stop();return;}
-  frOn=true;frT0=Date.now();btn.style.background='var(--terra)';
-  live.style.display='block';live.textContent='🎙️ 60';
-  speechSynthesis.cancel();
-  let lastText='';
-  frR=makeRec((f,i)=>{lastText=f+i;const left=Math.max(0,60-Math.round((Date.now()-frT0)/1000));btn.textContent='■ Stop ('+left+'s)';live.textContent='🎙️ '+lastText;},
-    (finalT)=>{frOn=false;clearInterval(frTimer);btn.textContent='● Start (60s)';btn.style.background='';frReport(finalT,Math.min(60,Math.round((Date.now()-frT0)/1000)));});
-  frTimer=setInterval(()=>{const el=Math.round((Date.now()-frT0)/1000);if(el>=60&&frOn){frR.stop();}else if(frOn){const left=60-el;btn.textContent='■ Stop ('+left+'s)';}},500);
-  frR.start();
-}
-function frReport(text,secs){
-  const out=document.getElementById('frOut');
-  const T=toks(text);
-  if(T.length<5){out.innerHTML='<div class="tip">几乎没收到语音——检查麦克风,再试一次。</div>';return;}
-  const padded=' '+T.join(' ')+' ';
-  const fillers=FR_FILLERS.map(f=>{const c=(padded.split(' '+f+' ').length-1);return c?{f,c}:null}).filter(Boolean).sort((a,b)=>b.c-a.c);
-  const nFill=fillers.reduce((s,x)=>s+x.c,0);
-  const wpm=Math.round(T.length/(secs/60));
-  const weak=FR_WEAKEND.test(' '+T.slice(-6).join(' '));
-  // bank words used
-  const bank=[...ALLWORDS.map(w=>({id:w.id,term:w.term,kind:'cur'})),...state.custom.map(c=>({id:c.id,term:c.term,kind:'cus'}))]
-    .filter(x=>{const tt=toks(x.term);return tt.length>=1&&tt.length<=4&&tt.join(' ').length>3&&padded.includes(' '+tt.join(' ')+' ');});
-  let score=100;
-  score-=Math.min(30,nFill*3);
-  if(weak)score-=10;
-  if(wpm<90||wpm>190)score-=10;
-  if(secs<30)score-=10;
-  score=Math.max(20,Math.min(100,score));
-  const xp=Math.round(score/10);
-  addXP(xp);state.reps++;bumpStreak();save();
-  window._frBank=bank;
-  out.innerHTML=`<span class="lbl">Report</span><div class="tip">
-   <b style="font-size:20px">${score}</b>/100 · +${xp} XP · ${secs}s · ${T.length} words · <b>${wpm} wpm</b> ${wpm<90?'(偏慢/犹豫)':wpm>190?'(偏快——留点停顿)':'(舒适区)'}<br>
-   ${nFill?('⚠️ 可检出的填充词: '+fillers.map(x=>'<b>'+esc(x.f)+'</b>×'+x.c).join(' · ')+'(um/uh 常被识别器吞掉,实际可能更多)'):'✅ 未检出填充词(um/uh 识别器可能吞掉)'}<br>
-   ${weak?'⚠️ 弱结尾:最后几个词是侵蚀尾(erosion tag)——用 silent period 收干净':'✅ 结尾干净'}<br>
-   ${bank.length?('📚 用到了词库词: '+bank.map(b=>'<b>'+esc(b.term)+'</b>').join(' · ')+' <button class="btn soft slim" style="padding:4px 10px;font-size:12px" onclick="frCount()">✓ Count toward 38</button>'):'📚 没检测到词库词——下次试着有意用一个 ⭐focus 词'}
-   <br><br><span style="color:var(--muted);font-size:12px">Transcript:</span> ${esc(text)}
-   ${(localStorage.getItem('bs_key')||'').trim()?'<div class="row"><button class="btn soft slim" onclick="frCoach()">🧑‍🏫 AI coach feedback</button></div>':''}
-  </div>`;
-  window._frText=text;
-}
-function frCount(){
-  (window._frBank||[]).forEach(b=>{if(b.kind==='cur'){const s=ws(b.id);if(s.uses<38)s.uses++;}else{const c=state.custom.find(x=>x.id===b.id);if(c&&c.uses<38)c.uses++;}});
-  save();renderStats();alert('Counted ✓ — real speech is the best rep.');
-}
-async function frCoach(){
-  const out=document.getElementById('frOut');
-  out.insertAdjacentHTML('beforeend','<div class="tip" id="frAI">… coaching</div>');
-  try{
-    const t=await aiText('You are a BetterSpeak speaking coach. A student spoke for ~60 seconds; here is the raw ASR transcript (no punctuation, may have recognition errors): "'+(window._frText||'')+'". In 5 short lines: 1) one thing genuinely strong; 2) workhorse/vague words used, with one precise swap each; 3) how the ENDING landed and a stronger final sentence; 4) one sentence-variety tip (short/long rhythm); 5) a one-line drill for tomorrow. Plain warm English, no preamble.');
-    document.getElementById('frAI').innerHTML='<span class="lbl">Coach</span><div style="white-space:pre-wrap">'+esc(t)+'</div>';
-  }catch(e){document.getElementById('frAI').textContent='AI feedback failed: '+e.message;}
-}
-
 /* ============ DRILLS ============ */
 const MC_ADJ=['smoky','refried','decaffeinated','hollow','understated','zigzagged','frosty','sparkling','toasted','dusty','clouded'];
 const MC_NOUN=['conversation','railroad','rainbow','rainforest','eyebrows','coffee','squirrel','surfboard','wood stove','reef','aroma','deadline','inbox','seminar','dataset','commute'];
@@ -3421,7 +3262,7 @@ function updateBadges(){
 function currentView(){const b=document.querySelector('nav button.on');return b?b.dataset.v:'learn'}
 function switchTo(v){document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));
   ['learn','practice','drills','bank','stats'].forEach(k=>document.getElementById('v-'+k).style.display=(k===v)?'block':'none');
-  if(v==='learn')renderLearn(); if(v==='practice')renderPrac(); if(v==='drills'){if(!mcPair)mcNew();if(!shCur)shNew();if(!document.getElementById('frTopic').innerHTML)frNew();} if(v==='bank')renderBank(); if(v==='stats')renderStats();
+  if(v==='learn')renderLearn(); if(v==='practice')renderPrac(); if(v==='drills'&&!mcPair)mcNew(); if(v==='bank')renderBank(); if(v==='stats')renderStats();
 }
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='learn'){inUnit=null;idx=-1;}switchTo(b.dataset.v);});
 
