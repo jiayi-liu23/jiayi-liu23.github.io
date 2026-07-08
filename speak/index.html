@@ -146,6 +146,7 @@
   .ascent .bar{height:10px;background:var(--sage);border-radius:20px;overflow:hidden}
   .ascent .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--wood),var(--cognac))}
   .empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:14px}
+.whyzh{margin-top:5px;color:var(--wood-dk);font-size:13.5px}
 </style>
 </head>
 <body>
@@ -161,7 +162,7 @@
   <nav>
     <button data-v="today" class="on"><span class="ico">☀️</span>Today</button>
     <button data-v="learn"><span class="ico">📖</span>Learn</button>
-    <button data-v="practice"><span class="ico">✍️</span>Practice<span class="bdg" id="bPrac"></span></button>
+    <button data-v="practice"><span class="ico">🎴</span>Shuffle</button>
     <button data-v="stats"><span class="ico">📈</span>Progress</button>
   </nav>
 </header>
@@ -215,9 +216,9 @@
       <div class="stat"><div class="n" id="sUnits">0</div><div class="l">units completed</div></div>
       <div class="stat"><div class="n" id="sLearned">0</div><div class="l">words learned</div></div>
       <div class="stat"><div class="n" id="sStar">0</div><div class="l">⭐ in focus</div></div>
-      <div class="stat"><div class="n" id="sReps">0</div><div class="l">practice reps</div></div>
-      <div class="stat"><div class="n" id="sGrad">0</div><div class="l">automatic (38+)</div></div>
-      <div class="stat"><div class="n" id="sDue">0</div><div class="l">due to practice</div></div>
+      <div class="stat"><div class="n" id="sReps">0</div><div class="l">cards flipped</div></div>
+      <div class="stat"><div class="n" id="sGrad">0</div><div class="l">my pickups</div></div>
+      <div class="stat"><div class="n" id="sDue">0</div><div class="l">flipped today</div></div>
     </div>
     <div class="card ascent">
       <div style="font-family:var(--serif);font-size:16px;color:var(--wood-dk);margin-bottom:8px">The Articulate Ascent</div>
@@ -2842,7 +2843,7 @@ function renderToday(){
      <div class="meter"><i style="width:${Math.min(100,x/XP_GOAL*100)}%"></i></div>
      <div class="meter-lbl"><span class="xp">⚡ ${x} / ${XP_GOAL} XP</span>${x>=XP_GOAL?' · goal met — streak safe 🔥':''}</div>
      ${row(T.learned>=5,'Learn 5 new cards',T.learned+' / 5 today · one unit, five entries','<button class="btn ghost slim" onclick="switchTo(\'learn\')">Go →</button>')}
-     ${row(T.sessions>=1,'One practice session',T.sessions+' completed · 8 items, mixed types','<button class="btn primary slim" onclick="switchTo(\'practice\')">Start →</button>')}
+     ${row(T.sessions>=5,'Flip 5 shuffle cards',T.sessions+' / 5 today · random pulls from the whole bank','<button class="btn primary slim" onclick="switchTo(\'practice\')">Shuffle →</button>')}
    </div>
    <div class="card" style="margin-top:14px">
      <span class="cat-chip">Line of the day · 今日一句</span>
@@ -2896,7 +2897,7 @@ function renderLearn(){
      <div class="blk"><span class="lbl">Meaning · 释义</span>${esc(w.gloss)}</div>
      ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">Word notes · 拆词</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
      <div class="blk"><span class="lbl">Source · 出处</span><div class="quote"><span class="q">“${esc(w.quote)}”${hasOrig(w)?`<a class="sayb" style="text-decoration:none" href="${origUrl(w)}" target="_blank" title="hear the ORIGINAL delivery">▶︎</a>`:''}</span><span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">'+origLabel(w)+'</a>':''}</span></div></div>
-     <div class="blk"><span class="lbl">Unpack · 解析</span>${esc(w.why)}</div>
+     <div class="blk"><span class="lbl">Unpack · 解析</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>
      <div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
      <div class="stepdots">${idx+1} / ${(u._sess||unitWords(u)).length}</div>
      <div class="row">
@@ -2917,10 +2918,10 @@ function learnNext(){
     const area=document.getElementById('learnArea');
     const i=UNITS.indexOf(u), nxt=UNITS[i+1];
     area.innerHTML=`<div class="card done-msg"><div class="big">Unit ${i+1} complete</div>
-      ${u.words.length} entries added to your practice pool.<br><br>
+      ${u.words.length} entries added to the shuffle deck.<br><br>
       <div class="row" style="justify-content:center">
         <button class="btn ghost slim" onclick="exitUnit()">Home</button>
-        ${nxt?`<button class="btn primary slim" onclick="enterUnit('${nxt.id}')">Next unit →</button>`:`<button class="btn primary slim" onclick="switchTo('practice')">Practice →</button>`}
+        ${nxt?`<button class="btn primary slim" onclick="enterUnit('${nxt.id}')">Next unit →</button>`:`<button class="btn primary slim" onclick="switchTo('practice')">Shuffle →</button>`}
       </div></div>`;
     updateBadges();
   }
@@ -2964,19 +2965,60 @@ function buildSession(forceExtra){
   sess={q,i:0,right:0,miss:0,extra:!!forceExtra,total:q.length};
   return q.length>0;
 }
-function renderPrac(forceExtra){
-  const area=document.getElementById('pracArea');
-  if(!sess||sess.i>=sess.q.length||forceExtra===true){
-    if(!buildSession(forceExtra)){
-      const pool=practicePool();
-      document.getElementById('pracSub').textContent='';
-      area.innerHTML=`<div class="card done-msg"><div class="big">All caught up ✦</div>
-        ${pool.length?`Nothing due right now.<div class="row" style="justify-content:center;margin-top:14px"><button class="btn soft slim" onclick="renderPrac(true)">Extra practice · random ${Math.min(SESSION_SIZE,pool.length)}</button></div>`:'Complete your first unit in Learn to unlock practice.'}
-        </div>`;
-      updateBadges();return;
-    }
+/* ---- Shuffle: random card browsing (no quizzes) ---- */
+const SHUF_SCOPES=[['all','All cards'],['fam','♛ Famous lines'],['star','⭐ Focus'],['new','New to me'],['mine','My Pickups']];
+let shufCur=null, shufRecent=[];
+function cardState(w){ if(w._cus){return state.custom.find(c=>c.id===w.id)||{}; } return ws(w.id); }
+function shufAll(){
+  const base=ALLWORDS.filter(w=>!REF_UNITS.has(w.unit));
+  const cus=state.custom.map(c=>({id:c.id,term:c.term,cat:c.cat||'Words',gloss:c.meaning||'',hard:[],quote:c.example||'',src:c.source||'',why:c.why||'',usage:c.usage||[],_cus:true,unit:'uP'}));
+  return base.concat(cus);
+}
+function shufScope(){return state.shufScope||'all'}
+function shufPool(){
+  const sc=shufScope(); let p=shufAll();
+  if(sc==='fam')p=p.filter(w=>hasOrig(w));
+  else if(sc==='star')p=p.filter(w=>cardState(w).star);
+  else if(sc==='new')p=p.filter(w=>!w._cus&&!ws(w.id).learned);
+  else if(sc==='mine')p=p.filter(w=>w.unit==='uP');
+  return p;
+}
+function setShufScope(sc){state.shufScope=sc;save();shufCur=null;shufRecent=[];renderPrac();}
+function shufDraw(){
+  const pool=shufPool();
+  if(!pool.length){
+    const msg={fam:'No famous lines in this scope yet.',star:'Nothing starred yet — tap ☆ Focus on any card and it gathers here.',new:'Nothing new left — you have seen every card. 🎉',mine:'No pickups yet — add words with ＋ in the header.'}[shufScope()]||'No cards here yet.';
+    document.getElementById('pracArea').innerHTML=`<div class="card done-msg">${msg}</div>`;return;
   }
-  renderItem();
+  let cand=pool.filter(w=>!shufRecent.includes(w.id));
+  if(!cand.length){shufRecent=[];cand=pool;}
+  const w=cand[Math.floor(Math.random()*cand.length)];
+  shufRecent.push(w.id); if(shufRecent.length>12)shufRecent.shift();
+  shufCur=w;
+  if(!w._cus){const s=ws(w.id); if(!s.learned){s.learned=true;s.next=today();}}
+  tl().sessions++; state.reps=(state.reps||0)+1; addXP(3); bumpStreak(); save();
+  renderShufCard(); renderStats();
+}
+function shufToggleStar(){ if(!shufCur)return; const st=cardState(shufCur); st.star=!st.star; save(); renderShufCard(); renderStats(); }
+function renderShufCard(){
+  const w=shufCur, st=cardState(w);
+  document.getElementById('pracArea').innerHTML=`<div class="card">
+    <span class="cat-chip">${esc(w.cat||'Card')}</span>
+    <div class="term">${esc(w.term)}</div>
+    <div class="blk"><span class="lbl">Meaning · 释义</span>${esc(w.gloss)}</div>
+    ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">Word notes · 拆词</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
+    ${w.quote?`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote"><span class="q">“${esc(w.quote)}”${hasOrig(w)?`<a class="sayb" style="text-decoration:none" href="${origUrl(w)}" target="_blank" title="hear the ORIGINAL delivery">▶︎</a>`:''}</span><span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">'+origLabel(w)+'</a>':''}</span></div></div>`:''}
+    ${w.why?`<div class="blk"><span class="lbl">Unpack · 解析</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:''}</div>`:''}
+    ${w.usage&&w.usage.length?`<div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
+    <div class="row" style="margin-top:14px">
+      <button class="btn ghost slim" onclick="shufToggleStar()">${st.star?'⭐ Focused':'☆ Focus'}</button>
+      <button class="btn primary" onclick="shufDraw()">Next card 🔀</button>
+    </div></div>`;
+}
+function renderPrac(){
+  const sc=shufScope();
+  document.getElementById('pracSub').innerHTML='<div class="row" style="flex-wrap:wrap;gap:6px">'+SHUF_SCOPES.map(p=>`<button class="btn ${p[0]===sc?'primary':'ghost'} slim" onclick="setShufScope('${p[0]}')">${p[1]}</button>`).join('')+'</div>';
+  if(!shufCur){shufDraw();}else{renderShufCard();}
 }
 function makeGen(){
   const useRe=(state.reps%2===0);
@@ -3065,7 +3107,7 @@ function renderItem(){
           <div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${(w.usage||[]).map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`
         :`${w.meaning?`<div class="blk"><span class="lbl">Meaning · 释义</span>${esc(w.meaning)}</div>`:''}
           ${w.example?`<div class="blk"><div class="quote"><span class="q">“${esc(w.example)}”</span>${w.source?`<span class="src">— ${esc(srcClean(w.source))}</span>`:''}</div></div>`:''}
-          ${w.why?`<div class="blk"><span class="lbl">Unpack · 解析</span>${esc(w.why)}</div>`:''}
+          ${w.why?`<div class="blk"><span class="lbl">Unpack · 解析</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>`:''}
           ${(w.usage&&w.usage.length)?`<div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}`}
       </div>
       <div class="row" id="pRow1"><button class="btn primary" onclick="checkPrac()">Check →</button></div>
@@ -3331,7 +3373,7 @@ function showCard(id){
      ${w.gloss?`<div class="blk"><span class="lbl">Meaning · 释义</span>${esc(w.gloss)}</div>`:''}
      ${(w.hard&&w.hard.length)?`<div class="blk"><span class="lbl">Word notes · 拆词</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
      ${w.quote?`<div class="blk"><div class="quote"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(srcClean(w.src))}${(!cus&&hasOrig(w))?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">'+origLabel(w)+'</a>':''}</span></div></div>`:''}
-     ${w.why?`<div class="blk"><span class="lbl">Unpack · 解析</span>${esc(w.why)}</div>`:''}
+     ${w.why?`<div class="blk"><span class="lbl">Unpack · 解析</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>`:''}
      ${(w.usage&&w.usage.length)?`<div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}
      <div class="row">
        <button class="btn soft slim" onclick="toggleStar('${id}');showCard('${id}')">${(s&&s.star)?'★ In focus':'☆ Focus'}</button>
@@ -3348,8 +3390,8 @@ function renderStats(){
   document.getElementById('sLearned').textContent=pool.filter(x=>x.s.learned).length;
   document.getElementById('sStar').textContent=pool.filter(x=>x.s.star).length;
   document.getElementById('sReps').textContent=state.reps;
-  document.getElementById('sGrad').textContent=pool.filter(x=>x.s.uses>=38).length;
-  document.getElementById('sDue').textContent=practicePool().filter(x=>x.s.next<=t).length;
+  document.getElementById('sGrad').textContent=pickupCards().length;
+  document.getElementById('sDue').textContent=tl().sessions;
   const learned=pool.filter(x=>x.s.learned);
   const avg=learned.length?learned.reduce((s,x)=>s+Math.min(38,x.s.uses),0)/learned.length/38:0;
   const stage=Math.max(1,Math.min(9,Math.round(1+avg*8)));
@@ -3357,14 +3399,10 @@ function renderStats(){
   const names=['','Innocent Ignorance','The Awakening','Verbal Rebranding','Confidence Catalyst','Perfection Deception','Natural Expression','Structural Mastery','Simple Eloquence','Golden Tongue'];
   document.getElementById('ascentLbl').textContent=`Stage ${stage} — ${names[stage]}`;
   const focus=bankItems().filter(x=>x.s&&x.s.star);
-  document.getElementById('focusList').innerHTML=focus.length?focus.map(x=>`<div class="srchit" onclick="switchTo('learn');togglePanel('search');document.getElementById('srchQ').value='';showCard('${x.id}')"><b>${esc(x.term)}</b><span>used ${x.s.uses}/38</span></div>`).join(''):'<span style="color:var(--muted);font-size:13px">Star words anywhere (★) and they gather here — practiced first, reviewed daily.</span>';
+  document.getElementById('focusList').innerHTML=focus.length?focus.map(x=>`<div class="srchit" onclick="switchTo('learn');togglePanel('search');document.getElementById('srchQ').value='';showCard('${x.id}')"><b>${esc(x.term)}</b></div>`).join(''):'<span style="color:var(--muted);font-size:13px">Star words anywhere (★) and they gather here for quick review.</span>';
 }
 function renderStreak(){const x=xpToday();document.getElementById('streak').innerHTML=`<span class=\"xp\">⚡ ${x}/${XP_GOAL}</span> · `+(state.streak>0?`🔥 <b>${state.streak}</b>-day`:'start your streak')}
-function updateBadges(){
-  const nP=practicePool().filter(x=>x.s.next<=today()).length;
-  const bp=document.getElementById('bPrac');
-  bp.textContent=nP||'';bp.style.display=nP?'inline':'none';
-}
+function updateBadges(){}
 function currentView(){const b=document.querySelector('nav button.on');return b?b.dataset.v:'learn'}
 function switchTo(v){document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));
   ['today','learn','practice','stats'].forEach(k=>document.getElementById('v-'+k).style.display=(k===v)?'block':'none');
