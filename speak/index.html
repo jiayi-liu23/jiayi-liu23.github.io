@@ -87,6 +87,8 @@
   .opt.ok{background:var(--sage);border-color:var(--green);color:var(--green);font-weight:700}
   .opt.bad{background:#F7E5DF;border-color:var(--terra);color:var(--terra)}
   .opt:disabled{cursor:default;opacity:.9}
+  .tin{width:100%;margin-top:12px;border:1px solid var(--hair);border-radius:12px;padding:12px 14px;font-family:var(--sans);font-size:16px;background:#FCFAF6}
+  .tin:focus{outline:none;border-color:var(--wood)}
   .sessbar{height:8px;background:var(--sage);border-radius:20px;margin:2px 0 14px;overflow:hidden}
   .sessbar i{display:block;height:100%;background:var(--wood);border-radius:20px;transition:width .3s}
   .sayb{background:none;border:none;font-size:17px;cursor:pointer;vertical-align:middle;margin-left:6px;opacity:.65}
@@ -2925,33 +2927,28 @@ function learnNext(){
 }
 
 /* ============ PRACTICE (session engine) ============ */
+const REF_UNITS=new Set(['u0','uVm','uR','u15']);
 function practicePool(){
-  const cur=ALLWORDS.filter(w=>ws(w.id).learned).map(w=>({kind:'cur',w,s:ws(w.id)}));
+  const cur=ALLWORDS.filter(w=>!REF_UNITS.has(w.unit)&&ws(w.id).learned).map(w=>({kind:'cur',w,s:ws(w.id)}));
   const cus=state.custom.map(c=>({kind:'cus',w:c,s:c}));
   return [...cur,...cus].filter(x=>x.s.uses<38);
 }
 const SESSION_SIZE=8;
 let sess=null;
 function exType(x){
-  const u=x.s.uses||0;
-  if(x.kind==='cus'){return (x.w.meaning? (u<2?'mc':'write') : 'write');}
-  if(u<1)return 'mc';
-  if(u<4){const t=x.w.term.toLowerCase(),q=(x.w.quote||'').toLowerCase();return q.includes(t)?'cloze':'mc';}
-  return 'write';
+  const u=x.s.uses||0, t=String(x.w.term);
+  if(u>=4) return 'write';
+  if(t.includes('→')) return 'swap';
+  const qtext=((x.kind==='cur'?x.w.quote:x.w.example)||'').toLowerCase();
+  if(keyWord(t)&&qtext.includes(keyWord(t))) return 'cloze';
+  return (x.kind==='cus'&&!x.w.meaning)?'write':'recall';
 }
-function maskTerm(g,t){
-  let out=g||'';
-  const bits=[t,...String(t).split(/[^A-Za-z']+/).filter(w=>w.length>3)];
-  bits.forEach(w=>{try{out=out.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),'____');}catch(e){}});
-  return out;
-}
-function distractors(x,n){
-  const cat=x.kind==='cur'?x.w.cat:(x.w.cat||'Words');
-  let pool=ALLWORDS.filter(w=>w.id!==x.w.id&&w.cat===cat);
-  if(pool.length<n)pool=ALLWORDS.filter(w=>w.id!==x.w.id);
-  return pool.sort(()=>Math.random()-.5).slice(0,n).map(w=>w.term);
-}
-function shortT(t){const ws_=t.split(' ');return ws_.length>8?ws_.slice(0,8).join(' ')+'…':t;}
+function norm(s){return String(s||'').toLowerCase().replace(/[’']/g,"'").replace(/[^a-z' ]+/g,' ').replace(/\s+/g,' ').trim();}
+function lev(a,b){if(a===b)return 0;const m=a.length,n=b.length;if(!m||!n)return m+n;let p=[...Array(n+1).keys()];for(let i=1;i<=m;i++){let c=[i];for(let j=1;j<=n;j++){c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));}p=c;}return p[n];}
+function fuzzyEq(inp,ans){inp=norm(inp);ans=norm(ans);if(!inp)return false;if(inp===ans)return true;const tol=ans.length>=8?2:(ans.length>=5?1:0);return lev(inp,ans)<=tol;}
+function keyWord(t){const stop=new Set(['that','this','with','from','have','been','will','your','their','there','what','when','into','only','every','more','than','like','just']);const ws_=norm(t).split(' ').filter(w=>w.length>=4&&!stop.has(w));return (ws_.sort((a,b)=>b.length-a.length)[0])||null;}
+function hintFor(w){return w?w[0]+'·'.repeat(Math.min(8,Math.max(2,w.length-1))):'';}
+function blankOut(text,word){try{return text.replace(new RegExp('\\b'+word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i'),'＿＿＿');}catch(e){return text;}}
 function buildSession(forceExtra){
   const pool=practicePool(),t=today();
   let q=pool.filter(x=>x.s.next<=t);
@@ -3014,38 +3011,43 @@ function renderItem(){
   const bar=bar0;
   const starBtn=`<button class="starbtn ${s.star?'on':''}" id="pStar" onclick="pracStar()" title="focus">★</button>`;
   const meter=`<div class="meter"><i style="width:${Math.min(100,s.uses/38*100)}%"></i></div><div class="meter-lbl">used ${s.uses} / ~38 · ${s.star?'⭐ focus':(s.uses===0?'first rep':'review')}${x._redone?' · retry':''}</div>`;
-  if(type==='mc'){
-    const isSwap=String(w.term).includes('→');
-    let promptHtml,opts,correct;
-    if(isSwap){
-      const parts=w.term.split('→');
-      correct=parts.slice(1).join('→').trim();
-      const pool=[...new Set(ALLWORDS.filter(o=>o.id!==w.id&&String(o.term).includes('→')).map(o=>o.term.split('→').slice(1).join('→').trim()))].sort(()=>Math.random()-.5).slice(0,3);
-      opts=[correct,...pool].sort(()=>Math.random()-.5);
-      promptHtml=`<div class="prompt" style="margin-top:10px">Upgrade this workhorse — what does the course recommend?</div>
-      <div class="quote"><span class="q" style="font-style:normal;font-size:18px"><b>${esc(parts[0].trim())}</b> → ?</span></div>`;
-    }else{
-      correct=w.term;
-      const gloss=maskTerm(x.kind==='cur'?w.gloss:(w.meaning||''),w.term);
-      opts=[w.term,...distractors(x,3)].sort(()=>Math.random()-.5);
-      promptHtml=`<div class="prompt" style="margin-top:10px">Which word or phrase means:</div>
-      <div class="quote"><span class="q" style="font-style:normal">${esc(gloss)}</span></div>`;
-    }
+  if(type==='swap'){
+    const parts=w.term.split('→');
+    const offender=parts[0].trim();
+    const right=parts.slice(1).join('→').trim().replace(/[()]/g,'');
+    const answers=right.split(/·|\/|,| or /).map(s=>s.trim()).filter(Boolean);
+    const accepts=[...answers,...answers.map(a=>a.split(' ')[0])];
+    x._ctx={mode:'swap',answers:accepts,reveal:right,tries:0};
+    area.innerHTML=bar+`<div class="card">${starBtn}
+      <span class="cat-chip">Upgrade</span>
+      <div class="prompt" style="margin-top:10px">One sharper word for:</div>
+      <div class="quote"><span class="q" style="font-style:normal;font-size:19px"><b>${esc(offender)}</b></span><span class="src" style="letter-spacing:1px">${answers.map(a=>esc(hintFor(a.split(' ')[0]))).join('  ·  ')}</span></div>
+      <input id="tIn" class="tin" placeholder="One word…" onkeydown="if(event.key==='Enter')tryAnswer()">
+      <div class="row"><button class="btn primary" onclick="tryAnswer()">Check →</button></div>
+      <div id="tOut" class="blk"></div></div>`;
+  }else if(type==='cloze'){
+    const qtext=(x.kind==='cur'?w.quote:w.example)||'';
+    const k=keyWord(w.term);
+    x._ctx={mode:'cloze',answers:[k],reveal:k,tries:0};
     area.innerHTML=bar+`<div class="card">${starBtn}
       <span class="cat-chip">${esc(x.kind==='cur'?w.cat:(w.cat||'Words'))}</span>
-      ${promptHtml}
-      <div style="margin-top:12px">${opts.map(o=>`<button class="opt" data-ok="${o===correct?1:0}" onclick="answerOpt(this,${o===correct})">${esc(shortT(o))}</button>`).join('')}</div>
-    </div>`;
-  }else if(type==='cloze'){
-    const re=new RegExp(w.term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i');
-    const blanked=w.quote.replace(re,'＿＿＿＿');
-    const opts=[w.term,...distractors(x,3)].sort(()=>Math.random()-.5);
+      <div class="prompt" style="margin-top:10px">One word completes the line:</div>
+      <div class="quote"><span class="q">“${esc(blankOut(qtext,k))}”</span><span class="src">— ${esc(srcClean(x.kind==='cur'?w.src:w.source))} · <span style="letter-spacing:1px">${esc(hintFor(k))}</span></span></div>
+      <input id="tIn" class="tin" placeholder="One word…" onkeydown="if(event.key==='Enter')tryAnswer()">
+      <div class="row"><button class="btn primary" onclick="tryAnswer()">Check →</button></div>
+      <div id="tOut" class="blk"></div></div>`;
+  }else if(type==='recall'){
+    const k=keyWord(w.term)||norm(w.term).split(' ')[0];
+    const scaffold=blankOut(w.term,k);
+    const gloss=x.kind==='cur'?w.gloss:(w.meaning||'');
+    x._ctx={mode:'recall',answers:[k],reveal:w.term,tries:0};
     area.innerHTML=bar+`<div class="card">${starBtn}
-      <span class="cat-chip">${esc(w.cat)}</span>
-      <div class="prompt" style="margin-top:10px">Complete the line:</div>
-      <div class="quote"><span class="q">“${esc(blanked)}”</span><span class="src">— ${esc(srcClean(w.src))}</span></div>
-      <div style="margin-top:12px">${opts.map(o=>`<button class="opt" data-ok="${o===w.term?1:0}" onclick="answerOpt(this,${o===w.term})">${esc(shortT(o))}</button>`).join('')}</div>
-    </div>`;
+      <span class="cat-chip">${esc(x.kind==='cur'?w.cat:(w.cat||'Words'))}</span>
+      <div class="prompt" style="margin-top:10px">Fill the blank:</div>
+      <div class="quote"><span class="q" style="font-style:normal;font-size:18px">${esc(scaffold)}</span><span class="src">${esc(String(gloss).slice(0,80))} · <span style="letter-spacing:1px">${esc(hintFor(k))}</span></span></div>
+      <input id="tIn" class="tin" placeholder="One word…" onkeydown="if(event.key==='Enter')tryAnswer()">
+      <div class="row"><button class="btn primary" onclick="tryAnswer()">Check →</button></div>
+      <div id="tOut" class="blk"></div></div>`;
   }else{
     area.innerHTML=bar+`<div class="card">${starBtn}
       <span class="cat-chip">${esc(x.kind==='cur'?w.cat:(w.cat||'Words'))}</span>
@@ -3107,21 +3109,23 @@ async function genCoach(kind){
 }
 function pracStar(){const s=sess.q[sess.i].s;s.star=!s.star;save();document.getElementById('pStar').classList.toggle('on',s.star);renderStats();}
 function scheduleOK(s){const step=Math.min(INTERVALS.length-1,Math.floor(s.uses/2));s.next=today()+INTERVALS[step]*DAY;}
-function answerOpt(btn,correct){
-  const x=sess.q[sess.i],s=x.s;
-  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
-  if(correct){
-    btn.classList.add('ok');
-    s.uses++;state.reps++;sess.right++;addXP(x._type==='cloze'?8:5);scheduleOK(s);
-    bumpStreak();save();
-    setTimeout(()=>{sess.i++;renderItem();},800);
+function tryAnswer(){
+  const x=sess.q[sess.i],s=x.s,c=x._ctx,out=document.getElementById('tOut');
+  const inp=(document.getElementById('tIn').value||'').trim();
+  if(!inp){out.innerHTML='<div class="tip">Type your answer first.</div>';return;}
+  const ok=c.answers.some(a=>fuzzyEq(inp,a));
+  if(ok){
+    out.innerHTML=`<div class="tip">✓ <b>${esc(c.reveal)}</b></div>`;
+    s.uses++;state.reps++;sess.right++;addXP(8);scheduleOK(s);bumpStreak();save();
+    setTimeout(()=>{sess.i++;renderItem();},1000);
   }else{
-    btn.classList.add('bad');
-    document.querySelectorAll('.opt').forEach(b=>{if(b.dataset.ok==='1')b.classList.add('ok');});
+    c.tries++;
+    if(c.tries<2){out.innerHTML='<div class="tip">Not quite — one more try.</div>';document.getElementById('tIn').select&&document.getElementById('tIn').select();return;}
+    out.innerHTML=`<div class="tip">Answer: <b>${esc(c.reveal)}</b></div>`;
     sess.miss++;s.next=today()+DAY;
-    if(!x._redone){const clone={...x,_redone:true};sess.q.push(clone);sess.total++;}
+    if(!x._redone){const clone={...x,_redone:true,_ctx:null};sess.q.push(clone);sess.total++;}
     save();
-    setTimeout(()=>{sess.i++;renderItem();},1600);
+    setTimeout(()=>{sess.i++;renderItem();},1700);
   }
 }
 function checkPrac(){document.getElementById('reveal').classList.add('show');document.getElementById('pRow1').style.display='none';document.getElementById('pRow2').style.display='flex';}
