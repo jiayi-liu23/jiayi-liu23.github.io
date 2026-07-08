@@ -88,6 +88,17 @@
   .sayb{background:none;border:none;font-size:17px;cursor:pointer;vertical-align:middle;margin-left:6px;opacity:.65}
   .sayb:hover{opacity:1}
   .xp{color:var(--gold);font-weight:700}
+  .hicon{background:none;border:1px solid var(--hair);border-radius:10px;width:34px;height:34px;font-size:16px;cursor:pointer;color:var(--ink)}
+  .hicon:hover{background:#fff}
+  .tdrow{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--hair)}
+  .tdrow:last-child{border-bottom:none}
+  .tdrow .tick{font-size:22px;width:30px;text-align:center}
+  .tdrow .tt{font-weight:700;font-size:15.5px}
+  .tdrow .td{font-size:12.5px;color:var(--muted)}
+  .srchit{padding:10px 0;border-bottom:1px solid var(--hair);cursor:pointer}
+  .srchit:hover{background:#FCFAF6}
+  .srchit b{font-size:14.5px}
+  .srchit span{display:block;font-size:12.5px;color:var(--muted)}
 
   .meter{height:7px;background:var(--sage);border-radius:20px;overflow:hidden;margin:14px 0 4px}
   .meter i{display:block;height:100%;background:var(--wood);border-radius:20px}
@@ -135,19 +146,57 @@
 <header>
   <div class="hbar">
     <div class="logo">Commonplace<small>a word bank for articulate speech</small></div>
-    <div class="streak" id="streak"></div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <button class="hicon" onclick="togglePanel('search')" title="Search all cards">🔍</button>
+      <button class="hicon" onclick="togglePanel('add')" title="Add a word">＋</button>
+      <div class="streak" id="streak" style="margin-left:6px"></div>
+    </div>
   </div>
   <nav>
-    <button data-v="learn" class="on">Learn<span class="bdg" id="bLearn"></span></button>
+    <button data-v="today" class="on">Today</button>
+    <button data-v="learn">Learn<span class="bdg" id="bLearn"></span></button>
     <button data-v="practice">Practice<span class="bdg" id="bPrac"></span></button>
-    <button data-v="drills">Drills</button>
-    <button data-v="bank">Bank</button>
     <button data-v="stats">Progress</button>
   </nav>
 </header>
 
+<div class="wrap" style="padding-bottom:0">
+  <div class="miniform" id="addPanel" style="margin-top:14px">
+    <label>Word / phrase</label><input id="fTerm">
+    <div class="row" style="margin-top:10px">
+      <button class="btn soft slim" id="afBtn" onclick="autoFill()">✨ Auto-fill the rest</button>
+      <button class="btn ghost slim" onclick="document.getElementById('aiKeyRow').style.display=document.getElementById('aiKeyRow').style.display==='block'?'none':'block'">AI key…</button>
+    </div>
+    <div id="aiKeyRow" style="display:none;border:1px dashed var(--hair);border-radius:12px;padding:10px;margin-top:8px">
+      <label>Anthropic API key (optional — richer auto-fill + coach feedback; stored only in this browser)</label>
+      <input id="fKey" placeholder="sk-ant-…" onchange="localStorage.setItem('bs_key',this.value.trim())">
+    </div>
+    <label>Meaning</label><input id="fMeaning">
+    <label>Example sentence (optional)</label><textarea id="fExample"></textarea>
+    <label>Source (optional)</label><input id="fSource" placeholder="e.g. heard in seminar / NYT article">
+    <label>Category</label>
+    <select id="fCat">
+      <option>Words</option><option>Phrases</option><option>Similes</option>
+      <option>Alliterations</option><option>Quotes</option><option>Workhorse swaps</option>
+      <option>Lexical gaps</option><option>Dedicated terms</option><option>Custom</option>
+    </select>
+    <div class="row"><button class="btn primary" onclick="saveForm()">Save → My Pickups</button><button class="btn ghost" onclick="togglePanel('add')">Close</button></div>
+  </div>
+  <div class="miniform" id="searchPanel" style="margin-top:14px">
+    <label>Search all cards</label>
+    <input id="srchQ" placeholder="Type to search terms, meanings, quotes…" oninput="doSearch(this.value)">
+    <div id="srchOut" style="margin-top:10px"></div>
+  </div>
+</div>
+
 <div class="wrap">
-  <section id="v-learn">
+  <section id="v-today">
+    <h2 class="sec">Today</h2>
+    <div class="sub">The course’s 3×5, as a daily loop — fifteen minutes, three checks.</div>
+    <div id="todayArea"></div>
+  </section>
+
+  <section id="v-learn" style="display:none">
     <h2 class="sec">Learn</h2>
     <div class="sub" id="learnSub">Twenty themed units — enter any, in any order. Cards shuffle each visit.</div>
     <div id="learnArea"></div>
@@ -157,65 +206,6 @@
     <h2 class="sec">Practice</h2>
     <div class="sub" id="pracSub"></div>
     <div id="pracArea"></div>
-  </section>
-
-  <section id="v-drills" style="display:none">
-    <h2 class="sec">Drills</h2>
-    <div class="sub">Generators, not flashcards — the course techniques made infinite. AI key (Bank → AI key…) unlocks coach feedback; without one they run offline.</div>
-
-    <div class="card">
-      <span class="cat-chip">Day 7 · two-question metaphor</span>
-      <div class="term" style="font-size:22px">Metaphor Collision · 隐喻碰撞机</div>
-      <div class="blk" id="mcPrompt"></div>
-      <div class="prompt">Write one sentence that makes the collision work:</div>
-      <textarea id="mcAnswer" placeholder="e.g. Even the rainbow this afternoon has been decaffeinated."></textarea>
-      <div class="row">
-        <button class="btn ghost slim" onclick="mcNew()">🎲 New collision</button>
-        <button class="btn primary" onclick="mcCheck()">Check →</button>
-      </div>
-      <div id="mcOut" class="blk"></div>
-    </div>
-
-    <div class="card">
-      <span class="cat-chip">Day 8 · workhorse upgrade</span>
-      <div class="term" style="font-size:22px">Workhorse ER · 万能词急诊室</div>
-      <div class="prompt">Paste a sentence you actually said or wrote today:</div>
-      <textarea id="erInput" placeholder="e.g. The results are really good and pretty interesting."></textarea>
-      <div class="row"><button class="btn primary" onclick="erCheck()">Diagnose →</button></div>
-      <div id="erOut" class="blk"></div>
-    </div>
-  </section>
-
-  <section id="v-bank" style="display:none">
-    <h2 class="sec">Word bank</h2>
-    <div class="sub">Keep entries short (~10 words max). ⭐ marks a focus word — practiced first. New words from your life: tell Coach in chat (“记词 …”) and they arrive in <b>My Pickups</b>, fully annotated.</div>
-    <div class="addbar">
-      <input id="quickTerm" placeholder="Add a word or phrase… (Enter)">
-      <button class="btn primary slim" onclick="toggleForm()">＋ Details</button>
-    </div>
-    <div class="miniform" id="miniform">
-      <label>Word / phrase</label><input id="fTerm">
-      <div class="row" style="margin-top:10px">
-        <button class="btn soft slim" id="afBtn" onclick="autoFill()">✨ Auto-fill the rest</button>
-        <button class="btn ghost slim" onclick="document.getElementById('aiKeyRow').style.display=document.getElementById('aiKeyRow').style.display==='block'?'none':'block'">AI key…</button>
-      </div>
-      <div id="aiKeyRow" style="display:none;border:1px dashed var(--hair);border-radius:12px;padding:10px;margin-top:8px">
-        <label>Anthropic API key (optional — richer, Joseph-style auto-fill; stored only in this browser)</label>
-        <input id="fKey" placeholder="sk-ant-…" onchange="localStorage.setItem('bs_key',this.value.trim())">
-      </div>
-      <label>Meaning</label><input id="fMeaning">
-      <label>Example sentence (optional)</label><textarea id="fExample"></textarea>
-      <label>Source (optional)</label><input id="fSource" placeholder="e.g. MLK, I Have a Dream (1963)">
-      <label>Category</label>
-      <select id="fCat">
-        <option>Words</option><option>Phrases</option><option>Similes</option>
-        <option>Alliterations</option><option>Quotes</option><option>Workhorse swaps</option>
-        <option>Lexical gaps</option><option>Dedicated terms</option><option>Custom</option>
-      </select>
-      <div class="row"><button class="btn primary" onclick="saveForm()">Save</button><button class="btn ghost" onclick="toggleForm()">Cancel</button></div>
-    </div>
-    <div class="filters" id="filters"></div>
-    <div id="bankList"></div>
   </section>
 
   <section id="v-stats" style="display:none">
@@ -233,6 +223,10 @@
       <div style="font-family:var(--serif);font-size:16px;color:var(--wood-dk);margin-bottom:8px">The Articulate Ascent</div>
       <div class="bar"><i id="ascentBar" style="width:5%"></i></div>
       <div class="meter-lbl" id="ascentLbl" style="margin-top:6px"></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div style="font-family:var(--serif);font-size:16px;color:var(--wood-dk);margin-bottom:8px">⭐ Focus words</div>
+      <div id="focusList" style="font-size:14px"></div>
     </div>
     <div class="tip">Progress is saved in this browser only — every person who opens the app keeps their own progress.</div>
   </section>
@@ -2820,10 +2814,38 @@ const XP_GOAL=50;
 function xpToday(){const t=today();if(state.xpDay!==t){state.xpDay=t;state.xpNow=0;}return state.xpNow||0;}
 function addXP(n){const t=today();if(state.xpDay!==t){state.xpDay=t;state.xpNow=0;}state.xpNow=(state.xpNow||0)+n;state.xp=(state.xp||0)+n;save();renderStreak();}
 
+/* ============ TODAY ============ */
+function tl(){const t=today();if(!state.tl||state.tl.day!==t)state.tl={day:t,learned:0,sessions:0,line:false};return state.tl;}
+function todayLine(){
+  const pool=ALLWORDS.filter(w=>CLIPS[w.id])||[];
+  const p2=pool.length?pool:ALLWORDS.filter(hasOrig);
+  return p2[Math.floor(today()/DAY)%p2.length];
+}
+function renderToday(){
+  const T=tl(),x=xpToday(),w=todayLine();
+  const row=(done,title,detail,action)=>`<div class="tdrow"><div class="tick">${done?'✅':'○'}</div><div style="flex:1"><div class="tt">${title}</div><div class="td">${detail}</div></div>${action||''}</div>`;
+  document.getElementById('todayArea').innerHTML=`
+   <div class="card">
+     <div class="meter"><i style="width:${Math.min(100,x/XP_GOAL*100)}%"></i></div>
+     <div class="meter-lbl"><span class="xp">⚡ ${x} / ${XP_GOAL} XP</span>${x>=XP_GOAL?' · goal met — streak safe 🔥':''}</div>
+     ${row(T.learned>=5,'Learn 5 new cards',T.learned+' / 5 today · one unit, five entries','<button class="btn ghost slim" onclick="switchTo(\'learn\')">Go →</button>')}
+     ${row(T.sessions>=1,'One practice session',T.sessions+' completed · 8 items, mixed types','<button class="btn primary slim" onclick="switchTo(\'practice\')">Start →</button>')}
+     ${row(T.line,'Line of the day','read it aloud once — then hear the original','')}
+   </div>
+   <div class="card" style="margin-top:14px">
+     <span class="cat-chip">${esc(w.cat)}</span>
+     <div class="term" style="font-size:20px">${esc(w.term)}</div>
+     <div class="quote" style="margin-top:10px"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(w.src)}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">'+origLabel(w)+'</a>':''}</span></div>
+     ${T.line?'<div class="tip" style="margin-top:10px">✅ done today — tomorrow brings a new line.</div>':'<div class="row"><button class="btn soft" onclick="tl().line=true;addXP(5);save();renderToday()">✓ I read it aloud (+5 XP)</button></div>'}
+   </div>`;
+}
+
 /* ============ LEARN ============ */
 let inUnit=null, idx=-1;
-function unitLearnedCount(u){return u.words.filter(w=>ws(w.id).learned).length}
-function unitDone(u){return unitLearnedCount(u)===u.words.length}
+function pickupCards(){return UNITS.find(x=>x.id==='uP')? PICKUPS.concat(state.custom.map(c=>({id:c.id,term:c.term,cat:c.cat||'Words',gloss:c.meaning||'',hard:[],quote:c.example||'',src:c.source||'',why:c.why||'',usage:c.usage||[],_cus:true}))) : [];}
+function unitWords(u){return u.id==='uP'? pickupCards() : u.words;}
+function unitLearnedCount(u){return unitWords(u).filter(w=>w._cus?true:ws(w.id).learned).length}
+function unitDone(u){return unitLearnedCount(u)===unitWords(u).length}
 function unitUnlocked(i){return true}
 
 function renderLearn(){
@@ -2834,15 +2856,15 @@ function renderLearn(){
       ? 'All units complete — Practice is now the main game: repeat each word toward 38 uses.'
       : 'Twenty themed units — enter any, in any order. Cards shuffle each visit.';
     const cont=UNITS.find(u=>!unitDone(u)&&unitLearnedCount(u)>0)||UNITS.find(u=>!unitDone(u));
-    const hero=cont?`<div class="card" style="margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="enterUnit('${cont.id}')"><div style="font-size:26px">▶</div><div><div style="font-weight:700">Continue: ${esc(cont.title)}</div><div style="font-size:12.5px;color:var(--muted)">${unitLearnedCount(cont)}/${cont.words.length} · pick up where you left off</div></div></div>`:'';
+    const hero=cont?`<div class="card" style="margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="enterUnit('${cont.id}')"><div style="font-size:26px">▶</div><div><div style="font-weight:700">Continue: ${esc(cont.title)}</div><div style="font-size:12.5px;color:var(--muted)">${unitLearnedCount(cont)}/${unitWords(cont).length} · pick up where you left off</div></div></div>`:'';
     area.innerHTML=hero+UNITS.map((u,i)=>{
       const done=unitDone(u),n=unitLearnedCount(u);
       const cls=done?'done':(n>0?'active':'');
       const icon=done?'✓':(i+1);
       return `<div class="unit ${cls}" onclick="enterUnit('${u.id}')">
         <div class="badge">${icon}</div>
-        <div><div class="ut">${esc(u.title)}${u.zh?` <span class="uz">· ${esc(u.zh)}</span>`:''}</div><div class="um">${esc(u.from)} · ${u.words.length} entries</div></div>
-        <div class="prog">${n}/${u.words.length}</div>
+        <div><div class="ut">${esc(u.title)}${u.zh?` <span class="uz">· ${esc(u.zh)}</span>`:''}</div><div class="um">${esc(u.from)} · ${unitWords(u).length} entries</div></div>
+        <div class="prog">${n}/${unitWords(u).length}</div>
       </div>`;
     }).join('');
     updateBadges();return;
@@ -2859,7 +2881,7 @@ function renderLearn(){
       </div></div>`;
     return;
   }
-  const w=(u._sess||u.words)[idx], s=ws(w.id);
+  const w=(u._sess||unitWords(u))[idx], s=w._cus?w:ws(w.id);
   area.innerHTML=`<div class="card">
      <button class="starbtn ${s.star?'on':''}" onclick="toggleStar('${w.id}')" title="focus">★</button>
      <span class="cat-chip">${esc(w.cat)}</span>
@@ -2869,21 +2891,21 @@ function renderLearn(){
      <div class="blk"><span class="lbl">Source</span><div class="quote"><span class="q">“${esc(w.quote)}”${hasOrig(w)?`<a class="sayb" style="text-decoration:none" href="${origUrl(w)}" target="_blank" title="hear the ORIGINAL delivery">▶︎</a>`:''}</span><span class="src">— ${esc(w.src)}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">${origLabel(w)}</a>':''}</span></div></div>
      <div class="blk"><span class="lbl">Why it matters</span>${esc(w.why)}</div>
      <div class="blk"><span class="lbl">Usage</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
-     <div class="stepdots">${idx+1} / ${u.words.length}</div>
+     <div class="stepdots">${idx+1} / ${(u._sess||unitWords(u)).length}</div>
      <div class="row">
        <button class="btn ghost slim" onclick="exitUnit()">⌂ Home</button>
        <button class="btn ghost slim" onclick="go(${idx-1})">← Back</button>
        <button class="btn primary" onclick="learnNext()">Next →</button>
      </div></div>`;
 }
-function enterUnit(id){inUnit=UNITS.find(u=>u.id===id);inUnit._sess=inUnit.ordered?[...inUnit.words]:[...inUnit.words].sort(()=>Math.random()-.5);idx=-1;renderLearn();window.scrollTo(0,0)}
+function enterUnit(id){inUnit=UNITS.find(u=>u.id===id);const uw=unitWords(inUnit);inUnit._sess=inUnit.ordered?[...uw]:[...uw].sort(()=>Math.random()-.5);idx=-1;renderLearn();window.scrollTo(0,0)}
 function exitUnit(){inUnit=null;idx=-1;renderLearn()}
 function go(i){ if(i<-1)i=-1; idx=i; renderLearn(); window.scrollTo(0,0)}
 function learnNext(){
-  const u=inUnit,w=(u._sess||u.words)[idx],s=ws(w.id);
-  if(!s.learned){s.learned=true;s.next=today();addXP(3);}
+  const u=inUnit,uw=(u._sess||unitWords(u)),w=uw[idx];
+  if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.next=today();addXP(3);tl().learned++;}}
   save();
-  if(idx+1<u.words.length){go(idx+1);}
+  if(idx+1<uw.length){go(idx+1);}
   else{
     const area=document.getElementById('learnArea');
     const i=UNITS.indexOf(u), nxt=UNITS[i+1];
@@ -2925,8 +2947,9 @@ function buildSession(forceExtra){
   if(forceExtra&&!q.length)q=[...pool].sort(()=>Math.random()-.5);
   q.forEach(x=>x._r=Math.random());
   q.sort((a,b)=>(b.s.star-a.s.star)||(a.s.next-b.s.next)||(a.s.uses-b.s.uses)||(a._r-b._r));
-  q=q.slice(0,SESSION_SIZE);
+  q=q.slice(0,SESSION_SIZE-1);
   q.forEach(x=>{x._type=exType(x);x._redone=false;});
+  if(q.length>=2){const g=makeGen();q.splice(1+Math.floor(Math.random()*(q.length-1)),0,g);}
   sess={q,i:0,right:0,miss:0,extra:!!forceExtra,total:q.length};
   return q.length>0;
 }
@@ -2944,12 +2967,40 @@ function renderPrac(forceExtra){
   }
   renderItem();
 }
+function makeGen(){
+  const useRe=(state.reps%2===0);
+  if(useRe){const p=REWRITE_PROMPTS[Math.floor(Math.random()*REWRITE_PROMPTS.length)];return {kind:'gen',gtype:'rewrite',p};}
+  const pair=[MC_ADJ[Math.floor(Math.random()*MC_ADJ.length)],MC_NOUN[Math.floor(Math.random()*MC_NOUN.length)]];
+  return {kind:'gen',gtype:'collide',pair};
+}
 function renderItem(){
   const area=document.getElementById('pracArea');
   if(sess.i>=sess.q.length){return renderSummary();}
-  const x=sess.q[sess.i],w=x.w,s=x.s,type=x._type;
-  document.getElementById('pracSub').textContent=`Session ${sess.i+1} / ${sess.q.length} · ⭐ focus first → schedule → fewest reps`;
-  const bar=`<div class="sessbar"><i style="width:${(sess.i/sess.q.length)*100}%"></i></div>`;
+  const x=sess.q[sess.i];
+  document.getElementById('pracSub').textContent=`Session ${sess.i+1} / ${sess.q.length}`;
+  const bar0=`<div class="sessbar"><i style="width:${(sess.i/sess.q.length)*100}%"></i></div>`;
+  if(x.kind==='gen'&&x.gtype==='rewrite'){
+    area.innerHTML=bar0+`<div class="card">
+      <span class="cat-chip">Upgrade · 改写</span>
+      <div class="prompt" style="margin-top:10px">Rewrite this sentence — kill the workhorse words, keep the meaning:</div>
+      <div class="quote"><span class="q">“${esc(x.p.s)}”</span></div>
+      <textarea id="genA" placeholder="Your sharper version…"></textarea>
+      <div class="row"><button class="btn primary" onclick="genRewriteCheck()">Check →</button><button class="btn ghost slim" onclick="genSkip()">Skip</button></div>
+      <div id="genOut" class="blk"></div></div>`;
+    updateBadges();return;
+  }
+  if(x.kind==='gen'&&x.gtype==='collide'){
+    area.innerHTML=bar0+`<div class="card">
+      <span class="cat-chip">Metaphor · 碰撞</span>
+      <div class="prompt" style="margin-top:10px">Make this collision work in one sentence:</div>
+      <div class="quote"><span class="q" style="font-style:normal;font-size:18px"><b>${x.pair[0]}</b> × <b>${x.pair[1]}</b></span><span class="src">① what trait does “${x.pair[0]}” carry? ② how could “${x.pair[1]}” have it?</span></div>
+      <textarea id="genA" placeholder="e.g. Even the rainbow this afternoon has been decaffeinated."></textarea>
+      <div class="row"><button class="btn primary" onclick="genCollideCheck()">Check →</button><button class="btn ghost slim" onclick="genSkip()">Skip</button></div>
+      <div id="genOut" class="blk"></div></div>`;
+    updateBadges();return;
+  }
+  const w=x.w,s=x.s,type=x._type;
+  const bar=bar0;
   const starBtn=`<button class="starbtn ${s.star?'on':''}" id="pStar" onclick="pracStar()" title="focus">★</button>`;
   const meter=`<div class="meter"><i style="width:${Math.min(100,s.uses/38*100)}%"></i></div><div class="meter-lbl">used ${s.uses} / ~38 · ${s.star?'⭐ focus':(s.uses===0?'first rep':'review')}${x._redone?' · retry':''}</div>`;
   if(type==='mc'){
@@ -2997,6 +3048,39 @@ function renderItem(){
   }
   updateBadges();
 }
+function genRewriteCheck(){
+  const a=(document.getElementById('genA').value||'').trim(),out=document.getElementById('genOut');
+  if(!a){alert('Write your version first.');return;}
+  const padded=' '+a.toLowerCase().replace(/[^a-z' ]+/g,' ').replace(/\s+/g,' ')+' ';
+  const left=sess.q[sess.i].p.bad.filter(b=>padded.includes(' '+b+' '));
+  if(a.split(/\s+/).length<4){out.innerHTML='<div class="tip">再长一点——保住原意,只是换掉病词。</div>';return;}
+  if(left.length){out.innerHTML='<div class="tip">⚠️ 还剩病词:'+left.map(esc).map(b=>'<b>'+b+'</b>').join(' · ')+' — 再改一版(或 Skip)。</div>';return;}
+  out.innerHTML='<div class="tip">✅ 病词清零 · +8 XP'+(aiReady()?' <button class="btn soft slim" style="padding:3px 9px;font-size:12px" onclick="genCoach(\'rewrite\')">🧑‍🏫 AI</button>':'')+'</div>';
+  window._genLast=a;sess.right++;state.reps++;addXP(8);bumpStreak();save();
+  setTimeout(()=>{sess.i++;renderItem();},1400);
+}
+function genCollideCheck(){
+  const x=sess.q[sess.i],a=(document.getElementById('genA').value||'').trim(),out=document.getElementById('genOut');
+  if(!a){alert('Write your collision first.');return;}
+  const low=a.toLowerCase();
+  if(a.split(/\s+/).length<6||!(low.includes(x.pair[1].split(' ')[0])||low.includes(x.pair[0]))){
+    out.innerHTML='<div class="tip">让句子至少 6 个词,并真的用上 <b>'+esc(x.pair[1])+'</b>(或 '+esc(x.pair[0])+')。</div>';return;
+  }
+  out.innerHTML='<div class="tip">✅ 成立 · +8 XP · 自检:特质清楚吗?画面意外吗?还能顺着 frame 再说一句吗?'+(aiReady()?' <button class="btn soft slim" style="padding:3px 9px;font-size:12px" onclick="genCoach(\'collide\')">🧑‍🏫 AI</button>':'')+'</div>';
+  window._genLast=a;sess.right++;state.reps++;addXP(8);bumpStreak();save();
+  setTimeout(()=>{sess.i++;renderItem();},1600);
+}
+function genSkip(){sess.miss++;sess.i++;renderItem();}
+function aiReady(){return !!(localStorage.getItem('bs_key')||'').trim();}
+async function genCoach(kind){
+  const out=document.getElementById('genOut');if(!out)return;
+  out.insertAdjacentHTML('beforeend','<div class="tip" id="genAI">… coaching</div>');
+  const prompt=kind==='rewrite'
+    ?'You are VocabularyGPT (BetterSpeak): clarity over complexity. The student rewrote a workhorse-laden sentence as: "'+(window._genLast||'')+'". In 3 short lines: 1) verdict; 2) one even sharper version; 3) one word-choice note. No preamble.'
+    :'You are a BetterSpeak metaphor coach (two-question method). The student wrote: "'+(window._genLast||'')+'". In 3 short lines: 1) verdict (fresh/works/forced) + why; 2) an improved version; 3) how to extend the frame one sentence. No preamble.';
+  try{const t=await aiText(prompt);const el=document.getElementById('genAI');if(el)el.innerHTML='<span class="lbl">Coach</span><div style="white-space:pre-wrap">'+esc(t)+'</div>';}
+  catch(e){const el=document.getElementById('genAI');if(el)el.textContent='AI failed: '+e.message;}
+}
 function pracStar(){const s=sess.q[sess.i].s;s.star=!s.star;save();document.getElementById('pStar').classList.toggle('on',s.star);renderStats();}
 function scheduleOK(s){const step=Math.min(INTERVALS.length-1,Math.floor(s.uses/2));s.next=today()+INTERVALS[step]*DAY;}
 function answerOpt(btn,correct){
@@ -3025,6 +3109,7 @@ function finishWrite(keepFocus){
   bumpStreak();save();sess.i++;renderItem();renderStats();
 }
 function renderSummary(){
+  tl().sessions++;save();
   const area=document.getElementById('pracArea');
   const pct=sess.total?Math.round(100*sess.right/(sess.right+sess.miss||1)):0;
   document.getElementById('pracSub').textContent='';
@@ -3041,56 +3126,43 @@ function renderSummary(){
 }
 function bumpStreak(){const t=today(); if(state.lastDay!==t){state.streak=(state.lastDay===t-DAY)?state.streak+1:1; state.lastDay=t; renderStreak();}}
 
-/* ============ BANK ============ */
-let bankFilter='All';
-const CATS=['Words','Phrases','Similes','Alliterations','Quotes','Workhorse swaps','Lexical gaps','Dedicated terms','Custom'];
-function bankItems(){
-  const cur=ALLWORDS.map(w=>({kind:'cur',id:w.id,term:w.term,meaning:w.gloss,source:w.src,cat:w.cat,s:ws(w.id)}));
-  const cus=state.custom.map(c=>({kind:'cus',id:c.id,term:c.term,meaning:c.meaning,source:c.source,cat:c.cat||'Words',s:c}));
-  return [...cur,...cus];
+/* ============ GEN DATA ============ */
+const MC_ADJ=['smoky','refried','decaffeinated','hollow','understated','zigzagged','frosty','sparkling','toasted','dusty','clouded'];
+const MC_NOUN=['conversation','railroad','rainbow','rainforest','eyebrows','coffee','squirrel','surfboard','wood stove','reef','aroma','deadline','inbox','seminar','dataset','commute'];
+const REWRITE_PROMPTS=[
+ {s:"The results are really good and pretty interesting.",bad:['really','good','pretty','interesting']},
+ {s:"It was a very big change and honestly kind of important.",bad:['very','big','honestly','kind of','important']},
+ {s:"The talk was basically amazing and the slides were nice.",bad:['basically','amazing','nice']},
+ {s:"This thing is literally huge for our project.",bad:['thing','literally','huge']},
+ {s:"At the end of the day the model is pretty solid.",bad:['at the end of the day','pretty']},
+ {s:"We just need to touch base and do a deep dive on the data.",bad:['just','touch base','deep dive']},
+ {s:"The new method is super cool and totally works.",bad:['super','cool','totally']},
+ {s:"Their approach is bad and the writing is boring, to say the least.",bad:['bad','to say the least']},
+ {s:"It is a no-brainer and a win-win for everyone involved.",bad:['no-brainer','win-win']},
+ {s:"The findings are unbelievable and could move the needle.",bad:['unbelievable','move the needle']},
+];
+const ER_WORDS=['good','nice','literally','basically','best','amazing','interesting','absolutely','tons','cool','important','bad','bunch','essentially','wild','pretty','funny','leverage','big','thing','vibes','unbelievable','fantastic','honestly','annoying','whatever','huge','awesome','famous','stupid','basic','killer','really','very','just','kind of','sort of','super','totally','pretty much','you know','stuff','actually'];
+async function aiText(prompt){
+  const key=(localStorage.getItem('bs_key')||'').trim(); if(!key)throw new Error('no key');
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5',max_tokens:450,messages:[{role:'user',content:prompt}]})});
+  if(!r.ok)throw new Error('API '+r.status);
+  const j=await r.json();return ((j.content||[])[0]||{}).text||'';
 }
-function renderFilters(){
-  const all=bankItems();
-  const counts={'All':all.length,'⭐ Focus':all.filter(x=>x.s.star).length};
-  CATS.forEach(c=>{const n=all.filter(x=>x.cat===c).length;if(n)counts[c]=n;});
-  document.getElementById('filters').innerHTML=Object.keys(counts).map(f=>
-    `<button class="fchip ${bankFilter===f?'on':''}" onclick="setFilter('${f}')">${f} · ${counts[f]}</button>`).join('');
+
+/* ============ ADD / SEARCH PANELS ============ */
+function togglePanel(which){
+  const add=document.getElementById('addPanel'),srch=document.getElementById('searchPanel');
+  if(which==='add'){srch.classList.remove('show');add.classList.toggle('show');if(add.classList.contains('show')){document.getElementById('fKey').value=localStorage.getItem('bs_key')||'';document.getElementById('fTerm').focus();}}
+  else{add.classList.remove('show');srch.classList.toggle('show');if(srch.classList.contains('show')){document.getElementById('srchQ').focus();doSearch(document.getElementById('srchQ').value);}}
 }
-function setFilter(f){bankFilter=f;renderBank();}
-function renderBank(){
-  renderFilters();
-  const el=document.getElementById('bankList');
-  let items=bankItems();
-  if(bankFilter==='⭐ Focus')items=items.filter(x=>x.s.star);
-  else if(bankFilter!=='All')items=items.filter(x=>x.cat===bankFilter);
-  if(!items.length){el.innerHTML=`<div class="empty">Nothing here yet.</div>`;return;}
-  const groups=(bankFilter==='All'||bankFilter==='⭐ Focus')?CATS:[bankFilter];
-  el.innerHTML=groups.map(cat=>{
-    const g=items.filter(x=>x.cat===cat); if(!g.length)return '';
-    return `<div class="grp-title">${cat} · ${g.length}</div>`+g.map(x=>`
-      <div class="entry">
-        <button class="estar ${x.s.star?'on':''}" onclick="toggleStar('${x.id}')">★</button>
-        <div style="flex:1">
-          <div class="t">${esc(x.term)} ${x.s.uses>=38?'<span class="grad">✦ AUTOMATIC</span>':(!x.s.learned?'<span class="newtag">NEW</span>':'')}</div>
-          ${x.meaning?`<div class="mm">${esc(x.meaning)}</div>`:''}
-          ${x.source?`<div class="mm" style="font-size:12px">— ${esc(x.source)}</div>`:''}
-          <div class="uses">used ${x.s.uses}/38</div>
-        </div>
-        ${x.kind==='cus'?`<button class="x" onclick="del('${x.id}')">×</button>`:''}
-      </div>`).join('');
-  }).join('');
-}
-function toggleForm(){document.getElementById('miniform').classList.toggle('show');document.getElementById('fKey').value=localStorage.getItem('bs_key')||'';const q=document.getElementById('quickTerm').value.trim();if(q)document.getElementById('fTerm').value=q;}
 let _af=null;
 async function autoFill(){
-  const term=(document.getElementById('fTerm').value||document.getElementById('quickTerm').value).trim();
+  const term=(document.getElementById('fTerm').value||'').trim();
   if(!term){alert('Type a word or phrase first.');return;}
-  document.getElementById('fTerm').value=term;
   const btn=document.getElementById('afBtn');btn.textContent='… filling';btn.disabled=true;_af=null;
-  try{
-    const key=(localStorage.getItem('bs_key')||'').trim();
+  try{const key=(localStorage.getItem('bs_key')||'').trim();
     if(key){await afClaude(term,key);}else{await afDict(term);}
-  }catch(e){alert('Auto-fill hit a snag: '+e.message+'. You can still fill fields by hand.');}
+  }catch(e){alert('Auto-fill hit a snag: '+e.message+'. You can fill fields by hand.');}
   btn.textContent='✨ Auto-fill the rest';btn.disabled=false;
 }
 async function afDict(term){
@@ -3110,7 +3182,7 @@ async function afDict(term){
   if(!document.getElementById('fSource').value)document.getElementById('fSource').value='Auto-filled · dictionary';
 }
 async function afClaude(term,key){
-  const body={model:'claude-haiku-4-5',max_tokens:600,messages:[{role:'user',content:'You are VocabularyGPT, a linguistics professor, poet, and renowned writer (per the BetterSpeak course prompts): you have rich, expressive vocabulary, speak with clarity and precision, and avoid needlessly complex language. Create a vocabulary card for "'+term+'" for a Chinese-native academic training articulate English speech. Reply ONLY with JSON: {"ipa":"/…/","gloss_en":"one plain line","gloss_zh":"简洁中文释义","example":"one natural sentence using it (academic/professional life if apt)","source":"register note or who says this","why":"one line on why this word is worth owning","usage":["short line 1","short line 2"]}'}]};
+  const body={model:'claude-haiku-4-5',max_tokens:600,messages:[{role:'user',content:'You are VocabularyGPT (per the BetterSpeak course prompts): rich vocabulary, clarity and precision, never needlessly complex. Create a vocabulary card for "'+term+'" for a Chinese-native academic training articulate English speech. Reply ONLY with JSON: {"ipa":"/…/","gloss_en":"one plain line","gloss_zh":"简洁中文释义","example":"one natural sentence (academic/professional life if apt)","source":"register note or who says this","why":"one line on why this word is worth owning","usage":["short line 1","short line 2"]}'}]};
   const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
   if(!r.ok)throw new Error('API '+r.status);
   const j=await r.json();const t=((j.content||[])[0]||{}).text||'';
@@ -3122,131 +3194,56 @@ async function afClaude(term,key){
   _af={why:c.why||'',usage:Array.isArray(c.usage)?c.usage.slice(0,2):[]};
 }
 function saveForm(){
-  const term=document.getElementById('fTerm').value.trim(); if(!term)return;
+  const term=(document.getElementById('fTerm').value||'').trim(); if(!term)return;
   state.custom.push({id:'c'+Date.now(),term,meaning:document.getElementById('fMeaning').value.trim(),example:document.getElementById('fExample').value.trim(),source:document.getElementById('fSource').value.trim(),cat:document.getElementById('fCat').value,why:(_af&&_af.why)||'',usage:(_af&&_af.usage)||[],star:false,learned:true,uses:0,next:today()});_af=null;
-  ['fTerm','fMeaning','fExample','fSource','quickTerm'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('miniform').classList.remove('show');
-  save(); renderBank(); renderStats(); updateBadges();
+  ['fTerm','fMeaning','fExample','fSource'].forEach(i=>document.getElementById(i).value='');
+  togglePanel('add');save();renderStats();updateBadges();
+  alert('Saved → My Pickups(Learn 最后一关)+ practice pool ✓');
 }
-document.getElementById('quickTerm').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=e.target.value.trim();if(v){state.custom.push({id:'c'+Date.now(),term:v,meaning:'',example:'',source:'',cat:'Words',star:false,learned:true,uses:0,next:today()});e.target.value='';save();renderBank();renderStats();updateBadges();}}});
-function del(id){state.custom=state.custom.filter(c=>c.id!==id);save();renderBank();renderStats();updateBadges();}
+function del(id){state.custom=state.custom.filter(c=>c.id!==id);save();renderStats();updateBadges();doSearch(document.getElementById('srchQ').value||'');}
+function bankItems(){
+  const cur=ALLWORDS.map(w=>({kind:'cur',id:w.id,term:w.term,meaning:w.gloss,source:w.src,cat:w.cat,s:ws(w.id)}));
+  const cus=state.custom.map(c=>({kind:'cus',id:c.id,term:c.term,meaning:c.meaning,source:c.source,cat:c.cat||'Words',s:c}));
+  return [...cur,...cus];
+}
 function toggleStar(id){
   const cus=state.custom.find(c=>c.id===id);
   if(cus)cus.star=!cus.star; else {const s=ws(id);s.star=!s.star;}
   save();
   const v=currentView();
-  if(v==='learn')renderLearn(); else if(v==='bank')renderBank();
+  if(v==='learn')renderLearn();
   renderStats();
 }
-
-/* ============ ORIGINAL-CLIP LINKS ============ */
-const CLIPS={
- // I Have a Dream — https://youtu.be/ARvrvJV4th4 (caption-timestamp verified 2026-07-08)
- u1w11:'https://youtu.be/ARvrvJV4th4?t=264',  // fierce urgency of now
- u1w12:'https://youtu.be/ARvrvJV4th4?t=232',  // insufficient funds
- u1w18:'https://youtu.be/ARvrvJV4th4?t=962',  // free at last
- u3w1:'https://youtu.be/ARvrvJV4th4?t=754',   // content of character
- u3w4:'https://youtu.be/ARvrvJV4th4?t=894',   // mighty mountains
- u3w6:'https://youtu.be/ARvrvJV4th4?t=291',   // dark and desolate
- u3w19:'https://youtu.be/ARvrvJV4th4?t=432',  // dignity and discipline
- u5w1:'https://youtu.be/ARvrvJV4th4?t=566',   // like a mighty stream
- u5w19:'https://youtu.be/ARvrvJV4th4?t=829',  // mountain of despair
- u8w15:'https://youtu.be/ARvrvJV4th4?t=880',  // let freedom ring
- u8w16:'https://youtu.be/ARvrvJV4th4?t=73',   // one hundred years later
- u8w1:'https://youtu.be/ARvrvJV4th4?t=284',   // now is the time
- // Batch 2 — caption-timestamp verified 2026-07-08
- // Batch 3 — cinema & Shakespeare (verified 2026-07-08)
- u11w4:'https://youtu.be/fHjMhYoY4Mg?t=18',
- u11w3:'https://youtu.be/Q_4mxtdD634?t=37',
- u8w3:'https://youtu.be/46GwJbrMghQ?t=177',
- u11w7:'https://youtu.be/pS2ePpOkpgc?t=117',
- u11w8:'https://youtu.be/tAyQL1inris?t=16',
- u14w20:'https://youtu.be/tAyQL1inris?t=84',
- u11w9:'https://youtu.be/UdeA7LsGtfY?t=142',
- u14w12:'https://youtu.be/UdeA7LsGtfY?t=151',
- u10w3:'https://youtu.be/91_G8iaokk8?t=26',
- u14w15:'https://youtu.be/BQ4yd2W50No?t=15',
- uSpw1:'https://youtu.be/bvFHRNGYfuo?t=137',
- uSpw16:'https://youtu.be/bvFHRNGYfuo?t=106',
- u1w24:'https://youtu.be/bvFHRNGYfuo?t=73',
- u5w2:'https://youtu.be/J7GY1Xg6X20?t=113',  // machine men — Great Dictator
- u1w14:'https://youtu.be/J7GY1Xg6X20?t=45',  // more than machinery
- uSpw17:'https://youtu.be/J7GY1Xg6X20?t=125',  // fight for liberty
- u1w20:'https://youtu.be/Qa7icmqgsow?t=248',  // waved goodbye — Challenger
- uSpw5:'https://youtu.be/Qa7icmqgsow?t=147',  // belongs to the brave
- u2w9:'https://youtu.be/wupToqz1e2g?t=66',  // mote of dust — Pale Blue Dot
- uSpw11:'https://youtu.be/wupToqz1e2g?t=194',  // only home we've ever known
- u1w15:'https://youtu.be/zgVrlx68v-0?t=102',  // longevity has its place — Mountaintop
- u14w13:'https://youtu.be/zgVrlx68v-0?t=144',  // mountaintop staccato
- u4w18:'https://youtu.be/zgVrlx68v-0?t=148',  // mine eyes have seen the glory
- u2w10:'https://youtu.be/Qa7icmqgsow?t=256',  // surly bonds / face of God
- u1w13:'https://youtu.be/wupToqz1e2g?t=17',  // that's here that's home
- u2w11:'https://youtu.be/zgVrlx68v-0?t=123',  // promised land
- uSpw2:'https://youtu.be/_RujOFCHsxo?t=91',  // mad as hell — Network
- u1w23:'https://youtu.be/_RujOFCHsxo?t=70',  // my life has value
- uSpw21:'https://youtu.be/_RujOFCHsxo?t=67',  // first get mad
- u1w16:'https://youtu.be/QXqlziZV63k?t=591',  // because they are hard — JFK Rice
- uD4w8:'https://youtu.be/QXqlziZV63k?t=405',  // banner of freedom
-};
-function hasOrig(w){return w&&w.quote&&w.src&&!/^BetterSpeak|worksheet|Index|canon supplement$/.test(w.src)&&!w.src.startsWith('BetterSpeak')&&!w.src.startsWith('Picked up');}
-function origUrl(w){
-  if(CLIPS[w.id])return CLIPS[w.id];
-  const who=(w.src||'').split('—')[0].split(',')[0].replace(/[“”"]/g,'').trim();
-  const snippet=toksKeep(w.quote).slice(0,8).join(' ');
-  return 'https://www.youtube.com/results?search_query='+encodeURIComponent(snippet+' '+who);
+function doSearch(q){
+  const out=document.getElementById('srchOut');
+  q=(q||'').trim().toLowerCase();
+  if(q.length<2){out.innerHTML='<div class="empty" style="padding:14px 0">Type at least 2 characters — searches all '+(ALLWORDS.length+state.custom.length)+' cards.</div>';return;}
+  const pool=[...ALLWORDS.map(w=>({w,cus:false})),...pickupOnly()];
+  const hits=pool.filter(x=>{const w=x.w;return (w.term+' '+(w.gloss||'')+' '+(w.quote||'')).toLowerCase().includes(q);}).slice(0,30);
+  if(!hits.length){out.innerHTML='<div class="empty" style="padding:14px 0">No matches.</div>';return;}
+  out.innerHTML=hits.map(x=>`<div class="srchit" onclick="showCard('${x.w.id}')"><b>${esc(x.w.term)}</b><span>${esc((x.w.gloss||'').slice(0,70))}</span></div>`).join('');
 }
-function origLabel(w){return CLIPS[w.id]?'original ▶ exact moment':'original ↗ (search)';}
-function toksKeep(t){return t.replace(/[“”]/g,'').split(/\s+/).filter(Boolean);}
-/* ============ DRILLS ============ */
-const MC_ADJ=['smoky','refried','decaffeinated','hollow','understated','zigzagged','frosty','sparkling','toasted','dusty','clouded'];
-const MC_NOUN=['conversation','railroad','rainbow','rainforest','eyebrows','coffee','squirrel','surfboard','wood stove','reef','aroma','deadline','inbox','seminar','dataset','commute'];
-let mcPair=null;
-function mcNew(){
-  mcPair=[MC_ADJ[Math.floor(Math.random()*MC_ADJ.length)],MC_NOUN[Math.floor(Math.random()*MC_NOUN.length)]];
-  document.getElementById('mcPrompt').innerHTML=`<span class="lbl">Your collision(练习册词表随机)</span><div class="quote"><span class="q" style="font-style:normal;font-size:18px"><b>${mcPair[0]}</b> × <b>${mcPair[1]}</b></span><span class="src">Method ① “${mcPair[0]}” 自带什么特质? ② “${mcPair[1]}” 怎么也能有这个特质?</span></div>`;
-  document.getElementById('mcOut').innerHTML='';document.getElementById('mcAnswer').value='';
-}
-async function mcCheck(){
-  const ans=document.getElementById('mcAnswer').value.trim();
-  if(!ans){alert('Write your collision sentence first.');return;}
-  const out=document.getElementById('mcOut');
-  state.reps++;bumpStreak();save();
-  const key=(localStorage.getItem('bs_key')||'').trim();
-  if(!key){
-    out.innerHTML=`<span class="lbl">Offline self-check</span><div class="tip">Day 7 三问自检:① 借来的特质清楚吗? ② 画面出人意料吗? ③ 还能顺着这个 frame 再说一句吗?<br>范例:“Even the rainbow this afternoon has been decaffeinated.” — 在 Bank → AI key 里加个 key 可获得真实点评。</div>`;
-    return;
-  }
-  out.innerHTML='<div class="tip">… asking the coach</div>';
-  try{
-    const t=await aiText(`You are a BetterSpeak metaphor coach (Day 7: the two-question method — what trait does my idea have? what else has that trait?). The student was given the collision "${mcPair?mcPair.join(' × '):'free choice'}" and wrote: "${ans}". Reply in 4 short lines, bilingual-friendly plain English: 1) verdict (fresh / works / forced) + one reason; 2) the trait their metaphor borrows; 3) one improved version; 4) one way to extend the frame one more sentence. No preamble.`);
-    out.innerHTML=`<span class="lbl">Coach feedback</span><div class="tip" style="white-space:pre-wrap">${esc(t)}</div>`;
-  }catch(e){out.innerHTML=`<div class="tip">AI feedback failed (${esc(e.message)}) — offline self-check still applies.</div>`;}
-}
-const ER_WORDS=['good','nice','cringe','literally','sick','basically','lame','best','amazing','interesting','absolutely','sus','toxic','tons','cool','important','bad','sucks','bunch','essentially','depressed','wild','iconic','pretty','funny','no brainer','leverage','big','thing','legit','full-blown','vibes','unbelievable','fantastic','honestly','win-win','annoying','triggered','whatever','irregardless','huge','awesome','famous','pissed','stupid','basic','addicting','killer','really','very','just','kind of','sort of','super','totally','virtually','pretty much','you know','i feel like','um','uh','like','so','stuff','actually','at the end of the day','deep dive','touch base','low-hanging fruit','move the needle','in terms of','when it comes to'];
-async function erCheck(){
-  const inp=document.getElementById('erInput').value.trim();
-  if(!inp){alert('Paste a sentence first.');return;}
-  const out=document.getElementById('erOut');
-  state.reps++;bumpStreak();save();
-  const low=' '+inp.toLowerCase().replace(/[^a-z' ]/g,' ')+' ';
-  const hits=[...new Set(ER_WORDS.filter(w=>low.includes(' '+w+' ')))];
-  let html= hits.length
-    ? `<span class="lbl">Offline scan(对照课程词表)</span><div class="tip">⚠️ ${hits.map(h=>'<b>'+esc(h)+'</b>').join(' · ')} — ${hits.length} 个万能词/废词。每个都在 Workhorse Upgrades / Pruning 关有升级卡。</div>`
-    : `<div class="tip">✅ Offline scan:课程词表内无命中(扫描只认识课程清单)。</div>`;
-  out.innerHTML=html;
-  const key=(localStorage.getItem('bs_key')||'').trim();
-  if(!key)return;
-  out.innerHTML=html+'<div class="tip">… asking VocabularyGPT</div>';
-  try{
-    const t=await aiText(`You are VocabularyGPT (BetterSpeak Day 8): a linguistics professor and poet who prizes clarity over complexity and never recommends needlessly big words. Diagnose this sentence a student actually said: "${inp}". Reply in 5 short lines: 1) its workhorse/vague/empty words; 2) for the single worst offender, three precise alternatives fitted to this exact context; 3) the full sentence rewritten with the best choice; 4) anything already strong; 5) one-line takeaway. No preamble.`);
-    out.innerHTML=html+`<span class="lbl">VocabularyGPT</span><div class="tip" style="white-space:pre-wrap">${esc(t)}</div>`;
-  }catch(e){out.innerHTML=html+`<div class="tip">AI feedback failed (${esc(e.message)}).</div>`;}
-}
-async function aiText(prompt){
-  const key=(localStorage.getItem('bs_key')||'').trim(); if(!key)throw new Error('no key');
-  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5',max_tokens:450,messages:[{role:'user',content:prompt}]})});
-  if(!r.ok)throw new Error('API '+r.status);
-  const j=await r.json();return ((j.content||[])[0]||{}).text||'';
+function pickupOnly(){return state.custom.map(c=>({w:{id:c.id,term:c.term,cat:c.cat||'Words',gloss:c.meaning||'',hard:[],quote:c.example||'',src:c.source||'',why:c.why||'',usage:c.usage||[],_cus:true},cus:true}));}
+function showCard(id){
+  let w=ALLWORDS.find(x=>x.id===id);
+  let cus=false;
+  if(!w){const c=state.custom.find(x=>x.id===id);if(!c)return;w={id:c.id,term:c.term,cat:c.cat||'Words',gloss:c.meaning||'',hard:[],quote:c.example||'',src:c.source||'',why:c.why||'',usage:c.usage||[],_cus:true};cus=true;}
+  const s=cus?state.custom.find(x=>x.id===id):ws(id);
+  document.getElementById('srchOut').innerHTML=`
+   <div class="card" style="box-shadow:none;border-style:dashed">
+     <span class="cat-chip">${esc(w.cat)}</span>
+     <div class="term" style="font-size:22px">${esc(w.term)}</div>
+     ${w.gloss?`<div class="blk"><span class="lbl">Meaning</span>${esc(w.gloss)}</div>`:''}
+     ${(w.hard&&w.hard.length)?`<div class="blk"><span class="lbl">Word notes</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${(typeof PRON!=='undefined'&&PRON[h[0]])?`<span class="ipa">${PRON[h[0]]}</span>`:''} — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
+     ${w.quote?`<div class="blk"><div class="quote"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(w.src)}${(!cus&&hasOrig(w))?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">'+origLabel(w)+'</a>':''}</span></div></div>`:''}
+     ${w.why?`<div class="blk"><span class="lbl">Why it matters</span>${esc(w.why)}</div>`:''}
+     ${(w.usage&&w.usage.length)?`<div class="blk"><span class="lbl">Usage</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}
+     <div class="row">
+       <button class="btn soft slim" onclick="toggleStar('${id}');showCard('${id}')">${(s&&s.star)?'★ In focus':'☆ Focus'}</button>
+       ${cus?`<button class="btn ghost slim" onclick="del('${id}')">Delete</button>`:''}
+       <button class="btn ghost slim" onclick="doSearch(document.getElementById('srchQ').value)">← Results</button>
+     </div>
+   </div>`;
 }
 
 /* ============ STATS / NAV ============ */
@@ -3264,6 +3261,8 @@ function renderStats(){
   document.getElementById('ascentBar').style.width=(stage/9*100)+'%';
   const names=['','Innocent Ignorance','The Awakening','Verbal Rebranding','Confidence Catalyst','Perfection Deception','Natural Expression','Structural Mastery','Simple Eloquence','Golden Tongue'];
   document.getElementById('ascentLbl').textContent=`Stage ${stage} — ${names[stage]} · aim for Stage 6`;
+  const focus=bankItems().filter(x=>x.s&&x.s.star);
+  document.getElementById('focusList').innerHTML=focus.length?focus.map(x=>`<div class="srchit" onclick="switchTo('learn');togglePanel('search');document.getElementById('srchQ').value='';showCard('${x.id}')"><b>${esc(x.term)}</b><span>used ${x.s.uses}/38</span></div>`).join(''):'<span style="color:var(--muted);font-size:13px">Star words anywhere (★) and they gather here — practiced first, reviewed daily.</span>';
 }
 function renderStreak(){const x=xpToday();document.getElementById('streak').innerHTML=`<span class=\"xp\">⚡ ${x}/${XP_GOAL}</span> · `+(state.streak>0?`🔥 <b>${state.streak}</b>-day`:'start your streak')}
 function updateBadges(){
@@ -3275,14 +3274,14 @@ function updateBadges(){
 }
 function currentView(){const b=document.querySelector('nav button.on');return b?b.dataset.v:'learn'}
 function switchTo(v){document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));
-  ['learn','practice','drills','bank','stats'].forEach(k=>document.getElementById('v-'+k).style.display=(k===v)?'block':'none');
-  if(v==='learn')renderLearn(); if(v==='practice')renderPrac(); if(v==='drills'&&!mcPair)mcNew(); if(v==='bank')renderBank(); if(v==='stats')renderStats();
+  ['today','learn','practice','stats'].forEach(k=>document.getElementById('v-'+k).style.display=(k===v)?'block':'none');
+  if(v==='today')renderToday(); if(v==='learn')renderLearn(); if(v==='practice')renderPrac(); if(v==='stats')renderStats();
 }
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='learn'){inUnit=null;idx=-1;}switchTo(b.dataset.v);});
 
 
 /* init */
-renderLearn(); renderStreak(); renderStats(); updateBadges();
+renderToday(); renderStreak(); renderStats(); updateBadges();
 </script>
 </body>
 </html>
