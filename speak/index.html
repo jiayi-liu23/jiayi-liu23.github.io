@@ -2860,9 +2860,6 @@ function unitUnlocked(i){return true}
 function renderLearn(){
   const area=document.getElementById('learnArea');
   if(!inUnit){
-    const doneAll=UNITS.every(unitDone);
-      ? 'All units complete — Practice is now the main game: repeat each word toward 38 uses.'
-      : 'Twenty themed units — enter any, in any order. Cards shuffle each visit.';
     const cont=UNITS.find(u=>!unitDone(u)&&unitLearnedCount(u)>0)||UNITS.find(u=>!unitDone(u));
     const hero=cont?`<div class="card" style="margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="enterUnit('${cont.id}')"><div style="font-size:26px">▶</div><div><div style="font-weight:700">Continue: ${esc(cont.title)}</div><div style="font-size:12.5px;color:var(--muted)">${unitLearnedCount(cont)}/${unitWords(cont).length} · pick up where you left off</div></div></div>`:'';
     area.innerHTML=hero+UNITS.map((u,i)=>{
