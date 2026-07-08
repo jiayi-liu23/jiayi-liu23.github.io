@@ -2861,7 +2861,6 @@ function renderLearn(){
   const area=document.getElementById('learnArea');
   if(!inUnit){
     const doneAll=UNITS.every(unitDone);
-    void = doneAll
       ? 'All units complete — Practice is now the main game: repeat each word toward 38 uses.'
       : 'Twenty themed units — enter any, in any order. Cards shuffle each visit.';
     const cont=UNITS.find(u=>!unitDone(u)&&unitLearnedCount(u)>0)||UNITS.find(u=>!unitDone(u));
@@ -3191,7 +3190,7 @@ function origUrl(w){
   const snippet=toksKeep(w.quote).slice(0,8).join(' ');
   return 'https://www.youtube.com/results?search_query='+encodeURIComponent(snippet+' '+who);
 }
-function origLabel(w){return CLIPS[w.id]?'original ▶ exact moment':'original ↗ (search)';}
+function origLabel(w){return CLIPS[w.id]?'original ▶':'original ↗';}
 function toksKeep(t){return t.replace(/[“”]/g,'').split(/\s+/).filter(Boolean);}
 
 /* ============ GEN DATA ============ */
