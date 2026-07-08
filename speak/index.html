@@ -161,7 +161,32 @@
 
   <section id="v-drills" style="display:none">
     <h2 class="sec">Drills</h2>
-    <div class="sub">Generators, not flashcards — the course techniques made infinite. With an AI key (Bank → AI key…) you get real coaching; without one they run in offline mode.</div>
+    <div class="sub">Voice reps + generators. 🎙️ needs Chrome/Edge/Safari with mic permission (use the https link). AI key (Bank → AI key…) unlocks coach feedback.</div>
+
+    <div class="card">
+      <span class="cat-chip">Voice · Recite</span>
+      <div class="term" style="font-size:22px">Shadow Reading · 跟读打分 <span id="srBadge"></span></div>
+      <div class="blk" id="shQuote"></div>
+      <div class="row">
+        <button class="btn ghost slim" onclick="shNew()">🎲 New line</button>
+        <button class="btn ghost slim" onclick="shListen()">🔊 Listen</button>
+        <button class="btn primary slim" id="shRecBtn" onclick="shRec()">● Record</button>
+      </div>
+      <div id="shLive" class="tip" style="display:none"></div>
+      <div id="shOut" class="blk"></div>
+    </div>
+
+    <div class="card">
+      <span class="cat-chip">Voice · Free speaking</span>
+      <div class="term" style="font-size:22px">Free Rep · 60 秒自由表达</div>
+      <div class="blk" id="frTopic"></div>
+      <div class="row">
+        <button class="btn ghost slim" onclick="frNew()">🎲 New topic</button>
+        <button class="btn primary slim" id="frRecBtn" onclick="frRec()">● Start (60s)</button>
+      </div>
+      <div id="frLive" class="tip" style="display:none"></div>
+      <div id="frOut" class="blk"></div>
+    </div>
 
     <div class="card">
       <span class="cat-chip">Day 7 · two-question metaphor</span>
@@ -3141,6 +3166,137 @@ function toggleStar(id){
   renderStats();
 }
 
+/* ============ VOICE ============ */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function srSupported(){return !!SR && (location.protocol==='https:'||location.hostname==='localhost'||location.protocol==='file:');}
+function makeRec(onText,onEnd){
+  const r=new SR(); r.lang='en-US'; r.continuous=true; r.interimResults=true;
+  let fin='';
+  r.onresult=e=>{let inter='';for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=t+' ';else inter+=t;}onText(fin,inter);};
+  r.onend=()=>onEnd(fin.trim());
+  r.onerror=ev=>{if(ev.error!=='no-speech'&&ev.error!=='aborted')alert('Mic error: '+ev.error+' (voice needs the https version + mic permission)');};
+  return r;
+}
+function toks(t){return t.toLowerCase().replace(/[’']/g,"'").replace(/[^a-z' ]+/g,' ').split(/\s+/).filter(Boolean);}
+
+/* ---- Shadow Reading ---- */
+let shCur=null,shR=null,shOn=false;
+function shPool(){return ALLWORDS.filter(w=>{const n=toks(w.quote).length;return n>=6&&n<=26;});}
+function shNew(){
+  const p=shPool(); shCur=p[Math.floor(Math.random()*p.length)];
+  document.getElementById('shQuote').innerHTML=`<div class="quote"><span class="q">“${esc(shCur.quote)}”</span><span class="src">— ${esc(shCur.src)}</span></div>`;
+  document.getElementById('shOut').innerHTML='';document.getElementById('shLive').style.display='none';
+}
+function shListen(){if(shCur)say(shCur.quote);}
+function shRec(){
+  if(!srSupported()){alert('Voice needs Chrome/Edge/Safari on the https version (jiayi-liu23.github.io/speak).');return;}
+  if(!shCur)shNew();
+  const btn=document.getElementById('shRecBtn'),live=document.getElementById('shLive');
+  if(shOn){shR.stop();return;}
+  shOn=true;btn.textContent='■ Stop';btn.style.background='var(--terra)';
+  live.style.display='block';live.textContent='🎙️ listening…';
+  speechSynthesis.cancel();
+  shR=makeRec((f,i)=>{live.textContent='🎙️ '+(f+i);},(finalT)=>{shOn=false;btn.textContent='● Record';btn.style.background='';shScore(finalT);});
+  shR.start();
+}
+function shScore(saidText){
+  const target=toks(shCur.quote), said=toks(saidText);
+  if(!said.length){document.getElementById('shOut').innerHTML='<div class="tip">没听到声音——检查麦克风权限,再试一次。</div>';return;}
+  // greedy in-order match
+  let j=0; const hit=target.map(()=>false);
+  for(let i=0;i<target.length;i++){for(let k=j;k<said.length;k++){if(said[k]===target[i]){hit[i]=true;j=k+1;break;}}}
+  const n=hit.filter(Boolean).length, pct=Math.round(100*n/target.length);
+  const marked=target.map((w,i)=>hit[i]?`<span style="color:var(--green)">${esc(w)}</span>`:`<b style="color:var(--terra)">${esc(w)}</b>`).join(' ');
+  let xp=pct>=80?8:(pct>=60?5:2), extra='';
+  const s=ws(shCur.id);
+  if(pct>=80&&s.uses<38){s.uses++;extra=' · counted toward 38 ✓';}
+  addXP(xp);state.reps++;bumpStreak();save();
+  document.getElementById('shOut').innerHTML=`<span class="lbl">Score</span>
+   <div class="tip"><b style="font-size:20px">${pct}%</b> word match · +${xp} XP${extra}<br><br>${marked}<br><br>
+   ${pct>=80?'👏 clean read — try it once more from memory.':'红色 = 漏掉/没被识别的词。先 🔊 听一遍,慢一点、咬清辅音,再来。'}</div>`;
+  renderStats();
+}
+
+/* ---- Free Rep ---- */
+const FR_TOPICS=[
+ 'Explain your current research to a curious neighbor.',
+ 'Describe your morning — include one metaphor.',
+ 'Argue for a tool you love (app, method, gadget).',
+ 'Tell the story of a mistake that taught you something.',
+ 'Describe your hometown to someone who will never visit.',
+ 'Pitch your favorite paper in plain words.',
+ 'What makes a seminar talk good? Take a position.',
+ 'Describe a place in Pittsburgh you like.',
+ 'Give advice to a first-year PhD student.',
+ 'Describe your ideal Saturday — vary your sentence lengths.',
+ 'What would you study with unlimited funding?',
+ 'Retell the plot of a show you watched recently.'];
+const FR_FILLERS=['like','so','you know','i mean','actually','basically','kind of','sort of','right','okay','yeah','just','literally','stuff','whatever'];
+const FR_WEAKEND=/( so yeah| yeah| that's it| i don't know| or something| whatever| i guess| stuff like that)$/;
+let frR=null,frOn=false,frT0=0,frTimer=null;
+function frNew(){
+  const t=FR_TOPICS[Math.floor(Math.random()*FR_TOPICS.length)];
+  document.getElementById('frTopic').innerHTML=`<div class="quote"><span class="q" style="font-style:normal">${esc(t)}</span><span class="src">60 seconds · speak, don’t script · endings matter</span></div>`;
+  document.getElementById('frOut').innerHTML='';document.getElementById('frLive').style.display='none';
+}
+function frRec(){
+  if(!srSupported()){alert('Voice needs Chrome/Edge/Safari on the https version (jiayi-liu23.github.io/speak).');return;}
+  if(!document.getElementById('frTopic').textContent.trim())frNew();
+  const btn=document.getElementById('frRecBtn'),live=document.getElementById('frLive');
+  if(frOn){frR.stop();return;}
+  frOn=true;frT0=Date.now();btn.style.background='var(--terra)';
+  live.style.display='block';live.textContent='🎙️ 60';
+  speechSynthesis.cancel();
+  let lastText='';
+  frR=makeRec((f,i)=>{lastText=f+i;const left=Math.max(0,60-Math.round((Date.now()-frT0)/1000));btn.textContent='■ Stop ('+left+'s)';live.textContent='🎙️ '+lastText;},
+    (finalT)=>{frOn=false;clearInterval(frTimer);btn.textContent='● Start (60s)';btn.style.background='';frReport(finalT,Math.min(60,Math.round((Date.now()-frT0)/1000)));});
+  frTimer=setInterval(()=>{const el=Math.round((Date.now()-frT0)/1000);if(el>=60&&frOn){frR.stop();}else if(frOn){const left=60-el;btn.textContent='■ Stop ('+left+'s)';}},500);
+  frR.start();
+}
+function frReport(text,secs){
+  const out=document.getElementById('frOut');
+  const T=toks(text);
+  if(T.length<5){out.innerHTML='<div class="tip">几乎没收到语音——检查麦克风,再试一次。</div>';return;}
+  const padded=' '+T.join(' ')+' ';
+  const fillers=FR_FILLERS.map(f=>{const c=(padded.split(' '+f+' ').length-1);return c?{f,c}:null}).filter(Boolean).sort((a,b)=>b.c-a.c);
+  const nFill=fillers.reduce((s,x)=>s+x.c,0);
+  const wpm=Math.round(T.length/(secs/60));
+  const weak=FR_WEAKEND.test(' '+T.slice(-6).join(' '));
+  // bank words used
+  const bank=[...ALLWORDS.map(w=>({id:w.id,term:w.term,kind:'cur'})),...state.custom.map(c=>({id:c.id,term:c.term,kind:'cus'}))]
+    .filter(x=>{const tt=toks(x.term);return tt.length>=1&&tt.length<=4&&tt.join(' ').length>3&&padded.includes(' '+tt.join(' ')+' ');});
+  let score=100;
+  score-=Math.min(30,nFill*3);
+  if(weak)score-=10;
+  if(wpm<90||wpm>190)score-=10;
+  if(secs<30)score-=10;
+  score=Math.max(20,Math.min(100,score));
+  const xp=Math.round(score/10);
+  addXP(xp);state.reps++;bumpStreak();save();
+  window._frBank=bank;
+  out.innerHTML=`<span class="lbl">Report</span><div class="tip">
+   <b style="font-size:20px">${score}</b>/100 · +${xp} XP · ${secs}s · ${T.length} words · <b>${wpm} wpm</b> ${wpm<90?'(偏慢/犹豫)':wpm>190?'(偏快——留点停顿)':'(舒适区)'}<br>
+   ${nFill?('⚠️ 可检出的填充词: '+fillers.map(x=>'<b>'+esc(x.f)+'</b>×'+x.c).join(' · ')+'(um/uh 常被识别器吞掉,实际可能更多)'):'✅ 未检出填充词(um/uh 识别器可能吞掉)'}<br>
+   ${weak?'⚠️ 弱结尾:最后几个词是侵蚀尾(erosion tag)——用 silent period 收干净':'✅ 结尾干净'}<br>
+   ${bank.length?('📚 用到了词库词: '+bank.map(b=>'<b>'+esc(b.term)+'</b>').join(' · ')+' <button class="btn soft slim" style="padding:4px 10px;font-size:12px" onclick="frCount()">✓ Count toward 38</button>'):'📚 没检测到词库词——下次试着有意用一个 ⭐focus 词'}
+   <br><br><span style="color:var(--muted);font-size:12px">Transcript:</span> ${esc(text)}
+   ${(localStorage.getItem('bs_key')||'').trim()?'<div class="row"><button class="btn soft slim" onclick="frCoach()">🧑‍🏫 AI coach feedback</button></div>':''}
+  </div>`;
+  window._frText=text;
+}
+function frCount(){
+  (window._frBank||[]).forEach(b=>{if(b.kind==='cur'){const s=ws(b.id);if(s.uses<38)s.uses++;}else{const c=state.custom.find(x=>x.id===b.id);if(c&&c.uses<38)c.uses++;}});
+  save();renderStats();alert('Counted ✓ — real speech is the best rep.');
+}
+async function frCoach(){
+  const out=document.getElementById('frOut');
+  out.insertAdjacentHTML('beforeend','<div class="tip" id="frAI">… coaching</div>');
+  try{
+    const t=await aiText('You are a BetterSpeak speaking coach. A student spoke for ~60 seconds; here is the raw ASR transcript (no punctuation, may have recognition errors): "'+(window._frText||'')+'". In 5 short lines: 1) one thing genuinely strong; 2) workhorse/vague words used, with one precise swap each; 3) how the ENDING landed and a stronger final sentence; 4) one sentence-variety tip (short/long rhythm); 5) a one-line drill for tomorrow. Plain warm English, no preamble.');
+    document.getElementById('frAI').innerHTML='<span class="lbl">Coach</span><div style="white-space:pre-wrap">'+esc(t)+'</div>';
+  }catch(e){document.getElementById('frAI').textContent='AI feedback failed: '+e.message;}
+}
+
 /* ============ DRILLS ============ */
 const MC_ADJ=['smoky','refried','decaffeinated','hollow','understated','zigzagged','frosty','sparkling','toasted','dusty','clouded'];
 const MC_NOUN=['conversation','railroad','rainbow','rainforest','eyebrows','coffee','squirrel','surfboard','wood stove','reef','aroma','deadline','inbox','seminar','dataset','commute'];
@@ -3220,7 +3376,7 @@ function updateBadges(){
 function currentView(){const b=document.querySelector('nav button.on');return b?b.dataset.v:'learn'}
 function switchTo(v){document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));
   ['learn','practice','drills','bank','stats'].forEach(k=>document.getElementById('v-'+k).style.display=(k===v)?'block':'none');
-  if(v==='learn')renderLearn(); if(v==='practice')renderPrac(); if(v==='drills'&&!mcPair)mcNew(); if(v==='bank')renderBank(); if(v==='stats')renderStats();
+  if(v==='learn')renderLearn(); if(v==='practice')renderPrac(); if(v==='drills'){if(!mcPair)mcNew();if(!shCur)shNew();if(!document.getElementById('frTopic').innerHTML)frNew();} if(v==='bank')renderBank(); if(v==='stats')renderStats();
 }
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='learn'){inUnit=null;idx=-1;}switchTo(b.dataset.v);});
 
