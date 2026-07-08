@@ -226,7 +226,7 @@
       <div style="font-family:var(--serif);font-size:16px;color:var(--wood-dk);margin-bottom:8px">⭐ Focus words</div>
       <div id="focusList" style="font-size:14px"></div>
     </div>
-    <div class="tip">Progress is saved in this browser only — every person who opens the app keeps their own progress.</div>
+    
   </section>
 </div>
 
@@ -425,7 +425,7 @@ const UNITS=[
    gloss:"『那就是这里。那就是家。那就是我们。』—— 六个最小的词,举起整个地球",
    hard:[],
    quote:"Look again at that dot. That’s here. That’s home. That’s us. On it everyone you love, everyone you know, everyone you ever heard of…",
-   src:"Carl Sagan, “Pale Blue Dot” — on the course Speech Bank",
+   src:"Carl Sagan, Pale Blue Dot (1994), reflecting on Voyager 1’s photograph of Earth from four billion miles away",
    why:"Three two-word sentences, all monosyllables — proof that scale comes from framing, not vocabulary.",
    usage:["End a data talk: that’s the sample. that’s the effect. that’s the story.","Triplets of tiny sentences land like hammer taps."]},
   {id:'u1w14',term:'more than machinery, we need humanity',cat:'Quotes',
@@ -590,7 +590,7 @@ const UNITS=[
    gloss:"悬浮在一束阳光里的微尘 —— 地球",
    hard:[["mote","微粒、尘埃(a mote of dust 一粒微尘)"]],
    quote:"Look again at that dot. That’s here. That’s home. That’s us… a mote of dust suspended in a sunbeam.",
-   src:"Carl Sagan, “Pale Blue Dot” — on the Speech Bank",
+   src:"Carl Sagan, Pale Blue Dot (1994), reflecting on Voyager 1’s photograph of Earth from four billion miles away",
    why:"Cosmic scale compressed into seven words — the gold standard of resonant imagery.",
    usage:["For perspective-setting openings and closings.","Pattern: a mote of X in a Y."]},
   {id:'u2w10',term:"slipped the surly bonds of Earth",cat:'Quotes',
@@ -2607,7 +2607,7 @@ const UNITS=[
    gloss:"『我们唯一的家园』—— home,一个词安放全人类",
    hard:[],
    quote:"Like it or not, for the moment the Earth is where we make our stand… the pale blue dot, the only home we’ve ever known.",
-   src:"Carl Sagan, “Pale Blue Dot” — on the Speech Bank",
+   src:"Carl Sagan, Pale Blue Dot (1994), reflecting on Voyager 1’s photograph of Earth from four billion miles away",
    why:"After the cosmic zoom-out, Sagan lands on the warmest household word in English. Scale down to land.",
    usage:["End big talks on a small warm word.","This dataset is the only record we have — treat it like home."]},
   {id:'uSpw12',term:'know when to stop raking the muck',cat:'Quotes',
@@ -2845,7 +2845,7 @@ function renderToday(){
    <div class="card" style="margin-top:14px">
      <span class="cat-chip">Line of the day · 今日一句</span>
      <div class="term" style="font-size:20px">${esc(w.term)}</div>
-     <div class="quote" style="margin-top:10px"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(w.src)}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">'+origLabel(w)+'</a>':''}</span></div>
+     <div class="quote" style="margin-top:10px"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">'+origLabel(w)+'</a>':''}</span></div>
      </div>`;
 }
 
@@ -2893,7 +2893,7 @@ function renderLearn(){
      <div class="term">${esc(w.term)}</div>
      <div class="blk"><span class="lbl">Meaning · 释义</span>${esc(w.gloss)}</div>
      ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">Word notes · 拆词</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
-     <div class="blk"><span class="lbl">Source · 出处</span><div class="quote"><span class="q">“${esc(w.quote)}”${hasOrig(w)?`<a class="sayb" style="text-decoration:none" href="${origUrl(w)}" target="_blank" title="hear the ORIGINAL delivery">▶︎</a>`:''}</span><span class="src">— ${esc(w.src)}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">'+origLabel(w)+'</a>':''}</span></div></div>
+     <div class="blk"><span class="lbl">Source · 出处</span><div class="quote"><span class="q">“${esc(w.quote)}”${hasOrig(w)?`<a class="sayb" style="text-decoration:none" href="${origUrl(w)}" target="_blank" title="hear the ORIGINAL delivery">▶︎</a>`:''}</span><span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">'+origLabel(w)+'</a>':''}</span></div></div>
      <div class="blk"><span class="lbl">Unpack · 解析</span>${esc(w.why)}</div>
      <div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
      <div class="stepdots">${idx+1} / ${(u._sess||unitWords(u)).length}</div>
@@ -3024,7 +3024,7 @@ function renderItem(){
     area.innerHTML=bar+`<div class="card">${starBtn}
       <span class="cat-chip">${esc(w.cat)}</span>
       <div class="prompt" style="margin-top:10px">Complete the line:</div>
-      <div class="quote"><span class="q">“${esc(blanked)}”</span><span class="src">— ${esc(w.src)}</span></div>
+      <div class="quote"><span class="q">“${esc(blanked)}”</span><span class="src">— ${esc(srcClean(w.src))}</span></div>
       <div style="margin-top:12px">${opts.map(o=>`<button class="opt" onclick="answerOpt(this,${o===w.term})">${esc(shortT(o))}</button>`).join('')}</div>
     </div>`;
   }else{
@@ -3037,10 +3037,10 @@ function renderItem(){
       <div class="reveal" id="reveal">
         ${x.kind==='cur'?`
           <div class="blk"><span class="lbl">Meaning · 释义</span>${esc(w.gloss)}</div>
-          <div class="blk"><div class="quote"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(w.src)}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">'+origLabel(w)+'</a>':''}</span></div></div>
+          <div class="blk"><div class="quote"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">'+origLabel(w)+'</a>':''}</span></div></div>
           <div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${(w.usage||[]).map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`
         :`${w.meaning?`<div class="blk"><span class="lbl">Meaning · 释义</span>${esc(w.meaning)}</div>`:''}
-          ${w.example?`<div class="blk"><div class="quote"><span class="q">“${esc(w.example)}”</span>${w.source?`<span class="src">— ${esc(w.source)}</span>`:''}</div></div>`:''}
+          ${w.example?`<div class="blk"><div class="quote"><span class="q">“${esc(w.example)}”</span>${w.source?`<span class="src">— ${esc(srcClean(w.source))}</span>`:''}</div></div>`:''}
           ${w.why?`<div class="blk"><span class="lbl">Unpack · 解析</span>${esc(w.why)}</div>`:''}
           ${(w.usage&&w.usage.length)?`<div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}`}
       </div>
@@ -3187,7 +3187,12 @@ function origUrl(w){
   const snippet=toksKeep(w.quote).slice(0,8).join(' ');
   return 'https://www.youtube.com/results?search_query='+encodeURIComponent(snippet+' '+who);
 }
-function origLabel(w){return CLIPS[w.id]?'original ▶':'original ↗';}
+function origLabel(w){return CLIPS[w.id]?'▶':'↗';}
+function srcClean(s){
+  if(!s)return s;
+  s=s.replace(/;\s*on the [^;]*$/,'');
+  return s.split(' — ').filter(seg=>!/^(on|from) the /i.test(seg)&&!/^canon supplement/i.test(seg)&&!/^the (Speech Bank|worksheet|course|movers)/i.test(seg)&&!/^whose closing/i.test(seg)&&!/^sampled in/i.test(seg)).join(' · ');
+}
 function toksKeep(t){return t.replace(/[“”]/g,'').split(/\s+/).filter(Boolean);}
 
 /* ============ GEN DATA ============ */
@@ -3299,7 +3304,7 @@ function showCard(id){
      <div class="term" style="font-size:22px">${esc(w.term)}</div>
      ${w.gloss?`<div class="blk"><span class="lbl">Meaning · 释义</span>${esc(w.gloss)}</div>`:''}
      ${(w.hard&&w.hard.length)?`<div class="blk"><span class="lbl">Word notes · 拆词</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
-     ${w.quote?`<div class="blk"><div class="quote"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(w.src)}${(!cus&&hasOrig(w))?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">'+origLabel(w)+'</a>':''}</span></div></div>`:''}
+     ${w.quote?`<div class="blk"><div class="quote"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(srcClean(w.src))}${(!cus&&hasOrig(w))?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">'+origLabel(w)+'</a>':''}</span></div></div>`:''}
      ${w.why?`<div class="blk"><span class="lbl">Unpack · 解析</span>${esc(w.why)}</div>`:''}
      ${(w.usage&&w.usage.length)?`<div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}
      <div class="row">
@@ -3324,7 +3329,7 @@ function renderStats(){
   const stage=Math.max(1,Math.min(9,Math.round(1+avg*8)));
   document.getElementById('ascentBar').style.width=(stage/9*100)+'%';
   const names=['','Innocent Ignorance','The Awakening','Verbal Rebranding','Confidence Catalyst','Perfection Deception','Natural Expression','Structural Mastery','Simple Eloquence','Golden Tongue'];
-  document.getElementById('ascentLbl').textContent=`Stage ${stage} — ${names[stage]} · aim for Stage 6`;
+  document.getElementById('ascentLbl').textContent=`Stage ${stage} — ${names[stage]}`;
   const focus=bankItems().filter(x=>x.s&&x.s.star);
   document.getElementById('focusList').innerHTML=focus.length?focus.map(x=>`<div class="srchit" onclick="switchTo('learn');togglePanel('search');document.getElementById('srchQ').value='';showCard('${x.id}')"><b>${esc(x.term)}</b><span>used ${x.s.uses}/38</span></div>`).join(''):'<span style="color:var(--muted);font-size:13px">Star words anywhere (★) and they gather here — practiced first, reviewed daily.</span>';
 }
