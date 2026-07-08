@@ -3126,6 +3126,65 @@ function renderSummary(){
 }
 function bumpStreak(){const t=today(); if(state.lastDay!==t){state.streak=(state.lastDay===t-DAY)?state.streak+1:1; state.lastDay=t; renderStreak();}}
 
+/* ============ ORIGINAL-CLIP LINKS ============ */
+const CLIPS={
+ // I Have a Dream — https://youtu.be/ARvrvJV4th4 (caption-timestamp verified 2026-07-08)
+ u1w11:'https://youtu.be/ARvrvJV4th4?t=264',  // fierce urgency of now
+ u1w12:'https://youtu.be/ARvrvJV4th4?t=232',  // insufficient funds
+ u1w18:'https://youtu.be/ARvrvJV4th4?t=962',  // free at last
+ u3w1:'https://youtu.be/ARvrvJV4th4?t=754',   // content of character
+ u3w4:'https://youtu.be/ARvrvJV4th4?t=894',   // mighty mountains
+ u3w6:'https://youtu.be/ARvrvJV4th4?t=291',   // dark and desolate
+ u3w19:'https://youtu.be/ARvrvJV4th4?t=432',  // dignity and discipline
+ u5w1:'https://youtu.be/ARvrvJV4th4?t=566',   // like a mighty stream
+ u5w19:'https://youtu.be/ARvrvJV4th4?t=829',  // mountain of despair
+ u8w15:'https://youtu.be/ARvrvJV4th4?t=880',  // let freedom ring
+ u8w16:'https://youtu.be/ARvrvJV4th4?t=73',   // one hundred years later
+ u8w1:'https://youtu.be/ARvrvJV4th4?t=284',   // now is the time
+ // Batch 2 — caption-timestamp verified 2026-07-08
+ // Batch 3 — cinema & Shakespeare (verified 2026-07-08)
+ u11w4:'https://youtu.be/fHjMhYoY4Mg?t=18',
+ u11w3:'https://youtu.be/Q_4mxtdD634?t=37',
+ u8w3:'https://youtu.be/46GwJbrMghQ?t=177',
+ u11w7:'https://youtu.be/pS2ePpOkpgc?t=117',
+ u11w8:'https://youtu.be/tAyQL1inris?t=16',
+ u14w20:'https://youtu.be/tAyQL1inris?t=84',
+ u11w9:'https://youtu.be/UdeA7LsGtfY?t=142',
+ u14w12:'https://youtu.be/UdeA7LsGtfY?t=151',
+ u10w3:'https://youtu.be/91_G8iaokk8?t=26',
+ u14w15:'https://youtu.be/BQ4yd2W50No?t=15',
+ uSpw1:'https://youtu.be/bvFHRNGYfuo?t=137',
+ uSpw16:'https://youtu.be/bvFHRNGYfuo?t=106',
+ u1w24:'https://youtu.be/bvFHRNGYfuo?t=73',
+ u5w2:'https://youtu.be/J7GY1Xg6X20?t=113',  // machine men — Great Dictator
+ u1w14:'https://youtu.be/J7GY1Xg6X20?t=45',  // more than machinery
+ uSpw17:'https://youtu.be/J7GY1Xg6X20?t=125',  // fight for liberty
+ u1w20:'https://youtu.be/Qa7icmqgsow?t=248',  // waved goodbye — Challenger
+ uSpw5:'https://youtu.be/Qa7icmqgsow?t=147',  // belongs to the brave
+ u2w9:'https://youtu.be/wupToqz1e2g?t=66',  // mote of dust — Pale Blue Dot
+ uSpw11:'https://youtu.be/wupToqz1e2g?t=194',  // only home we've ever known
+ u1w15:'https://youtu.be/zgVrlx68v-0?t=102',  // longevity has its place — Mountaintop
+ u14w13:'https://youtu.be/zgVrlx68v-0?t=144',  // mountaintop staccato
+ u4w18:'https://youtu.be/zgVrlx68v-0?t=148',  // mine eyes have seen the glory
+ u2w10:'https://youtu.be/Qa7icmqgsow?t=256',  // surly bonds / face of God
+ u1w13:'https://youtu.be/wupToqz1e2g?t=17',  // that's here that's home
+ u2w11:'https://youtu.be/zgVrlx68v-0?t=123',  // promised land
+ uSpw2:'https://youtu.be/_RujOFCHsxo?t=91',  // mad as hell — Network
+ u1w23:'https://youtu.be/_RujOFCHsxo?t=70',  // my life has value
+ uSpw21:'https://youtu.be/_RujOFCHsxo?t=67',  // first get mad
+ u1w16:'https://youtu.be/QXqlziZV63k?t=591',  // because they are hard — JFK Rice
+ uD4w8:'https://youtu.be/QXqlziZV63k?t=405',  // banner of freedom
+};
+function hasOrig(w){return w&&w.quote&&w.src&&!/^BetterSpeak|worksheet|Index|canon supplement$/.test(w.src)&&!w.src.startsWith('BetterSpeak')&&!w.src.startsWith('Picked up');}
+function origUrl(w){
+  if(CLIPS[w.id])return CLIPS[w.id];
+  const who=(w.src||'').split('—')[0].split(',')[0].replace(/[“”"]/g,'').trim();
+  const snippet=toksKeep(w.quote).slice(0,8).join(' ');
+  return 'https://www.youtube.com/results?search_query='+encodeURIComponent(snippet+' '+who);
+}
+function origLabel(w){return CLIPS[w.id]?'original ▶ exact moment':'original ↗ (search)';}
+function toksKeep(t){return t.replace(/[“”]/g,'').split(/\s+/).filter(Boolean);}
+
 /* ============ GEN DATA ============ */
 const MC_ADJ=['smoky','refried','decaffeinated','hollow','understated','zigzagged','frosty','sparkling','toasted','dusty','clouded'];
 const MC_NOUN=['conversation','railroad','rainbow','rainforest','eyebrows','coffee','squirrel','surfboard','wood stove','reef','aroma','deadline','inbox','seminar','dataset','commute'];
