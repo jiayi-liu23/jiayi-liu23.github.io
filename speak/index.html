@@ -2939,6 +2939,12 @@ function exType(x){
   if(u<4){const t=x.w.term.toLowerCase(),q=(x.w.quote||'').toLowerCase();return q.includes(t)?'cloze':'mc';}
   return 'write';
 }
+function maskTerm(g,t){
+  let out=g||'';
+  const bits=[t,...String(t).split(/[^A-Za-z']+/).filter(w=>w.length>3)];
+  bits.forEach(w=>{try{out=out.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),'____');}catch(e){}});
+  return out;
+}
 function distractors(x,n){
   const cat=x.kind==='cur'?x.w.cat:(x.w.cat||'Words');
   let pool=ALLWORDS.filter(w=>w.id!==x.w.id&&w.cat===cat);
@@ -3009,13 +3015,26 @@ function renderItem(){
   const starBtn=`<button class="starbtn ${s.star?'on':''}" id="pStar" onclick="pracStar()" title="focus">★</button>`;
   const meter=`<div class="meter"><i style="width:${Math.min(100,s.uses/38*100)}%"></i></div><div class="meter-lbl">used ${s.uses} / ~38 · ${s.star?'⭐ focus':(s.uses===0?'first rep':'review')}${x._redone?' · retry':''}</div>`;
   if(type==='mc'){
-    const gloss=x.kind==='cur'?w.gloss:(w.meaning||'');
-    const opts=[w.term,...distractors(x,3)].sort(()=>Math.random()-.5);
+    const isSwap=String(w.term).includes('→');
+    let promptHtml,opts,correct;
+    if(isSwap){
+      const parts=w.term.split('→');
+      correct=parts.slice(1).join('→').trim();
+      const pool=[...new Set(ALLWORDS.filter(o=>o.id!==w.id&&String(o.term).includes('→')).map(o=>o.term.split('→').slice(1).join('→').trim()))].sort(()=>Math.random()-.5).slice(0,3);
+      opts=[correct,...pool].sort(()=>Math.random()-.5);
+      promptHtml=`<div class="prompt" style="margin-top:10px">Upgrade this workhorse — what does the course recommend?</div>
+      <div class="quote"><span class="q" style="font-style:normal;font-size:18px"><b>${esc(parts[0].trim())}</b> → ?</span></div>`;
+    }else{
+      correct=w.term;
+      const gloss=maskTerm(x.kind==='cur'?w.gloss:(w.meaning||''),w.term);
+      opts=[w.term,...distractors(x,3)].sort(()=>Math.random()-.5);
+      promptHtml=`<div class="prompt" style="margin-top:10px">Which word or phrase means:</div>
+      <div class="quote"><span class="q" style="font-style:normal">${esc(gloss)}</span></div>`;
+    }
     area.innerHTML=bar+`<div class="card">${starBtn}
       <span class="cat-chip">${esc(x.kind==='cur'?w.cat:(w.cat||'Words'))}</span>
-      <div class="prompt" style="margin-top:10px">Which word or phrase means:</div>
-      <div class="quote"><span class="q" style="font-style:normal">${esc(gloss)}</span></div>
-      <div style="margin-top:12px">${opts.map(o=>`<button class="opt" onclick="answerOpt(this,${o===w.term})">${esc(shortT(o))}</button>`).join('')}</div>
+      ${promptHtml}
+      <div style="margin-top:12px">${opts.map(o=>`<button class="opt" data-ok="${o===correct?1:0}" onclick="answerOpt(this,${o===correct})">${esc(shortT(o))}</button>`).join('')}</div>
     </div>`;
   }else if(type==='cloze'){
     const re=new RegExp(w.term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i');
@@ -3025,7 +3044,7 @@ function renderItem(){
       <span class="cat-chip">${esc(w.cat)}</span>
       <div class="prompt" style="margin-top:10px">Complete the line:</div>
       <div class="quote"><span class="q">“${esc(blanked)}”</span><span class="src">— ${esc(srcClean(w.src))}</span></div>
-      <div style="margin-top:12px">${opts.map(o=>`<button class="opt" onclick="answerOpt(this,${o===w.term})">${esc(shortT(o))}</button>`).join('')}</div>
+      <div style="margin-top:12px">${opts.map(o=>`<button class="opt" data-ok="${o===w.term?1:0}" onclick="answerOpt(this,${o===w.term})">${esc(shortT(o))}</button>`).join('')}</div>
     </div>`;
   }else{
     area.innerHTML=bar+`<div class="card">${starBtn}
@@ -3098,7 +3117,7 @@ function answerOpt(btn,correct){
     setTimeout(()=>{sess.i++;renderItem();},800);
   }else{
     btn.classList.add('bad');
-    document.querySelectorAll('.opt').forEach(b=>{if(b.textContent===shortT(x.w.term))b.classList.add('ok');});
+    document.querySelectorAll('.opt').forEach(b=>{if(b.dataset.ok==='1')b.classList.add('ok');});
     sess.miss++;s.next=today()+DAY;
     if(!x._redone){const clone={...x,_redone:true};sess.q.push(clone);sess.total++;}
     save();
