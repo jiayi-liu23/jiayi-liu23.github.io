@@ -1,0 +1,2322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#F7F4EF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Commonplace">
+<title>Commonplace · Word Bank</title>
+<style>
+  :root{
+    --bg:#F7F4EF; --card:#FFFFFF; --ink:#2E2A26; --muted:#8A8178; --hair:#E7E0D6;
+    --wood:#B07D56; --wood-dk:#8C5E3C; --cognac:#9C5B3B; --sage:#EEF0E7; --green:#6E7E5B;
+    --terra:#B4462F; --gold:#C8A24A;
+    --shadow:0 2px 10px rgba(60,45,30,.06),0 8px 30px rgba(60,45,30,.05);
+    --serif:Georgia,"Cormorant Garamond","Songti SC",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:680px;margin:0 auto;padding:0 18px 80px}
+
+  header{position:sticky;top:0;z-index:20;background:rgba(247,244,239,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--hair)}
+  .hbar{max-width:680px;margin:0 auto;padding:14px 18px 0;display:flex;align-items:baseline;justify-content:space-between}
+  .logo{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--wood-dk)}
+  .logo small{display:block;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+  .streak{font-size:13px;color:var(--muted);font-weight:600}
+  .streak b{color:var(--terra)}
+  nav{max-width:680px;margin:0 auto;padding:8px 18px 0;display:flex;gap:20px}
+  nav button{background:none;border:none;font-family:var(--sans);font-size:14.5px;font-weight:600;color:var(--muted);padding:6px 0 12px;cursor:pointer;border-bottom:2px solid transparent}
+  nav button.on{color:var(--ink);border-bottom-color:var(--wood)}
+  nav button .bdg{font-size:11px;background:var(--sage);color:var(--green);border-radius:10px;padding:1px 7px;margin-left:4px;font-weight:700}
+
+  h2.sec{font-family:var(--serif);font-size:21px;font-weight:600;color:var(--wood-dk);margin:26px 0 4px}
+  .sub{font-size:13.5px;color:var(--muted);margin-bottom:16px}
+
+  .card{background:var(--card);border:1px solid var(--hair);border-radius:16px;box-shadow:var(--shadow);padding:20px;position:relative}
+  .card+.card{margin-top:14px}
+
+  .unit{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--hair);border-radius:16px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:12px;cursor:pointer;transition:transform .12s}
+  .unit:hover{transform:translateY(-1px)}
+  .unit.locked{opacity:.45;cursor:default}
+  .unit .badge{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;flex:0 0 44px;background:var(--sage);color:var(--green)}
+  .unit.done .badge{background:#EFE7CF;color:var(--gold)}
+  .unit.active .badge{background:var(--wood-dk);color:#fff}
+  .unit .ut{font-weight:700;font-size:15.5px}
+  .unit .uz{font-family:var(--serif);color:var(--wood-dk);font-size:13.5px}
+  .unit .um{font-size:12px;color:var(--muted);margin-top:2px}
+  .unit .prog{margin-left:auto;font-size:12px;color:var(--muted);white-space:nowrap}
+
+  .term{font-family:var(--serif);font-size:28px;font-weight:600;color:var(--ink);margin:8px 0 2px}
+  .cat-chip{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--wood-dk);background:#F3ECE2;border-radius:20px;padding:3px 10px}
+  .starbtn{position:absolute;top:14px;right:14px;background:none;border:none;font-size:24px;cursor:pointer;color:#D9CFC0;line-height:1;transition:transform .15s}
+  .starbtn:hover{transform:scale(1.15)}
+  .starbtn.on{color:var(--gold)}
+
+  .blk{margin-top:13px;font-size:14.5px}
+  .blk .lbl{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--wood);display:block;margin-bottom:3px}
+  .quote{background:var(--sage);border-radius:12px;padding:12px 14px;font-size:14.5px}
+  .quote .q{font-style:italic}
+  .quote .src{display:block;font-size:12.5px;color:var(--green);margin-top:6px;font-weight:600}
+  .hardw{background:#FBF7EF;border:1px dashed var(--hair);border-radius:12px;padding:10px 13px;font-size:13.5px}
+  .hardw div{margin:2px 0}
+  .hardw b{color:var(--wood-dk)}
+  .ipa{color:var(--muted);font-size:12px;font-style:italic;margin-left:5px}
+  .usage li{margin:4px 0 4px 18px;font-size:14px}
+
+  .prompt{font-size:14px;color:var(--ink);margin:16px 0 8px;font-weight:600}
+  textarea{width:100%;min-height:74px;border:1px solid var(--hair);border-radius:12px;padding:12px;font-family:var(--sans);font-size:15px;color:var(--ink);resize:vertical;background:#FCFAF6}
+  textarea:focus{outline:none;border-color:var(--wood)}
+  .reveal{display:none;margin-top:4px}
+  .reveal.show{display:block}
+
+  .row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .btn{border:none;border-radius:12px;padding:11px 18px;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;flex:1;min-width:96px}
+  .btn.primary{background:var(--wood-dk);color:#fff}
+  .btn.ghost{background:#fff;border:1px solid var(--hair);color:var(--ink)}
+  .btn.soft{background:var(--sage);color:var(--green)}
+  .btn.slim{flex:0 0 auto}
+
+  .meter{height:7px;background:var(--sage);border-radius:20px;overflow:hidden;margin:14px 0 4px}
+  .meter i{display:block;height:100%;background:var(--wood);border-radius:20px}
+  .meter-lbl{font-size:11.5px;color:var(--muted)}
+  .stepdots{font-size:12px;color:var(--muted);margin-top:4px}
+
+  .done-msg{text-align:center;padding:34px 10px;color:var(--muted)}
+  .done-msg .big{font-family:var(--serif);font-size:24px;color:var(--wood-dk);margin-bottom:6px}
+
+  .addbar{display:flex;gap:8px;margin-bottom:8px}
+  .addbar input{flex:1;border:1px solid var(--hair);border-radius:12px;padding:11px 13px;font-size:15px;font-family:var(--sans);background:#fff}
+  .addbar input:focus{outline:none;border-color:var(--wood)}
+  .miniform{background:var(--card);border:1px solid var(--hair);border-radius:16px;box-shadow:var(--shadow);padding:16px;margin-bottom:16px;display:none}
+  .miniform.show{display:block}
+  .miniform label{font-size:12px;font-weight:600;color:var(--muted);display:block;margin:8px 0 3px}
+  .miniform input,.miniform select,.miniform textarea{width:100%;border:1px solid var(--hair);border-radius:10px;padding:9px 11px;font-size:14.5px;font-family:var(--sans);background:#FCFAF6}
+  .miniform textarea{min-height:48px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 14px}
+  .fchip{border:1px solid var(--hair);background:#fff;border-radius:20px;padding:5px 13px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
+  .fchip.on{background:var(--wood-dk);border-color:var(--wood-dk);color:#fff}
+  .grp-title{font-family:var(--serif);font-size:16px;color:var(--wood-dk);margin:22px 0 8px}
+  .entry{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid var(--hair)}
+  .entry:last-child{border-bottom:none}
+  .entry .t{font-weight:600;font-size:15.5px}
+  .entry .mm{font-size:13px;color:var(--muted);margin-top:2px}
+  .entry .uses{font-size:11px;color:var(--wood);margin-top:3px}
+  .entry .estar{background:none;border:none;font-size:18px;cursor:pointer;color:#D9CFC0;line-height:1;padding-top:2px}
+  .entry .estar.on{color:var(--gold)}
+  .entry .x{background:none;border:none;color:var(--hair);font-size:18px;cursor:pointer;line-height:1;padding-top:2px}
+  .entry .x:hover{color:var(--terra)}
+  .grad{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.5px}
+  .newtag{font-size:10px;font-weight:700;color:var(--terra);letter-spacing:.5px}
+
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .stat{background:var(--card);border:1px solid var(--hair);border-radius:16px;box-shadow:var(--shadow);padding:18px;text-align:center}
+  .stat .n{font-family:var(--serif);font-size:32px;color:var(--wood-dk);font-weight:600}
+  .stat .l{font-size:12px;color:var(--muted);margin-top:2px}
+  .ascent{margin-top:16px}
+  .ascent .bar{height:10px;background:var(--sage);border-radius:20px;overflow:hidden}
+  .ascent .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--wood),var(--cognac))}
+  .empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:14px}
+</style>
+</head>
+<body>
+<header>
+  <div class="hbar">
+    <div class="logo">Commonplace<small>a word bank for articulate speech</small></div>
+    <div class="streak" id="streak"></div>
+  </div>
+  <nav>
+    <button data-v="learn" class="on">Learn<span class="bdg" id="bLearn"></span></button>
+    <button data-v="practice">Practice<span class="bdg" id="bPrac"></span></button>
+    <button data-v="drills">Drills</button>
+    <button data-v="bank">Bank</button>
+    <button data-v="stats">Progress</button>
+  </nav>
+</header>
+
+<div class="wrap">
+  <section id="v-learn">
+    <h2 class="sec">Learn</h2>
+    <div class="sub" id="learnSub">Twenty themed units — enter any, in any order. Cards shuffle each visit.</div>
+    <div id="learnArea"></div>
+  </section>
+
+  <section id="v-practice" style="display:none">
+    <h2 class="sec">Practice</h2>
+    <div class="sub" id="pracSub"></div>
+    <div id="pracArea"></div>
+  </section>
+
+  <section id="v-drills" style="display:none">
+    <h2 class="sec">Drills</h2>
+    <div class="sub">Generators, not flashcards — the course techniques made infinite. With an AI key (Bank → AI key…) you get real coaching; without one they run in offline mode.</div>
+
+    <div class="card">
+      <span class="cat-chip">Day 7 · two-question metaphor</span>
+      <div class="term" style="font-size:22px">Metaphor Collision · 隐喻碰撞机</div>
+      <div class="blk" id="mcPrompt"></div>
+      <div class="prompt">Write one sentence that makes the collision work:</div>
+      <textarea id="mcAnswer" placeholder="e.g. Even the rainbow this afternoon has been decaffeinated."></textarea>
+      <div class="row">
+        <button class="btn ghost slim" onclick="mcNew()">🎲 New collision</button>
+        <button class="btn primary" onclick="mcCheck()">Check →</button>
+      </div>
+      <div id="mcOut" class="blk"></div>
+    </div>
+
+    <div class="card">
+      <span class="cat-chip">Day 8 · workhorse upgrade</span>
+      <div class="term" style="font-size:22px">Workhorse ER · 万能词急诊室</div>
+      <div class="prompt">Paste a sentence you actually said or wrote today:</div>
+      <textarea id="erInput" placeholder="e.g. The results are really good and pretty interesting."></textarea>
+      <div class="row"><button class="btn primary" onclick="erCheck()">Diagnose →</button></div>
+      <div id="erOut" class="blk"></div>
+    </div>
+  </section>
+
+  <section id="v-bank" style="display:none">
+    <h2 class="sec">Word bank</h2>
+    <div class="sub">Keep entries short (~10 words max). ⭐ marks a focus word — practiced first. New words from your life: tell Coach in chat (“记词 …”) and they arrive in <b>My Pickups</b>, fully annotated.</div>
+    <div class="addbar">
+      <input id="quickTerm" placeholder="Add a word or phrase… (Enter)">
+      <button class="btn primary slim" onclick="toggleForm()">＋ Details</button>
+    </div>
+    <div class="miniform" id="miniform">
+      <label>Word / phrase</label><input id="fTerm">
+      <div class="row" style="margin-top:10px">
+        <button class="btn soft slim" id="afBtn" onclick="autoFill()">✨ Auto-fill the rest</button>
+        <button class="btn ghost slim" onclick="document.getElementById('aiKeyRow').style.display=document.getElementById('aiKeyRow').style.display==='block'?'none':'block'">AI key…</button>
+      </div>
+      <div id="aiKeyRow" style="display:none;border:1px dashed var(--hair);border-radius:12px;padding:10px;margin-top:8px">
+        <label>Anthropic API key (optional — richer, Joseph-style auto-fill; stored only in this browser)</label>
+        <input id="fKey" placeholder="sk-ant-…" onchange="localStorage.setItem('bs_key',this.value.trim())">
+      </div>
+      <label>Meaning</label><input id="fMeaning">
+      <label>Example sentence (optional)</label><textarea id="fExample"></textarea>
+      <label>Source (optional)</label><input id="fSource" placeholder="e.g. MLK, I Have a Dream (1963)">
+      <label>Category</label>
+      <select id="fCat">
+        <option>Words</option><option>Phrases</option><option>Similes</option>
+        <option>Alliterations</option><option>Quotes</option><option>Workhorse swaps</option>
+        <option>Lexical gaps</option><option>Dedicated terms</option><option>Custom</option>
+      </select>
+      <div class="row"><button class="btn primary" onclick="saveForm()">Save</button><button class="btn ghost" onclick="toggleForm()">Cancel</button></div>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div id="bankList"></div>
+  </section>
+
+  <section id="v-stats" style="display:none">
+    <h2 class="sec">Progress</h2>
+    <div class="sub">A word becomes automatic after ~38 uses — that's when it enters your surface lexicon.</div>
+    <div class="stat-grid">
+      <div class="stat"><div class="n" id="sUnits">0</div><div class="l">units completed</div></div>
+      <div class="stat"><div class="n" id="sLearned">0</div><div class="l">words learned</div></div>
+      <div class="stat"><div class="n" id="sStar">0</div><div class="l">⭐ in focus</div></div>
+      <div class="stat"><div class="n" id="sReps">0</div><div class="l">practice reps</div></div>
+      <div class="stat"><div class="n" id="sGrad">0</div><div class="l">automatic (38+)</div></div>
+      <div class="stat"><div class="n" id="sDue">0</div><div class="l">due to practice</div></div>
+    </div>
+    <div class="card ascent">
+      <div style="font-family:var(--serif);font-size:16px;color:var(--wood-dk);margin-bottom:8px">The Articulate Ascent</div>
+      <div class="bar"><i id="ascentBar" style="width:5%"></i></div>
+      <div class="meter-lbl" id="ascentLbl" style="margin-top:6px"></div>
+    </div>
+    <div class="tip">Progress is saved in this browser only — every person who opens the app keeps their own progress.</div>
+  </section>
+</div>
+
+<script>
+const KEY='betterspeak_commonplace_v3';
+const V2KEY='betterspeak_commonplace_v2';
+const INTERVALS=[1,3,7,14,30];
+const DAY=86400000;
+const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()};
+
+/* ============ CURRICULUM ============ */
+const UNITS=[
+{id:'u0',ordered:true,title:'The Articulate Ascent',zh:'九阶地图',from:'Day 1 · The Articulate Ascent · 口才的九个阶段',
+ essence:'Every speaker climbs the same nine stages — and the map keeps you from getting stuck. <b>Aim for Stage 6, Natural Expression</b>, not stage-nine perfection; and beware Stage 5, where polish becomes a trap. These stage names are worth knowing as words: they name where you are.<br><span style="color:var(--muted)">九阶一张地图:目标是第6阶「自然表达」,别掉进第5阶的完美主义陷阱。</span>',
+ words:[
+  {id:'u0w1',term:'the Articulate Ascent',cat:'Phrases',
+   gloss:"口才的爬升之路 —— 九个阶段的成长地图",
+   hard:[["ascent","攀登、上升(与 descent 相对)"]],
+   quote:"I took these milestones and put them into this diagram, which I call the Articulate Ascent.",
+   src:"BetterSpeak · Day 1",
+   why:"Knowing the map means never mistaking a stage for the destination.",
+   usage:["Where am I on the ascent this month?","Progress talk: name the stage, not just the feeling."]},
+  {id:'u0w2',term:'the Awakening',cat:'Phrases',
+   gloss:"觉醒(第2阶):突然听见自己的 filler 和口头禅,回不去了",
+   hard:[],
+   quote:"Fillers, empty language and redundancies become clear… your verbal comfort is shaken, and there’s no going back.",
+   src:"BetterSpeak · Day 1 — Stage 2",
+   why:"Awareness is the entry fee: you can’t fix what you can’t hear.",
+   usage:["The recording gave me my Awakening — I say “so” constantly.","Uncomfortable = working."]},
+  {id:'u0w3',term:'the Perfection Deception',cat:'Phrases',
+   gloss:"完美的骗局(第5阶):过度打磨,说话变得机械做作 —— 是坑,不是进步",
+   hard:[["deception","欺骗、骗局"]],
+   quote:"Your speech is overly polished and mechanical as you strive for an unrealistic standard… ordinary words must be special words.",
+   src:"BetterSpeak · Day 1 — Stage 5",
+   why:"The named trap: if every word must be special, no word is natural. Naming it helps you exit it.",
+   usage:["I caught myself rephrasing a grocery list — Perfection Deception.","Let ordinary words be ordinary."]},
+  {id:'u0w4',term:'Natural Expression',cat:'Phrases',
+   gloss:"自然表达(第6阶,目标):升级过的词汇 + 真实的性格,不再苛求每个词",
+   hard:[],
+   quote:"You blend your enhanced vocabulary with genuine personality… finding your natural flow and not overthinking your word choice.",
+   src:"BetterSpeak · Day 1 — Stage 6, where most people should aim",
+   why:"The destination is freedom, not polish — vocabulary in service of personality.",
+   usage:["Goal check: does this sound like me, upgraded — or someone else?","Stage 6 over stage 9, always."]},
+  {id:'u0w5',term:'extemporaneous speaking',cat:'Words',
+   gloss:"即席表达 —— 有利害关系时的临场发言(会议、答辩、谈判)",
+   hard:[["extemporaneous","即席的、未经准备的(ex tempore 拉丁:出于当下)"]],
+   quote:"Extemporaneous is when you speak, usually when there are stakes to what you say… most people want verbal athleticism in this category.",
+   src:"BetterSpeak · Day 1 — the third mode of communication",
+   why:"The mode this whole course trains for — name it and you can practice for it.",
+   usage:["Seminars are extemporaneous mode; dinner is expression mode.","Different modes, different standards."]},
+  {id:'u0w6',term:'expertise · expression · extemporaneous',cat:'Phrases',
+   gloss:"三种说话模式:专业输出 / 社交闲聊(允许乱) / 有代价的临场",
+   hard:[],
+   quote:"Expression is raw and messy — it’s often called social speak… there is a raw, authentic realness we achieve when we allow ourselves mistakes.",
+   src:"BetterSpeak · Day 1 — the three modes",
+   why:"Permission structure: social speak SHOULD be loose. Don’t audit your brunch conversation.",
+   usage:["Match the mode: precision at the podium, ease at the table.","Expression mode is where relationships live."]},
+  {id:'u0w7',term:'the Golden Tongue',cat:'Phrases',
+   gloss:"金舌(第9阶):前1%——每句自带优雅与简洁;欣赏它,不必追求它",
+   hard:[],
+   quote:"Every sentence you speak reflects natural elegance and simplicity… we don’t pursue speaking like a stage-nine communicator.",
+   src:"BetterSpeak · Day 1 — Stage 9",
+   why:"Knowing the ceiling exists — and choosing not to pay its price — is itself articulate judgment.",
+   usage:["Admire the golden tongues; train for Stage 6.","Cost-benefit applies to eloquence too."]},
+  {id:'u0w8',term:'verbal athlete',cat:'Phrases',
+   gloss:"语言运动员 —— 把口才当运动练:灵活、聪明地使用语言的人",
+   hard:[],
+   quote:"A verbal athlete is someone who uses language flexibly and intelligently — this program is a training program for verbal athletes.",
+   src:"BetterSpeak · the course’s founding term",
+   why:"The identity behind the whole method: athletes train; they don’t wait for talent.",
+   usage:["Ten minutes of reps a day — verbal athletics.","Skill, not gift."]},
+ ]},
+{id:'u1',title:'Ordinary Words, Extraordinary Ways',zh:'平凡词的新用法',from:'Day 2 · The Architecture of Vocabulary · 词汇的架构',
+ essence:'Articulate speakers know only ~500–1,000 more words than you. Their real edge: <b>using words everyone knows in unexpected ways.</b> Precise + fresh beats big — never trade clarity for complexity.<br><span style="color:var(--muted);font-size:13px">Tip: read each quote aloud once — speaking is physical.</span><br><span style="color:var(--muted)">不背大词——把人人认识的简单词用出新意,清晰永远优先。</span>',
+ words:[
+  {id:'u1w1',term:'starving for affection',cat:'Phrases',
+   gloss:'craving love intensely — 极度渴望关爱(把"挨饿"借给情感)',
+   hard:[['starve','挨饿;这里借指情感上的匮乏']],
+   quote:'I was starving for affection, having been neglected for so long.',
+   src:'Frank Sinatra — quoted in BetterSpeak Day 2',
+   why:'Borrowing a physical word (hunger) for an emotion makes an ordinary word vivid — the heart of this unit.',
+   usage:['After a week of Zoom calls, I was starving for real conversation.','Pattern: starving for recognition / feedback / sunlight.']},
+  {id:'u1w2',term:'the cancer of modern society',cat:'Phrases',
+   gloss:'a destructive force that spreads — 像癌症一样扩散的破坏性力量',
+   hard:[],
+   quote:'Greed has become the cancer of modern society.',
+   src:'Simon Sinek — quoted in BetterSpeak Day 2',
+   why:'Everyone knows "cancer" — used for anything harmful that spreads, one word carries both the damage and the trend.',
+   usage:['Misinformation is the cancer of online discourse.','Pattern: the cancer of X.']},
+  {id:'u1w4',term:'throw dust in the eyes of',cat:'Phrases',
+   gloss:'to blind or confuse someone — 迷惑听众,让人看不清(字面:往眼里扬灰)',
+   hard:[['throw dust in someone’s eyes','固定短语:迷惑、障目']],
+   quote:'Anything beyond four syllables, he was convinced, would throw dust in the eyes of your listener.',
+   src:'Stephen Fry’s four-syllable rule, cited in the course',
+   why:'Fry’s point: long words blind more than they impress. And the idiom itself is worth keeping.',
+   usage:['All that jargon just throws dust in the eyes of the audience.','Pair with the rule: reach for the shorter word first.']},
+  {id:'u1w5',term:'word shrapnel',cat:'Phrases',
+   gloss:'词弹片 —— "词库爆炸"后乱飞的花哨大词,污染句子',
+   hard:[['shrapnel','弹片(爆炸后乱飞的碎片)']],
+   quote:'Don’t let the thesaurus explode in your head and contaminate your sentences with word shrapnel.',
+   src:'BetterSpeak · Day 2 (a friend’s coinage, quoted in the lecture)',
+   why:'A vivid name for this unit’s failure mode: fancy words scattered without purpose.',
+   usage:['That abstract is full of word shrapnel — strip it back to plain verbs.','Self-check: did I choose this word, or did the thesaurus explode?']},
+  {id:'u1w3',term:'utilize → use',cat:'Workhorse swaps',
+   gloss:'utilize is just "use" in a lab coat — 浮夸版的 use,多两个音节,零新信息',
+   hard:[['utilize','"使用"的做作说法,常见于装正式的文书']],
+   quote:'Words like utilize… are used to dress up simple statements and give an air of scientific impartiality to biased judgments.',
+   src:'George Orwell, “Politics and the English Language” (1946)',
+   why:'The subtraction rule: shorter words make clearer sentences. Over four syllables? Look for the shorter word first.',
+   usage:['Say "use the data," not "utilize the data."','Same in papers: help > facilitate, show > demonstrate — when precision allows.']},
+  {id:'u1w6',term:"phenomenon · individual · objective → (plain words)",cat:'Workhorse swaps',
+   gloss:"Orwell 点名的一批『白大褂词』:给简单陈述披上科学外衣",
+   hard:[["phenomenon","现象(希腊来的四音节大词)"],["objective","目标(=goal 的浮夸版)"]],
+   quote:"Words like phenomenon, element, individual, objective, categorical, effective, virtual are used to dress up simple statements.",
+   src:"George Orwell, “Politics and the English Language” (1946)",
+   why:"Recognize the whole family, not just utilize — dress-up nouns blur who did what.",
+   usage:["the phenomenon of burnout → how burnout happens","an individual → a person; the objective → the goal"]},
+  {id:'u1w7',term:"eliminate · liquidate → cut · end",cat:'Workhorse swaps',
+   gloss:"大词动词的平价替身 —— 更短、更直接、责任更清楚",
+   hard:[["liquidate","清算、清除(冷冰冰的官僚动词)"]],
+   quote:"…promote, constitute, exhibit, exploit, utilize, eliminate, liquidate — the result is an increase in slovenliness and vagueness.",
+   src:"George Orwell, “Politics and the English Language” (1946)",
+   why:"Plain verbs keep the actor visible; inflated verbs hide who is doing what to whom.",
+   usage:["eliminate redundancies → cut repetition","exhibit growth → grow"]},
+  {id:'u1w8',term:"a disease of the tongue",cat:'Phrases',
+   gloss:"舌头的病 —— Fry 给『大词癖』起的名字(inflated nounism)",
+   hard:[["inflated","充气的、膨胀的"]],
+   quote:"Stephen Fry called this a disease of the tongue: inflated nounism.",
+   src:"Stephen Fry, cited in BetterSpeak Day 2",
+   why:"Naming a bad habit makes it visible — and the phrase itself is a usable metaphor.",
+   usage:["Jargon is a disease of the tongue, and grad school is where you catch it.","Mold: a disease of the X."]},
+  {id:'u1w9',term:"move mountains, minds, and mankind",cat:'Alliterations',
+   gloss:"撼动高山、心智与人类 —— 平凡动词 move + m 音三连升级",
+   hard:[],
+   quote:"Those words blend together to produce an effect that can move mountains, minds, and mankind itself.",
+   src:"BetterSpeak · Day 2",
+   why:"An ordinary verb made grand by an escalating trio — small, bigger, biggest.",
+   usage:["A good seminar moves minds; a good policy moves mountains.","Trio mold: X, larger X, largest X."]},
+  {id:'u1w10',term:"bridle my tongue",cat:'Phrases',
+   gloss:"勒住舌头 —— 克制炫词的冲动",
+   hard:[["bridle","马勒/缰绳;作动词=勒住、约束"]],
+   quote:"A vain part of me wants to pack that idea in a scholarly way, but I have to bridle my tongue — the objective is understanding.",
+   src:"BetterSpeak · Day 2",
+   why:"The discipline of this unit in one image: hold the reins on your own vocabulary.",
+   usage:["I bridled my tongue and gave the two-sentence version.","Useful in meetings when the jargon urge hits."]},
+ ]},
+{id:'u2',title:'Resonant Phrases',zh:'共鸣词句',from:'Day 3 · The Commonplace Book · 摘抄本',
+ essence:'MLK, Franklin, and Reagan all kept a <b>commonplace book</b> — lines that struck them, collected and rehearsed until ready. The eloquence you admire on stage is preparation, not improvisation. A phrase needs <b>~38 uses</b> to become automatic.<br><span style="color:var(--muted)">高手的金句是提前收藏、反复演练的;一个词句约用38次才成为本能。</span>',
+ words:[
+  {id:'u2w1',term:"the enormous array of the world's ills",cat:'Quotes',
+   gloss:"the huge, layered mass of the world's problems — 世间层层叠叠的苦难",
+   hard:[['array','一大排、阵列(an array of = 一整片的)'],['ills','弊病、苦难(名词)']],
+   quote:"…the belief that there is nothing one man or one woman can do against the enormous array of the world's ills.",
+   src:'Robert F. Kennedy, “Day of Affirmation” (Cape Town, 1966)',
+   why:"Six words that hold the scale of the world's problems and one person's smallness — a model resonant phrase.",
+   usage:['No single reform can address the enormous array of problems in healthcare.','Pattern: the enormous array of + plural noun.']},
+  {id:'u2w3',term:'a tiny ripple of hope',cat:'Quotes',
+   gloss:'一圈微小的希望涟漪 —— 个体行动微小但真实的影响',
+   hard:[['ripple','涟漪、水波']],
+   quote:'Each time a man stands up for an ideal… he sends forth a tiny ripple of hope.',
+   src:'Robert F. Kennedy, the same “Day of Affirmation” speech (1966)',
+   why:'The counter-image to "the enormous array of the world’s ills" — smallness answered with ripples. Collect pairs like this.',
+   usage:['Every mentoring hour sends out a tiny ripple of hope.','Works beautifully as an ending line.']},
+  {id:'u2w5',term:'the limits of my language are the limits of my world',cat:'Quotes',
+   gloss:'语言的边界就是世界的边界 —— 词汇决定你能"看见"什么',
+   hard:[],
+   quote:'The limits of my language mean the limits of my world.',
+   src:'Ludwig Wittgenstein — the course’s opening argument for learning words',
+   why:'Why collect words at all: we learn words not to say more but to see more (the Cornell robin/eagle/bear study).',
+   usage:['Learning the word "predator" changed what the children could see.','Use it when making the case for reading widely.']},
+  {id:'u2w4',term:'selective about cereals and automobiles',cat:'Quotes',
+   gloss:'对麦片和汽车挑三挑四(却不会思考) —— 讽刺消费社会',
+   hard:[['selective','挑剔的、有选择的']],
+   quote:"We're developing a new citizenry, one that will be very selective about cereals and automobiles, but won't be able to think.",
+   src:'Rod Serling, TV interview — the line lived in his writer’s diary first',
+   why:'Proof of the commonplace book: Serling’s "quick wit" was a pre-written line. Preparation looks like genius.',
+   usage:['We’re selective about phone cases and coffee orders, but not about news sources.','Steal the shape: selective about X and Y, but unable to Z.']},
+  {id:'u2w2',term:'dawn a new day',cat:'Phrases',
+   gloss:'a new day breaks — 新的一天破晓;比喻新阶段的开始',
+   hard:[['dawn','破晓(动词);a new era dawns = 新时代开启']],
+   quote:'Every time it dawns a new day, I am grateful for life.',
+   src:'BetterSpeak · demonstrating the mock-conversation drill',
+   why:"The review method itself: don't read your word bank like a list — make 2–3 sentences with each word, aloud.",
+   usage:['A new day is dawning for our research group — two papers out, one to go.','Drill: take any new word and improvise three sentences with it.']},
+  {id:'u2w6',term:"the golden time",cat:'Phrases',
+   gloss:"黄金时光 —— 给『最好的那段时间』一个郑重的名字",
+   hard:[["grudge","吝惜、不情愿地给(grudging its going = 舍不得它流走)"]],
+   quote:"She had no room for gaiety and ease. She had spent the golden time in grudging its going.",
+   src:"BetterSpeak · Rhetorical Devices worksheet",
+   why:"A resonant two-word name for your best hours — plus the g-sounds (golden / grudging / going).",
+   usage:["Guard your golden time — mornings are for writing.","What’s YOUR golden time? Name it, then defend it."]},
+  {id:'u2w7',term:"wires and lights in a box",cat:'Quotes',
+   gloss:"『盒子里的电线和灯泡』—— 没有思想加持,技术只是硬件",
+   hard:[],
+   quote:"This instrument can teach, it can illuminate… But it can do so only to the extent that humans are determined to use it to those ends. Otherwise, it is merely wires and lights in a box.",
+   src:"Edward R. Murrow, RTNDA address (1958) — on the course Speech Bank",
+   why:"A resonant demotion: strip a technology of purpose and it becomes parts. Perfect for AI talks.",
+   usage:["Without pedagogy, an LLM is just weights in a box.","Mold: merely X and Y in a box."]},
+  {id:'u2w8',term:"the man in the arena",cat:'Quotes',
+   gloss:"竞技场中人 —— 荣耀属于下场的人,不属于看台上的批评者",
+   hard:[["marred","被弄脏/损伤的(mar 玷污)"]],
+   quote:"It is not the critic who counts… The credit belongs to the man who is actually in the arena, whose face is marred by dust and sweat and blood.",
+   src:"Theodore Roosevelt, “Citizenship in a Republic” (1910) — on the Speech Bank",
+   why:"The most-collected passage about doing versus judging — a commonplace-book classic.",
+   usage:["Referee reports sting less when you remember who’s in the arena.","Salute effort: she’s in the arena."]},
+  {id:'u2w9',term:"a mote of dust suspended in a sunbeam",cat:'Quotes',
+   gloss:"悬浮在一束阳光里的微尘 —— 地球",
+   hard:[["mote","微粒、尘埃(a mote of dust 一粒微尘)"]],
+   quote:"Look again at that dot. That’s here. That’s home. That’s us… a mote of dust suspended in a sunbeam.",
+   src:"Carl Sagan, “Pale Blue Dot” — on the Speech Bank",
+   why:"Cosmic scale compressed into seven words — the gold standard of resonant imagery.",
+   usage:["For perspective-setting openings and closings.","Mold: a mote of X in a Y."]},
+  {id:'u2w10',term:"slipped the surly bonds of Earth",cat:'Quotes',
+   gloss:"挣脱大地阴沉的束缚 —— 飞行、超越、告别的意象",
+   hard:[["surly","阴沉乖戾的"],["bonds","束缚、镣铐"]],
+   quote:"They slipped the surly bonds of Earth to touch the face of God.",
+   src:"Ronald Reagan, Challenger address (1986), quoting the poem “High Flight” — both on the course lists",
+   why:"A eulogy that borrowed a poem — proof the commonplace book works under the highest stakes.",
+   usage:["For farewells and tributes.","Note the chain: poem → notebook → the most-watched speech of 1986."]},
+  {id:'u2w11',term:"I’ve seen the promised land",cat:'Quotes',
+   gloss:"我见过应许之地 —— 愿景在望、虽不能至",
+   hard:[["the promised land","应许之地(圣经典故:迦南)"]],
+   quote:"I’ve been to the mountaintop… And I’ve seen the promised land. I may not get there with you.",
+   src:"Martin Luther King, “I’ve Been to the Mountaintop” (1968) — on the Speech Bank",
+   why:"Biblical imagery lending a vision weight — delivered the night before his assassination.",
+   usage:["For long-horizon goals: we can see the promised land from here.","Use with care — it carries history."]},
+ ]},
+{id:'uD4',title:'Your Language Diet',zh:'语言食谱',from:'Day 4 · Diagnosing Your Inputs · 诊断你的语言输入',
+ essence:'Your speech is the average of the language you consume. The surface lexicon <b>shrinks after college</b> unless you feed it — so rate your inputs, upgrade the diet, and vary your sentences. <i>“You cannot expect to speak extraordinarily when your inputs are ordinary.”</i><br><span style="color:var(--muted)">你说出的话=你摄入语言的平均值;给输入打分,喂养会缩水的活跃词库。</span>',
+ words:[
+  {id:'uD4w1',term:'language diet',cat:'Phrases',
+   gloss:"语言食谱 —— 你每天摄入的语言,决定你说出的语言",
+   hard:[],
+   quote:"The quality of our speech is a product of our language environments.",
+   src:"BetterSpeak · Day 4",
+   why:"The unit’s thesis in two words — inputs become outputs.",
+   usage:["My language diet this month: papers, podcasts, and one poem a week.","Audit yours: what do you hear >10 min/day?"]},
+  {id:'uD4w2',term:'you cannot speak extraordinarily on ordinary inputs',cat:'Quotes',
+   gloss:"输入平庸,输出不可能非凡",
+   hard:[],
+   quote:"The harsh truth is you cannot expect to speak extraordinarily when your inputs are ordinary.",
+   src:"BetterSpeak · Day 4",
+   why:"The line that justifies the whole diet — worth keeping verbatim.",
+   usage:["Before blaming your mouth, check your ears.","Applies to writing too: read above your level."]},
+  {id:'uD4w3',term:'the shrinking circle',cat:'Phrases',
+   gloss:"收缩的圆 —— surface lexicon 不喂养就会缩水;新词不用就会掉出去",
+   hard:[],
+   quote:"Think of your surface lexicon as an expanding and contracting circle… if those words are not put to use, they lose their place.",
+   src:"BetterSpeak · Day 4",
+   why:"Why review exists: the circle contracts by default. Use it or lose it, literally.",
+   usage:["Every practice rep here holds the circle open.","The 38-use rule is the circle’s entry fee."]},
+  {id:'uD4w4',term:'rate your inputs 1–10',cat:'Phrases',
+   gloss:"给每个语言来源打分(1-10):5 分 ≈ 和陌生人闲聊;10 分 ≈ 史上最好的演讲",
+   hard:[],
+   quote:"I proceeded to rate each on a scale of 1 to 10 on how articulate I considered each to be… I had little exposure to anything above a five.",
+   src:"BetterSpeak · Day 4 — the diagnostic worksheet",
+   why:"The diagnostic that started his transformation — most of us live below a five.",
+   usage:["List everything you consume >10 min/day; score it.","Swap ONE low scorer for a speech or poem."]},
+  {id:'uD4w5',term:'this sentence has five words',cat:'Quotes',
+   gloss:"五词句的课:全用短句就单调;长短交替,文字开始唱歌",
+   hard:[["monotonous","单调的"],["crescendo","(音乐)渐强"]],
+   quote:"This sentence has five words… several together become monotonous… Now listen. I vary the sentence, and I create music. The writing sings… and sometimes, when I am certain the reader is rested, I will engage him with a sentence of considerable length, a sentence that burns with energy and builds with all the impetus of a crescendo.",
+   src:"Gary Provost — quoted in BetterSpeak Day 4",
+   why:"The most famous demonstration of sentence-length variety ever written — hear it aloud once and you never unhear it.",
+   usage:["Short. Then medium. Then one long sentence that builds and builds and finally lands.","Vary length before you vary vocabulary."]},
+  {id:'uD4w6',term:'read poetry aloud',cat:'Phrases',
+   gloss:"朗读诗 —— 让嘴巴学会节奏;课程书单:Invictus, If, Still I Rise, Do Not Go Gentle…",
+   hard:[],
+   quote:"Reciting poetry aloud with the intent of learning rhythm and cadence — the very heartbeat of language.",
+   src:"BetterSpeak · Day 4 — and the course poem list",
+   why:"Poems are concentrated meter: five minutes of reading aloud tunes the instrument.",
+   usage:["Start with “Invictus” — two minutes, out loud.","One poem per week, re-read daily."]},
+  {id:'uD4w7',term:'the articulation key (1–10)',cat:'Phrases',
+   gloss:"口才评级表:1=脏话+filler 满天飞;5=普通对话;7≈纽约时报文章;10=撼动人心的演说",
+   hard:[],
+   quote:"Use the articulation key to rate each language input from 1 to 10… a 5 is approximately an average conversation with a stranger.",
+   src:"BetterSpeak · Diagnosing Inputs worksheet (the articulation key)",
+   why:"A shared ruler for the whole program: rate what you consume, then deliberately add sources above 7.",
+   usage:["Rate your podcast list tonight — most of it will be a 4–5.","Swap one input below 5 for one above 7."]},
+  {id:'uD4w8',term:'a banner of freedom and peace',cat:'Quotes',
+   gloss:"『不让征服者的敌旗,而让自由与和平的旗帜,插上月球』—— 评级表第 9 级样句",
+   hard:[["banner","旗帜、大旗"],["conquest","征服"]],
+   quote:"The eyes of the world now look into space… and we have vowed that we shall not see it governed by a hostile flag of conquest, but by a banner of freedom and peace.",
+   src:"John F. Kennedy, the Rice “Moon” speech — level 9 sample in the articulation key",
+   why:"What a 9 sounds like: vivid imagery, antithesis (flag of conquest vs banner of peace), zero filler.",
+   usage:["Antithesis mold: not X of A, but Y of B.","Read aloud — feel the sentence build."]},
+  {id:'uD4w9',term:'the starless midnight of racism and war',cat:'Quotes',
+   gloss:"『无星的午夜』对『和平与手足之情的破晓』—— 评级表第 10 级(满分)样句",
+   hard:[["starless","无星的"],["daybreak","破晓"]],
+   quote:"I refuse to accept the view that mankind is so tragically bound to the starless midnight of racism and war that the bright daybreak of peace and brotherhood can never become a reality… unarmed truth and unconditional love will have the final word.",
+   src:"Martin Luther King, Nobel acceptance (1964) — level 10 sample in the articulation key",
+   why:"The scale’s ceiling: paired metaphors (midnight/daybreak), alliteration (bright daybreak… brotherhood), and a thunderous ending.",
+   usage:["Study it as the 10 to aim beneath — remember, the course’s goal is Stage 6, not this.","“Unarmed truth” — collect the two-word pairing."]},
+ ]},
+{id:'u3',title:'Alliteration Couplings',zh:'头韵词对',from:'Day 5 · Elements of Eloquence · 修辞元素',
+ essence:'Alliteration = neighboring words sharing a first sound. MLK didn’t invent his live — he <b>stored word-pairs in his notebook</b>: say the first word and the rest follows. When speaking, lean slightly on the repeated sound.<br><span style="color:var(--muted)">头韵=相邻词共享开头音;像MLK一样提前存好「词对」,第一个词一出口,后面自动跟上。</span>',
+ words:[
+  {id:'u3w1',term:'content of character',cat:'Alliterations',
+   gloss:'品格的内涵 —— 看人看内在,不看外表',
+   hard:[['content','内涵、内容(名词,重音在前:CON-tent)'],['character','品格、人格']],
+   quote:'…not be judged by the color of their skin but by the content of their character.',
+   src:'Martin Luther King, “I Have a Dream” (Lincoln Memorial, 1963)',
+   why:'Four hard c-sounds in one line (color/skin vs content/character) — the alliteration makes the idea quotable and portable.',
+   usage:['We hire for content of character, not polish of résumé.','Works in any judging context: reviews, hiring, choosing collaborators.']},
+  {id:'u3w2',term:'trials and tribulations',cat:'Alliterations',
+   gloss:'千难万苦、种种磨难(固定词对)',
+   hard:[['trial','磨难、考验(不只是"审判")'],['tribulation','苦难 —— 书面语,几乎总与 trials 成对出现']],
+   quote:'Trials and tribulations — among the alliterative couplings King wrote in his commonplace book and committed to memory.',
+   src:'BetterSpeak · Day 5 (MLK’s stored word-pairs)',
+   why:'A ready-made pair: say "trials" and the rest completes itself. The cheapest way to add rhythm to a sentence.',
+   usage:['Every first year on the tenure track has its trials and tribulations.','Solemn but warm — good for empathy without heaviness.']},
+  {id:'u3w3',term:'jails and jaws of injustice',cat:'Alliterations',
+   gloss:'不义的牢笼与巨口 —— 把"不公"比作猛兽:既关押你(jails),又吞噬你(jaws)',
+   hard:[['jaws','(猛兽的)上下餂、血盆大口;虎钳的钳口。电影《大白鲨》就叫 Jaws'],['injustice','不公、不义']],
+   quote:'Jails and jaws of injustice — listed among King’s stored alliterative couplings.',
+   src:'BetterSpeak · Day 5 (MLK’s stored word-pairs)',
+   why:'A j-sound pair plus a double metaphor: injustice both cages you (jails) and devours you (jaws). Far stronger than "unfair system."',
+   usage:['Lighter use: freed at last from the jails and jaws of bureaucracy.','记忆:jail 关住你,jaw 咬住你。']},
+  {id:'u3w4',term:'mighty mountains',cat:'Alliterations',
+   gloss:'巍巍高山(m 音词对)',
+   hard:[['mighty','浩大的、雄伟的']],
+   quote:'Let freedom ring from the mighty mountains of New York.',
+   src:'Martin Luther King, “I Have a Dream” (1963)',
+   why:'An m-pair from his stored list — notice how the same coupling reappears across his speeches.',
+   usage:['We drove through the mighty mountains of western Pennsylvania.','A simple pair to deploy whenever scale is the point.']},
+  {id:'u3w5',term:'sanity and sobriety',cat:'Alliterations',
+   gloss:'理智与清醒(s 音词对)',
+   hard:[['sobriety','清醒、冷静(sober 的名词)']],
+   quote:'…confident in the sanity and sobriety of all leaders.',
+   src:'Carl Sagan, on nuclear risk',
+   why:'Lean on the s-sounds when you say it — Sagan does. That slight punch is what makes alliteration land.',
+   usage:['I trust the sanity and sobriety of this committee.','Best in serious, formal registers.']},
+  {id:'u3w6',term:'dark and desolate',cat:'Alliterations',
+   gloss:'黑暗而荒凉(d 音词对)',
+   hard:[['desolate','荒凉的、被遗弃的']],
+   quote:'Now is the time to rise from the dark and desolate valley of segregation to the sunlit path of racial justice.',
+   src:'Martin Luther King, “I Have a Dream” (1963)',
+   why:'Alliteration plus imagery in one line: dark/desolate valley against the sunlit path — note the built-in contrast.',
+   usage:['The project’s dark and desolate middle stretch is where most people quit.','Pair it with a bright counter-image, as King does.']},
+  {id:'u3w7',term:"invade and infiltrate",cat:'Alliterations',
+   gloss:"侵入并渗透(i 音词对)",
+   hard:[["infiltrate","渗透、潜入"]],
+   quote:"…the type of bitterness that can invade and infiltrate the life of the individual.",
+   src:"Martin Luther King — quoted in BetterSpeak Day 5",
+   why:"Two verbs, same sound, escalating intimacy: invade breaks in, infiltrate seeps in.",
+   usage:["Don’t let cynicism invade and infiltrate the group.","Anchor the i-, fish the second verb."]},
+  {id:'u3w8',term:"aided and abetted",cat:'Alliterations',
+   gloss:"协助并教唆(a 音词对;法律用语,搭配固定)",
+   hard:[["abet","教唆、怂恿(几乎只在 aid and abet 里出现)"]],
+   quote:"Many of the mobs and the hoodlums are aided and abetted by some of the policemen.",
+   src:"Martin Luther King — quoted in BetterSpeak Day 5",
+   why:"A legal set-phrase repurposed for moral charge — borrowed registers add weight.",
+   usage:["Procrastination, aided and abetted by Twitter.","Playful in low-stakes settings, damning in high."]},
+  {id:'u3w9',term:"questioning and questing",cat:'Alliterations',
+   gloss:"追问并求索(qu 音词对)",
+   hard:[["quest","求索、寻找(名词 quest 的动词化)"]],
+   quote:"Questioning and questing for answers — whenever I use the word questioning, the full phrase fills my mouth.",
+   src:"BetterSpeak · his own stored coupling",
+   why:"His demo of the method: the first word is the trigger; the pair fires as one unit.",
+   usage:["A career of questioning and questing.","Build your own trigger-pairs and store them."]},
+  {id:'u3w10',term:"wonderful and wonder-filled",cat:'Alliterations',
+   gloss:"美妙而充满惊奇 —— 同词根拆开用,双关",
+   hard:[],
+   quote:"You stand at the threshold of a wonderful and wonder-filled world of words.",
+   src:"BetterSpeak · the course’s opening lecture",
+   why:"Splitting one word into its parts (wonder-filled) refreshes a worn adjective.",
+   usage:["A wonderful, wonder-filled first semester.","Mold: X and X-filled."]},
+  {id:'u3w11',term:"a better class of criminal",cat:'Quotes',
+   gloss:"『这座城市配得上更高级的罪犯』(c 音)",
+   hard:[],
+   quote:"This city deserves a better class of criminal, and I’m gonna give it to them.",
+   src:"The Dark Knight (2008) — from the course worksheet",
+   why:"Alliteration polishes even menace — class/criminal snap together.",
+   usage:["Playful mold: this X deserves a better class of Y.","Listen for the c-punch when said aloud."]},
+  {id:'u3w12',term:"so cheap that it was chilling",cat:'Phrases',
+   gloss:"抠门到让人发冷(ch 音)—— 字母锚定法的示范",
+   hard:[["chilling","令人发冷的、悚然的"]],
+   quote:"The rich man was so cheap that it was chilling.",
+   src:"BetterSpeak · Rhetorical Devices worksheet — letter anchoring",
+   why:"The technique live: anchor “cheap,” let the ch- ring, fish for the next ch-word.",
+   usage:["The reviewer was so curt it was chilling.","Drill: anchor one letter per day."]},
+  {id:'u3w13',term:"grimaced and groaned",cat:'Alliterations',
+   gloss:"龇牙咧嘴又哀声连连(g 音)—— 日常场景也能用",
+   hard:[["grimace","做苦相、皱眉咧嘴"]],
+   quote:"When the tests were distributed, the guys grimaced and groaned.",
+   src:"BetterSpeak · Rhetorical Devices worksheet",
+   why:"Alliteration isn’t only for podiums — everyday scenes take it lightly.",
+   usage:["The class grimaced and groaned at the pop quiz.","Low-stakes practice ground."]},
+  {id:'u3w14',term:"the depths and dimensions of the problem",cat:'Alliterations',
+   gloss:"问题的深度与维度(d 音)",
+   hard:[["dimension","维度、方面"]],
+   quote:"On the whole, they understand the depths and dimensions of the problem.",
+   src:"Martin Luther King — quoted in BetterSpeak Day 5",
+   why:"A ready-made pair for serious analysis — sounds thorough because it is balanced.",
+   usage:["The committee grasped the depths and dimensions of the data issue.","Perfect for academic registers."]},
+  {id:'u3w15',term:"green leaves wilting over yellow flowers",cat:'Alliterations',
+   gloss:"呻吟与哭喊交汇、黑呢衣的闷味、绿叶垂在黄花上 —— 多重头韵织出的画面",
+   hard:[["wilt","枯萎、蔫掉"]],
+   quote:"Up the aisle, the moans and screams merged with the sickening smell of woolen black clothes worn in summer weather and green leaves wilting over yellow flowers.",
+   src:"BetterSpeak · Rhetorical Devices worksheet (Maya Angelou’s prose)",
+   why:"Layered pairs (moans/merged, sickening/smell/summer, woolen/worn/weather) carrying grief through sound.",
+   usage:["Read it aloud slowly — count the sound pairs.","Density like this is for writing; borrow one pair at a time in speech."]},
+  {id:'u3w16',term:"swimming steadily… braced solidly",cat:'Alliterations',
+   gloss:"鱼稳稳游着,老人牢牢撑着 —— s 音把两股僵持的力连在一起",
+   hard:[["braced","撑住的、绷紧的(brace 支撑)"]],
+   quote:"Four hours later the fish was still swimming steadily out to sea… and the old man was still braced solidly with the line across his back.",
+   src:"Hemingway, The Old Man and the Sea — from the worksheet",
+   why:"Adverb pairs (steadily / solidly) mirror the stalemate — sound doing the storytelling.",
+   usage:["She worked steadily, backed solidly by her data.","Adverb alliteration is a quiet, classy move."]},
+  {id:'u3w17',term:'something displeasing, something downright detestable',cat:'Alliterations',
+   gloss:"说不出哪里不对,但就是令人生厌(d 音三连)",
+   hard:[["detestable","可憎的(detest 憎恶)"],["downright","彻头彻尾地"]],
+   quote:"His appearance: something displeasing, something downright detestable. I never saw a man I so disliked, and yet I scarce know why.",
+   src:"Stevenson, Dr Jekyll and Mr Hyde — from the course worksheet",
+   why:"The d-sounds thud like a verdict — sound conveying disgust before reasons arrive.",
+   usage:["Something distant, something downright dismissive about that reply.","Mold: something X-ing, something downright Y."]},
+  {id:'u3w18',term:'I forgot my flip phone but felt free',cat:'Alliterations',
+   gloss:"忘带手机,反而自由(f 音四连)—— 头韵也能很日常",
+   hard:[],
+   quote:"I forgot my flip phone but felt free.",
+   src:"BetterSpeak · Rhetorical Devices worksheet",
+   why:"Proof alliteration fits small talk — four f’s and a tiny philosophy.",
+   usage:["Left the laptop, felt lighter.","Everyday sentences are the practice ground."]},
+ ]},
+{id:'u8',title:'Anaphora',zh:'首语反复',from:'Day 5 · Elements of Eloquence · 修辞元素',
+ essence:'Anaphora = starting consecutive sentences or clauses with <b>the same words</b>. Don’t plan it — generate it live by <b>extending your thought with the words you just said</b>. The pulse gets stronger with each repeat.<br><span style="color:var(--muted)">首语反复=连续句子用同样的开头;不预谋,借刚说出口的词现场延伸。</span>',
+ words:[
+  {id:'u8w1',term:'Now is the time…',cat:'Quotes',
+   gloss:'"现在正是……的时候" —— 连续句首重复,制造鼓点',
+   hard:[],
+   quote:'Now is the time to make real the promises of democracy. Now is the time to rise from the dark and desolate valley of segregation… Now is the time to make justice a reality.',
+   src:'Martin Luther King, “I Have a Dream” (1963)',
+   why:'The king of rhetorical figures: repeat your opening words and the sentences gain a hypnotic pulse.',
+   usage:['Now is the time to lock the sample. Now is the time to write.','Live trick: reuse the words you just said to extend the thought.']},
+  {id:'u8w2',term:"still, like air, I'll rise",cat:'Quotes',
+   gloss:'"可我仍将升起,像空气一样" —— 排比蓄力后的收束',
+   hard:[],
+   quote:"You may shoot me with your words. You may cut me with your eyes. You may kill me with your hatefulness. But still, like air, I'll rise.",
+   src:'Maya Angelou, “Still I Rise”',
+   why:'Three "You may…" lines build the pressure; the short final line releases it. Anaphora plus a simile ending.',
+   usage:['Structure to steal: repeat the attack three times, answer once.','It’s on the course poem list — read the whole poem aloud.']},
+  {id:'u8w3',term:'get busy living, or get busy dying',cat:'Quotes',
+   gloss:'"要么忙着活,要么忙着死" —— 两个对称短句里的重复',
+   hard:[],
+   quote:'Get busy living, or get busy dying.',
+   src:'The Shawshank Redemption (1994)',
+   why:'Anaphora in miniature: two clauses, same opening, opposite endings — the symmetry is why it’s quotable.',
+   usage:['Get busy revising, or get busy regretting.','Mold: get busy X-ing, or get busy Y-ing.']},
+  {id:'u8w4',term:'I would rather be ashes than dust',cat:'Quotes',
+   gloss:'"宁为灰烬,不为尘土" —— 燃烧殆尽好过从未燃烧',
+   hard:[['ashes','灰烬(燃烧过的)'],['dust','尘土(风化的、从未燃烧的)']],
+   quote:'I would rather be ashes than dust. I would rather that my spark should burn out in a brilliant blaze than it be stifled by dry-rot.',
+   src:'Jack London’s credo',
+   why:'"I would rather…" repeated turns a preference into a creed. Ashes vs dust: both grey powders, opposite lives.',
+   usage:['I’d rather submit and be rejected than sit on a draft forever.','Mold: I would rather X than Y — then repeat it.']},
+  {id:'u8w5',term:'it means to…',cat:'Phrases',
+   gloss:'"它意味着……" —— 用 to 做低调的句首重复',
+   hard:[],
+   quote:'It means to try and tell your kids everything… It means to make sure everything is buttoned up… It means to say your goodbyes.',
+   src:'Steve Jobs, Stanford commencement (2005)',
+   why:'The everyday form of anaphora: extend a thought with "to… to…" instead of closing the sentence.',
+   usage:['Tenure means to build a record. It means to pick your battles. It means to protect your mornings.','Casual version: "Do you remember what it feels like to… to…?"']},
+  {id:'u8w6',term:"when the rain speaks…",cat:'Quotes',
+   gloss:"『当雨开口……』—— 句首三连的模板",
+   hard:[],
+   quote:"When the rain speaks, the earth listens. When the rain speaks, life pauses. When the rain speaks, we understand silence.",
+   src:"BetterSpeak · Rhetorical Devices worksheet",
+   why:"Pure template anaphora — same opener, three deepening endings.",
+   usage:["When the data speaks, models listen.","Mold: When X speaks, Y…"]},
+  {id:'u8w7',term:"it rained all over the place",cat:'Quotes',
+   gloss:"『雨落在……雨落在……』—— 悲伤靠重复,不靠形容词",
+   hard:[["lousy","糟糕的(口语)"]],
+   quote:"It rained on his lousy tombstone, and it rained on the grass on his stomach. It rained all over the place.",
+   src:"J.D. Salinger, The Catcher in the Rye — from the worksheet",
+   why:"Zero fancy words; the repetition does the grieving. Restraint as power.",
+   usage:["Emails came for the deadline, emails came for the review, emails came all week.","Repeat the plain verb; skip the adjectives."]},
+  {id:'u8w8',term:"if I asked you about art…",cat:'Quotes',
+   gloss:"『如果我问你……你大概会……但你说不出……』—— 段落级排比",
+   hard:[["the skinny","内幕、详情(口语)"]],
+   quote:"If I asked you about art, you’d probably give me the skinny on every art book ever written… But I bet you can’t tell me what it smells like in the Sistine Chapel.",
+   src:"Good Will Hunting (1997) — from the worksheet",
+   why:"Anaphora at paragraph scale: three If-I-asked builds, each undercut by a But.",
+   usage:["Mold: If I asked you about X, you could cite Y — but could you tell me Z?","Knowledge vs experience, in one structure."]},
+  {id:'u8w9',term:"for his steadfast love endures forever",cat:'Quotes',
+   gloss:"重复的副歌句 —— 排比的最古老形态",
+   hard:[["steadfast","坚定不移的"],["endure","持续、长存"]],
+   quote:"Give thanks to the Lord, for he is good, for his steadfast love endures forever. Give thanks to the God of gods… Give thanks to the Lord of lords…",
+   src:"Psalm 136 — from the worksheet",
+   why:"The refrain is anaphora at scale — three thousand years of proof that repetition binds listeners.",
+   usage:["A recurring closing line can become YOUR refrain.","Note how the openers vary while the refrain holds."]},
+  {id:'u8w10',term:"with each page turned…",cat:'Quotes',
+   gloss:"『每翻一页……』—— 温和的三连",
+   hard:[],
+   quote:"With each page turned, a journey begins. With each page turned, a mind expands. With each page turned, a new world awaits.",
+   src:"BetterSpeak · Rhetorical Devices worksheet",
+   why:"Anaphora in a gentle register — it doesn’t need a podium.",
+   usage:["With each draft, the argument sharpens. With each draft, the fat burns off.","Mold: With each X, Y."]},
+  {id:'u8w11',term:"the moment we forget…",cat:'Quotes',
+   gloss:"『当我们忘记的那一刻……当我们不再被记忆纠缠的那一刻……』",
+   hard:[["haunted","被萦绕/纠缠的"]],
+   quote:"The moment we forget this, the moment we cease to be haunted by its remembrance, then we become the gravediggers.",
+   src:"Rod Serling — quoted in BetterSpeak Day 5",
+   why:"Clause-level anaphora: two “the moment” clauses loading one grave conclusion.",
+   usage:["The moment we stop checking, the moment we trust the pipeline blindly, the errors move in.","Two clauses, one payoff."]},
+  {id:'u8w12',term:"do I ask for help? do I bury my ego?",cat:'Phrases',
+   gloss:"现场生成排比的方法:借刚出口的词,续两问",
+   hard:[],
+   quote:"Do I ask for help? Do I bury my ego and hand over the fishing rod? Do I risk losing my catch just to claim I caught the fish myself?",
+   src:"BetterSpeak · Day 5 — the live-generation demo",
+   why:"THE technique: don’t plan anaphora; extend the words you just said. Ask: finish the sentence, or reuse its opening?",
+   usage:["Do I push back? Do I pick this battle? Do I let the small stuff go?","Storytelling: it pauses the action and zooms in."]},
+  {id:'u8w13',term:'that this time must be different; that their voice could be that difference',cat:'Quotes',
+   gloss:"隐形的排比:用 that 从句悄悄重复 —— 高手的 anaphora 可以不着痕迹",
+   hard:[],
+   quote:"It’s the answer told by lines that stretched around schools and churches… because they believed that this time must be different; that their voice could be that difference.",
+   src:"Barack Obama, election night 2008 — the worksheet’s “subtle anaphora” example",
+   why:"Anaphora doesn’t need drums: repeated that-clauses give structure the ear feels but can’t name.",
+   usage:["We argued that the effect was real; that it was causal; that it mattered.","Subtlety scales better in meetings than thunder."]},
+ ]},
+{id:'u4',title:'Powerful Endings',zh:'有力的结尾',from:'Day 6 · The Art of Ending Your Sentences · 收尾的艺术',
+ essence:'Listeners remember your <b>last words</b> (recency). A weak ending — "…yeah, that’s just my opinion" — erodes everything before it. Strong speakers tie endings to <b>eternal elements</b>: earth, ocean, time, fate.<br><span style="color:var(--muted)">听众记住的是最后一句;弱结尾毁掉全部,「永恒元素」给句子分量。</span>',
+ words:[
+  {id:'u4w1',term:'until the very ends of the earth',cat:'Phrases',
+   gloss:'直到天涯海角 —— 用"大地的尽头"给句子收尾',
+   hard:[['the ends of the earth','天涯海角(固定表达)']],
+   quote:'One of the most potent phrases to end on is "until the very ends of the earth."',
+   src:'BetterSpeak · on eternal elements',
+   why:'In a world of small talk, tying a sentence to something beyond the moment gives it weight.',
+   usage:["I'd chase this research question to the very ends of the earth.","Don't force it — no epic endings for grocery runs."]},
+  {id:'u4w2',term:'a far, far better thing',cat:'Quotes',
+   gloss:'"远远更好的事" —— 重复 far 制造庄重的递进',
+   hard:[['far better','比较级强化:far = 远远地,比 much better 更有文学感']],
+   quote:'It is a far, far better thing that I do, than I have ever done; it is a far, far better rest that I go to than I have ever known.',
+   src:'Dickens, the closing line of A Tale of Two Cities',
+   why:'Repetition (far, far) + parallel structure (better thing / better rest) — a textbook ending. Borrow the shape.',
+   usage:['Choosing honesty here is a far, far better thing than winning the argument.','Pattern: It is a far, far better X that… than…']},
+  {id:'u4w3',term:'boats against the current',cat:'Quotes',
+   gloss:'逆流之舟 —— 被不断推回过去,仍继续向前划',
+   hard:[['borne back','被推回(bear 的过去分词 borne)'],['ceaselessly','不停地(cease 停止)']],
+   quote:'So we beat on, boats against the current, borne back ceaselessly into the past.',
+   src:'F. Scott Fitzgerald, the closing line of The Great Gatsby',
+   why:'Voted among the most powerful closing lines — eternal elements (boats, current, the past) plus b-alliteration.',
+   usage:['Some weeks are just boats against the current.','Use sparingly — it carries real weight.']},
+  {id:'u4w4',term:'wait and hope',cat:'Quotes',
+   gloss:'"等待,并心怀希望" —— 全书智慧收进两个词',
+   hard:[],
+   quote:'All human wisdom is summed up in these two words: Wait and hope.',
+   src:'Alexandre Dumas, the closing of The Count of Monte Cristo',
+   why:'The ending lands because it is tiny — compression is the power.',
+   usage:['The paper is under review — nothing left to do but wait and hope.','A gentle, complete way to end an update.']},
+  {id:'u4w5',term:'a multitude of drops',cat:'Quotes',
+   gloss:'"沧海不过是无数水滴" —— 渺小与浩瀚互为答案',
+   hard:[['multitude','大量、众多']],
+   quote:'My life amounts to no more than one drop in a limitless ocean. Yet what is any ocean, but a multitude of drops?',
+   src:'David Mitchell, Cloud Atlas',
+   why:'Sets up smallness, then reverses it with a question — an ending that answers itself.',
+   usage:['One referee report is a drop; a literature is a multitude of drops.','The turn "Yet what is any X but…" is reusable.']},
+  {id:'u4w6',term:"snow falling faintly through the universe",cat:'Quotes',
+   gloss:"雪,穿过宇宙,轻轻落下 —— 收尾的天花板",
+   hard:[["swoon","晕眩、失神"],["faintly","轻微地、隐约地"]],
+   quote:"His soul swooned slowly as he heard the snow falling faintly through the universe and faintly falling… upon all the living and the dead.",
+   src:"James Joyce, “The Dead” — closing line",
+   why:"Eternal elements (snow, universe, the living and the dead) + f-alliteration + the falling/faintly swap on repeat.",
+   usage:["For contemplative closes.","Note the mirrored repeat: falling faintly / faintly falling."]},
+  {id:'u4w7',term:"he loved Big Brother",cat:'Quotes',
+   gloss:"最冷的收尾:四个词宣告彻底的失败",
+   hard:[],
+   quote:"But it was all right, everything was all right, the struggle was finished. He had won the victory over himself. He loved Big Brother.",
+   src:"George Orwell, 1984 — closing line",
+   why:"An ending can reverse the whole book. Endings carry the most weight per word — spend them deliberately.",
+   usage:["Save your shortest sentence for last.","Irony lands hardest at the close."]},
+  {id:'u4w8',term:"the salt wind from the sea",cat:'Quotes',
+   gloss:"灰烬随着海上的咸风扑面而来 —— 感官收尾",
+   hard:[["ashes","灰烬"]],
+   quote:"And the ashes blew towards us with the salt wind from the sea.",
+   src:"Daphne du Maurier, Rebecca — closing line",
+   why:"Ends on senses, not statements: ash, salt, wind, sea — four eternal elements in one line.",
+   usage:["Close a story on a concrete sensory image.","Say it aloud: taste the s-sounds."]},
+  {id:'u4w9',term:"lost in darkness and distance",cat:'Quotes',
+   gloss:"消失于黑暗与远方(d 音收尾)",
+   hard:[["borne away","被带走(bear 的过去分词)"]],
+   quote:"He was soon borne away by the waves and lost in darkness and distance.",
+   src:"Mary Shelley, Frankenstein — closing line",
+   why:"Alliteration + eternal elements as the lights go out — the d-pair does the fading.",
+   usage:["The question drifted off, lost in darkness and distance.","Endings love pairs: darkness and distance, dust and dreams."]},
+  {id:'u4w10',term:"wept for the end of innocence",cat:'Quotes',
+   gloss:"为纯真的终结而哭 —— 三个宾语层层加深",
+   hard:[["weep/wept","哭泣(过去式 wept)"]],
+   quote:"Ralph wept for the end of innocence, the darkness of man’s heart, and the fall through the air of the true, wise friend called Piggy.",
+   src:"William Golding, Lord of the Flies — closing line",
+   why:"One verb, three objects, ascending from abstract to unbearably concrete.",
+   usage:["Mold: X wept/stood/fought for A, B, and the very concrete C.","Put the most specific item last."]},
+  {id:'u4w11',term:"a little boy and his Bear will always be playing",cat:'Quotes',
+   gloss:"温柔收尾的范本 —— 魔法之地,永远有男孩和他的熊",
+   hard:[["enchanted","被施了魔法的、迷人的"]],
+   quote:"But wherever they go, and whatever happens to them on the way, in that enchanted place on the top of the Forest, a little boy and his Bear will always be playing.",
+   src:"A.A. Milne, The House at Pooh Corner — closing line",
+   why:"Proof endings needn’t be grand to be eternal — warmth plus permanence (“always”).",
+   usage:["For farewells that should comfort, not impress.","Note the shape: wherever…, whatever…, in that place, X will always Y."]},
+ ]},
+{id:'uVm',title:'Voice Models',zh:'声音样板',from:'Day 6 · Great Vocal Tracks · 声音模仿素材',
+ essence:'Day 6’s second action item: pick ONE voice you admire and <b>mimic its tonality, rhythm, and pitch</b> — not to steal an identity, but to walk in the tracks of a great voice and discover your own range. Thirteen trained instruments to choose from.<br><span style="color:var(--muted)">选一个喜欢的声音模仿其音调与节奏——为了发现自己的音域,不是变成别人。</span>',
+ words:[
+  {id:'uVmw1',term:'Orson Welles',cat:'Phrases',gloss:"浑厚共鸣的男中音,自带剧场纵深 — rich, resonant baritone",hard:[["baritone","男中音"],["resonant","共鸣的、洪亮的"]],quote:"Rich, resonant baritone with theatrical depth.",src:"BetterSpeak · Great Vocal Tracks",why:"The reference point for chest resonance — sentences land like verdicts.",usage:["Mimic one line of his 1970 interview daily.","Steal the unhurried pace, not the accent."]},
+  {id:'uVmw2',term:'Alan Rickman',cat:'Phrases',gloss:"深沉如天鹅绒,带一丝讥诮 — deep, velvety, sardonic",hard:[["velvety","天鹅绒般的"],["sardonic","讥诮的、冷嘲的"]],quote:"Deep, velvety, with a hint of sardonic wit.",src:"BetterSpeak · Great Vocal Tracks",why:"Proof that SLOW is a superpower — he makes pauses feel expensive.",usage:["Practice his drawl on one sentence; feel how delay adds weight.","Sardonic ≠ mean: it’s wit served cold."]},
+  {id:'uVmw3',term:'Patrick Stewart',cat:'Phrases',gloss:"清亮、共鸣、莎剧式的优雅 — clear, Shakespearean elegance",hard:[],quote:"Clear, resonant, Shakespearean elegance.",src:"BetterSpeak · Great Vocal Tracks",why:"Stage training made audible: every consonant finished, every line shaped.",usage:["Mimic him to fix swallowed word-endings.","Make it so — two words, full authority."]},
+  {id:'uVmw4',term:'David Attenborough',cat:'Phrases',gloss:"温暖、亲切、引人入胜的轻柔 — warm, inviting gentleness",hard:[],quote:"Warm, inviting, with a compelling gentleness.",src:"BetterSpeak · Great Vocal Tracks",why:"The masterclass in wonder: authority without volume.",usage:["Narrate something mundane in his register — your coffee, the bus.","Gentleness holds attention longer than force."]},
+  {id:'uVmw5',term:'LeVar Burton',cat:'Phrases',gloss:"流畅、富表情、温暖清晰 — smooth, expressive, warm clarity",hard:[],quote:"Smooth, expressive, warm clarity.",src:"BetterSpeak · Great Vocal Tracks",why:"The teacher’s voice: precision that never talks down.",usage:["Model for explaining methods to non-specialists.","Warmth + clarity is the seminar sweet spot."]},
+  {id:'uVmw6',term:'Jeremy Irons',cat:'Phrases',gloss:"顺滑、醇厚、带砂砾感的贵族式松弛 — gravelly aristocratic coolness",hard:[["gravelly","沙哑的(gravel 碎石)"],["aristocratic","贵族式的"]],quote:"Smooth, rich, with a gravelly aristocratic coolness.",src:"BetterSpeak · Great Vocal Tracks",why:"Texture as signature — the gravel makes the smoothness interesting.",usage:["Listen for how he ends phrases DOWNWARD — Day 6’s inflection rule, embodied.","Coolness = never chasing the listener."]},
+  {id:'uVmw7',term:'Marshall McLuhan',cat:'Phrases',gloss:"自信、富表现力、有说服节奏 — confident, persuasive cadence",hard:[["cadence","节奏、语调的起伏"]],quote:"Confident, expressive tone conveying a persuasive cadence.",src:"BetterSpeak · Great Vocal Tracks",why:"The academic who sounded like aphorisms — ideas cut to rhythm.",usage:["Model for conference talks: punchy, quotable, paced.","The medium is the message — cadence included."]},
+  {id:'uVmw8',term:'Cate Blanchett',cat:'Phrases',gloss:"清脆、字字清晰、表现力多变 — crisp, expressive versatility",hard:[["crisp","清脆利落的"]],quote:"Crisp, articulate, with an expressive versatility.",src:"BetterSpeak · Great Vocal Tracks",why:"Range on demand: the same instrument does warmth, steel, and irony.",usage:["Mimic one interview answer; notice her full stops.","Crispness reads as preparation."]},
+  {id:'uVmw9',term:'Judi Dench',cat:'Phrases',gloss:"温暖而有权威,音色独一无二 — warm, authoritative timbre",hard:[["timbre","音色"]],quote:"Warm, authoritative, with a distinctive timbre.",src:"BetterSpeak · Great Vocal Tracks",why:"Authority and warmth are not a tradeoff — she runs both at once.",usage:["The register for delivering hard feedback kindly.","Low volume, high command."]},
+  {id:'uVmw10',term:'Emma Thompson',cat:'Phrases',gloss:"明亮、口齿清晰、毫不费力的表达 — bright, effortlessly expressive",hard:[],quote:"Bright, articulate, effortlessly expressive.",src:"BetterSpeak · Great Vocal Tracks",why:"Wit at speaking speed — proof articulacy can sound like play.",usage:["Model for Q&A sessions: quick without rushing.","Effortlessness is rehearsed — that’s the secret."]},
+  {id:'uVmw11',term:'Maya Angelou',cat:'Phrases',gloss:"深沉如歌,带着回响的智慧 — deep, melodious, resonant wisdom",hard:[["melodious","如旋律般的"]],quote:"Deep, melodious, with a resonant wisdom.",src:"BetterSpeak · Great Vocal Tracks",why:"The pause master: she lets silence finish her sentences (Day 14, embodied).",usage:["Play her 1983 interview; count the pauses.","Slow down until it feels wrong — that’s her speed."]},
+  {id:'uVmw12',term:'Sigourney Weaver',cat:'Phrases',gloss:"清亮、强健、自信的果断 — clear, strong, confident assertiveness",hard:[["assertiveness","果断、坚定"]],quote:"Clear, strong, with a confident assertiveness.",src:"BetterSpeak · Great Vocal Tracks",why:"Zero uptalk — every sentence lands on its feet (Day 6’s downward inflection).",usage:["Model when you need the room to stop moving.","Assertive ≠ loud; it’s finished sentences."]},
+  {id:'uVmw13',term:'Meryl Streep',cat:'Phrases',gloss:"千变万化、细腻、情感光谱极宽 — adaptable, nuanced, rich range",hard:[["nuanced","细腻的、有层次的"]],quote:"Adaptable, nuanced, with a rich emotional range.",src:"BetterSpeak · Great Vocal Tracks",why:"The ceiling of vocal flexibility — register as a choice, not a habit.",usage:["Try one sentence three ways: warm, wry, cold.","Range is trained one imitation at a time."]},
+ ]},
+{id:'u5',title:'Simile & Metaphor',zh:'明喻与隐喻',from:'Day 7 · Evocative Language · 画面感语言',
+ essence:'The language of the mind is images: sentences with pictures get remembered. A <b>simile</b> compares with like/as; a <b>metaphor</b> says A <i>is</i> B. To build one, ask: <b>what trait does my idea have? what else has that trait?</b><br><span style="color:var(--muted)">心智的语言是图像;明喻用 like/as,隐喻问两个问题就能现场造。</span>',
+ words:[
+  {id:'u5w1',term:'like a mighty stream',cat:'Similes',
+   gloss:'如浩荡江河 —— 给抽象概念一个奔涌的画面',
+   hard:[['mighty','浩大的、强大的(比 strong 更有史诗感)'],['stream','水流;mighty stream = 大江大河']],
+   quote:'…until justice rolls down like waters and righteousness like a mighty stream.',
+   src:'Martin Luther King, “I Have a Dream” (1963), echoing the Book of Amos',
+   why:'Justice is abstract; a rushing river is not. Pairing an abstract idea with a natural image is the classic simile move.',
+   usage:['Once the team warmed up, ideas flowed like a mighty stream.','Pattern: X rolls down like waters — unstoppable arrival.']},
+  {id:'u5w2',term:'machine men with machine minds',cat:'Quotes',
+   gloss:'机器一样的人、机器的头脑 —— 谴责失去人性的顺从',
+   hard:[['machine men','像机器一样、没有心的人']],
+   quote:"Don't give yourselves to these unnatural men — machine men with machine minds and machine hearts! You are not machines! You are men!",
+   src:'Charlie Chaplin, the closing speech of The Great Dictator (1940)',
+   why:'One word (machine) repeated across three nouns (men / minds / hearts) — repetition and metaphor in a single stroke.',
+   usage:['The review read like it was written by machine men with machine minds — technically correct, missing the point.','The repeat-and-swap structure itself is worth stealing.']},
+  {id:'u5w3',term:'my head is a battlefield',cat:'Phrases',
+   gloss:'我的头像战场 —— 隐喻两步法的成品',
+   hard:[['battlefield','战场;进入"战争"框架后,victory / losses / courage 会自动涌上来']],
+   quote:'What characteristic does my idea have? Pain. What else has that characteristic? War… My head is a battlefield.',
+   src:'BetterSpeak · demonstrating the two-question metaphor method',
+   why:'The method matters more than the line: trait → what else has it → enter that frame, and related words start arriving on their own.',
+   usage:['Deadline week: my calendar is a battlefield.','Drill: pick any object, ask the two questions, build one metaphor.']},
+  {id:'u5w4',term:'an army of snow',cat:'Phrases',
+   gloss:'一支雪的军队 —— 雪崩的隐喻',
+   hard:[['avalanche','雪崩']],
+   quote:'An avalanche is an army of snow.',
+   src:'BetterSpeak · Metaphor Worksheet — playing in the key of "power"',
+   why:'A demo of frames: avalanche and army share "power"; collide them and the metaphor appears.',
+   usage:['By Friday my inbox was an army of unread mail.','Drill: pick a key (power, tide, moon) and collide its words.']},
+  {id:'u5w5',term:'a rich harvest of stars',cat:'Phrases',
+   gloss:'繁星如丰收 —— 满天星斗像谷仓里的收成',
+   hard:[['harvest','收成、丰收']],
+   quote:'The New Mexico sky is a rich harvest of stars.',
+   src:'BetterSpeak · Metaphor Worksheet — playing in the key of "moon"',
+   why:'Nouns from one frame (harvest) borrowed for another (sky) — abundance transfers.',
+   usage:['Pittsburgh in October is a rich harvest of color.','Mold: a rich harvest of + plural noun.']},
+  {id:'u5w6',term:'the rainbow has been decaffeinated',cat:'Phrases',
+   gloss:'彩虹被"去了咖啡因" —— 形容词乱撞撞出的新鲜比喻',
+   hard:[['decaffeinated','去咖啡因的→(比喻)被抽走了劲儿的、变淡的']],
+   quote:'My day has been bleached of sound and color. Even the rainbow this afternoon has been decaffeinated.',
+   src:'BetterSpeak · Metaphor Worksheet’s adjective-collision exercise',
+   why:'Proof that "wrong" adjectives make the freshest images — push five odd adjectives against every noun you see.',
+   usage:['Without you the party felt decaffeinated.','Drill: put 5 odd adjectives on your lock screen today.']},
+  {id:'u5w7',term:"playing in the key of tide",cat:'Phrases',
+   gloss:"在『潮汐』这个调上弹 —— 同框词:ocean, moon, recede, power",
+   hard:[["key","(音乐)调;这里指语义的『框架』"]],
+   quote:"This is “playing in the key of tide,” where tide is the fundamental tone.",
+   src:"BetterSpeak · Metaphor Worksheet, after Pat Pattison",
+   why:"The generator itself: pick a key before you speak, and metaphors arrive already in tune.",
+   usage:["Before a talk, pick a key: war, garden, tide, harvest.","List five words in that key; collide them."]},
+  {id:'u5w8',term:"Muhammad Ali avalanched over his opponents",cat:'Phrases',
+   gloss:"阿里像雪崩一样碾过对手 —— 名词当动词用",
+   hard:[["avalanche (v.)","雪崩;此处动词化:如雪崩般压倒"]],
+   quote:"Muhammad Ali avalanched over his opponents.",
+   src:"BetterSpeak · Metaphor Worksheet — the key of “power”",
+   why:"Verbing a noun is instant metaphor — one word does the whole image.",
+   usage:["The rebuttal avalanched over their objections.","Drill: verb one noun today (to snowball, to bulldoze, to orbit)."]},
+  {id:'u5w9',term:"a calendar of human courage",cat:'Phrases',
+   gloss:"人类勇气的日历 —— 抽象名词装进具体容器",
+   hard:[],
+   quote:"Astronauts’ flights are a calendar of human courage.",
+   src:"BetterSpeak · Metaphor Worksheet — the key of “moon”",
+   why:"Abstract (courage) + concrete container (calendar): the container mold makes any abstraction visible.",
+   usage:["Her CV is a calendar of quiet persistence.","Mold: a calendar / harvest / army of + abstract noun."]},
+  {id:'u5w10',term:"tides of electricity",cat:'Phrases',
+   gloss:"电的潮汐 —— 插座拦着一整片海",
+   hard:[["socket","插座"]],
+   quote:"A socket holds back tides of electricity.",
+   src:"BetterSpeak · Metaphor Worksheet",
+   why:"Scale mismatch on purpose: a tiny socket vs oceanic tides — surprise is the spark.",
+   usage:["One inbox rule holds back tides of email.","Mold: small X holds back tides of Y."]},
+  {id:'u5w11',term:"the crescent of human knowledge",cat:'Phrases',
+   gloss:"人类知识的月牙 —— 未满,而在生长",
+   hard:[["crescent","月牙、新月"]],
+   quote:"The crescent of human knowledge grows with each astronaut’s mission.",
+   src:"BetterSpeak · Metaphor Worksheet",
+   why:"The moon-frame gives knowledge a shape and a promise: still filling in.",
+   usage:["Each replication grows the crescent of what we know.","Humble + hopeful in one image."]},
+  {id:'u5w12',term:"a harvest of lovers",cat:'Phrases',
+   gloss:"黄昏把一茬情侣送到海滩 —— 丰收框架的另一种用法",
+   hard:[],
+   quote:"Evening brings a harvest of lovers to the beach.",
+   src:"BetterSpeak · Metaphor Worksheet",
+   why:"Harvest implies season, abundance, ripeness — three meanings smuggled in one word.",
+   usage:["September brings a harvest of new students to campus.","Mold: [time] brings a harvest of X to Y."]},
+  {id:'u5w13',term:"social media is a lavatory wall",cat:'Quotes',
+   gloss:"社交媒体是厕所墙 —— 人们往上面乱涂乱写",
+   hard:[["lavatory","厕所(英式,比 toilet 文一点)"]],
+   quote:"Social media is just a lavatory wall — people put things up there.",
+   src:"Quoted in Day 7 (often attributed to Stephen Fry)",
+   why:"A metaphor that argues: the comparison itself is the critique.",
+   usage:["Pick metaphors that carry your judgment for you.","Mold: X is just a Y — people Z there."]},
+  {id:'u5w14',term:"like an iron bar pressed into my shin",cat:'Similes',
+   gloss:"像一根铁棍压在小腿上 —— 具体到发疼的明喻",
+   hard:[["shin","小腿迎面骨"]],
+   quote:"I can’t talk about self-love and have an iron bar pressed into my shin.",
+   src:"Russell Brand — quoted in BetterSpeak Day 7",
+   why:"Precision makes pain believable: not “uncomfortable,” but iron, bar, shin.",
+   usage:["Reviewing that dataset is an iron bar on the shin.","Specific body part + specific object = felt simile."]},
+  {id:'u5w15',term:"busy as a bee · fierce like a sea storm",cat:'Similes',
+   gloss:"词引子明喻:busy→bee;hot→desert mirage;fierce→sea storm;stuck→stuck shoe",
+   hard:[["word primer","词引子:作为明喻起点的那个词"]],
+   quote:"Busy as a bee; hot like a desert mirage; fierce like a sea storm; stuck like a stuck shoe.",
+   src:"BetterSpeak · Day 7 (primer-built similes)",
+   why:"Build a simile bank keyed by primer words; the first word triggers the whole comparison.",
+   usage:["Keep 5 primers loaded: busy, hot, fierce, stuck, slow.","Say the primer, let the bank answer."]},
+  {id:'u5w16',term:"choked like tea leaves blocking a sink",cat:'Similes',
+   gloss:"像茶叶堵住水槽一样哽住 —— 日常物件的精确画面",
+   hard:[["choke","哽住、堵住"]],
+   quote:"Choked him like the tea leaves blocking a sink.",
+   src:"BetterSpeak · Day 7 (primer-built similes)",
+   why:"Household objects make the freshest similes — everyone has seen the clog.",
+   usage:["The queue choked like tea leaves in a drain.","Mine your kitchen for comparisons."]},
+  {id:'u5w17',term:"verbal gymnastics · theater of the imagination",cat:'Phrases',
+   gloss:"两词隐喻组:mental landscape(心智地形)· intellectual joust(智力比武)· ideological cocktail(观念鸡尾酒)· mosaic of information(信息马赛克)",
+   hard:[["joust","(中世纪骑士)长矛比武"]],
+   quote:"Mental landscape, intellectual joust, ideological cocktail, verbal gymnastics, theater of your imagination, mosaic of information.",
+   src:"BetterSpeak · Day 7 (compound metaphors)",
+   why:"Two-word compounds are portable metaphors — collect them like tools.",
+   usage:["The seminar turned into an intellectual joust.","Coin your own: data archaeology, citation forest."]},
+  {id:'u5w18',term:'the collision lists (smoky · refried · frosty …)',cat:'Phrases',
+   gloss:"练习册的原料表:11 个形容词 × 11 个名词,硬碰硬撞出隐喻",
+   hard:[],
+   quote:"Adjectives: smoky, refried, decaffeinated, hollow, understated, zigzagged, frosty, sparkling, toasted, dusty, clouded. Nouns: conversation, railroad, rainbow, rainforest, eyebrows, coffee, squirrel, surfboard, wood stove, reef, aroma.",
+   src:"BetterSpeak · Metaphor Worksheet (Pat Pattison’s collision exercise)",
+   why:"The generator, not a single metaphor: push any adjective against every noun until one collision takes your breath.",
+   usage:["A smoky conversation. A frosty inbox. A refried argument.","Pick 5, lock-screen them, collide all day."]},
+ ]},
+{id:'u6',title:'Workhorse Upgrades',zh:'万能词升级',from:'Day 8 · Workhorse Words · 万能词',
+ essence:'good / great / awesome are <b>workhorse words</b> — common and vague, they flatten rich experience into one cheap adjective. Upgrade one at a time: pick your most-abused word, notice its context, choose a precise replacement. Your personal catchphrases are your <b>verbal brand</b> — keep those.<br><span style="color:var(--muted)">good/great 这类万能词把体验压扁;一次升级一个,自己的口头禅保留。</span>',
+ words:[
+  {id:'u6w1',term:'good → nourishing · vivid · restorative',cat:'Workhorse swaps',
+   gloss:'按语境替换 good:食物→nourishing(滋养) / 艺术→vivid(鲜活) / 休息→restorative(回血)',
+   hard:[['nourishing','滋养的'],['vivid','鲜活的、栉栉如生的'],['restorative','恢复元气的']],
+   quote:'We collapse the rich, dynamic texture of our experience into a vague, cheap adjective.',
+   src:'BetterSpeak · on the cost of workhorse words',
+   why:'Not synonym-memorizing — one context, one precise word. "Nourishing" carries three times the information of "good."',
+   usage:["The dinner wasn't just good — it was nourishing.",'That weekend in the mountains was restorative.']},
+  {id:'u6w2',term:'great → remarkable · heartening',cat:'Workhorse swaps',
+   gloss:'收到好消息别只会 great:remarkable(了不起)/ heartening(令人振奋、心里一暖)',
+   hard:[['remarkable','值得评说的→了不起的'],['heartening','让人受鼓舞的(hearten 鼓舞)']],
+   quote:'I noticed that I use "great" like a comma.',
+   src:'BetterSpeak · the first workhorse word he upgraded was his own',
+   why:'"Like a comma" — that’s autopilot, not choice. A half-second pause lets the precise word surface.',
+   usage:["That's heartening news about the grant.",'Her progress this semester has been remarkable.']},
+  {id:'u6w3',term:'interesting → intriguing · illuminating',cat:'Workhorse swaps',
+   gloss:'interesting 是万金油;intriguing(勾人好奇)/ illuminating(令人豁然开朗)更准',
+   hard:[['intriguing','引人好奇的'],['illuminating','有启发性的(illuminate 照亮)']],
+   quote:'(#10 on the Workhorse Words Index: "interesting.")',
+   src:'BetterSpeak · Workhorse Words Index (50 words)',
+   why:'In seminars "interesting" says nothing. Say what kind of interesting: curious? clarifying? surprising?',
+   usage:['That identification strategy is intriguing.','Her discussion of the null result was illuminating.']},
+  {id:'u6w4',term:'thing → the actual noun',cat:'Workhorse swaps',
+   gloss:'thing 是词汇缺口的遮羞布 —— 换成它真正指的名词',
+   hard:[],
+   quote:'(#31 on the index: "thing.")',
+   src:'BetterSpeak · Workhorse Words Index',
+   why:'Every "thing" hides a more precise noun: mechanism, obstacle, clause, tradeoff. Naming it is the upgrade.',
+   usage:['Not "the thing about the model" — "the assumption behind the model."','Catch yourself: what IS the thing?']},
+  {id:'u6w5',term:'awesome → breathtaking · striking',cat:'Workhorse swaps',
+   gloss:'awesome 已被用平;breathtaking(令人屏息)/ striking(醒目、击中人)还保有力量',
+   hard:[['breathtaking','美/壮观到让人屏住呼吸'],['striking','醒目的、令人过目不忘的']],
+   quote:'(#44 on the index: "awesome.")',
+   src:'BetterSpeak · Workhorse Words Index',
+   why:'Awesome once meant awe. Reserve strong words for strong things and they start meaning something again.',
+   usage:['The view from Mount Washington is breathtaking.','A striking result deserves a striking word.']},
+  {id:'u6w6',term:"amazing → dazzling · astonishing",cat:'Workhorse swaps',
+   gloss:"amazing 已被说到麻木:dazzling(耀眼)/ astonishing(令人震惊)按强度选",
+   hard:[["dazzling","炫目的(dazzle 晃眼)"],["astonishing","令人震惊的"]],
+   quote:"(#9 on the Workhorse Words Index: “amazing.”)",
+   src:"BetterSpeak · Workhorse Words Index",
+   why:"Pick by what amazed you: the shine (dazzling) or the disbelief (astonishing).",
+   usage:["The keynote demo was dazzling.","An astonishing effect size — check it twice."]},
+  {id:'u6w7',term:"bad → sloppy · harmful · dull",cat:'Workhorse swaps',
+   gloss:"bad 藏住了『坏在哪』:做工差 sloppy / 有害 harmful / 无聊 dull",
+   hard:[["sloppy","马虎的、潦草的"]],
+   quote:"(#19 on the index: “bad.”)",
+   src:"BetterSpeak · Workhorse Words Index",
+   why:"“Bad” hides the diagnosis. Say WHY it’s bad and the sentence starts working.",
+   usage:["The code isn’t bad — it’s sloppy.","A dull talk, not a bad one; the content was fine."]},
+  {id:'u6w8',term:"nice → gracious · thoughtful",cat:'Workhorse swaps',
+   gloss:"夸人别只会 nice:gracious(有风度)/ thoughtful(体贴周到)",
+   hard:[["gracious","优雅大度的"]],
+   quote:"(#2 on the index: “nice.”)",
+   src:"BetterSpeak · Workhorse Words Index",
+   why:"“Nice” evaluates nothing. Gracious and thoughtful each name a virtue.",
+   usage:["She was gracious about the mix-up.","A thoughtful reviewer — caught what mattered."]},
+  {id:'u6w9',term:"cool → composed · impressive",cat:'Workhorse swaps',
+   gloss:"cool 两个方向:情绪镇定 composed / 东西厉害 impressive",
+   hard:[["composed","镇定自若的(compose oneself)"]],
+   quote:"(#16 on the index: “cool.”)",
+   src:"BetterSpeak · Workhorse Words Index",
+   why:"Split the word by what you mean — poise or quality — and pick that side.",
+   usage:["She stayed composed through the Q&A.","An impressive identification strategy."]},
+  {id:'u6w10',term:"big · huge → vast · consequential",cat:'Workhorse swaps',
+   gloss:"说尺寸用 vast(浩瀚);说分量用 consequential(影响重大)",
+   hard:[["consequential","后果重大的"]],
+   quote:"(#30 and #43 on the index: “big,” “huge.”)",
+   src:"BetterSpeak · Workhorse Words Index",
+   why:"“Big” confuses size with importance. English has separate words; use them.",
+   usage:["A vast dataset, a consequential finding.","Huge news → consequential news."]},
+  {id:'u6w11',term:"important → central · urgent",cat:'Workhorse swaps',
+   gloss:"说清『为什么重要』:核心 central / 紧迫 urgent",
+   hard:[],
+   quote:"(#18 on the index: “important.”)",
+   src:"BetterSpeak · Workhorse Words Index",
+   why:"Everything is “important.” Central and urgent explain the kind of importance.",
+   usage:["This assumption is central to the model.","The data request is urgent, not just important."]},
+  {id:'u6w12',term:"funny → witty · absurd",cat:'Workhorse swaps',
+   gloss:"好笑分两种:机智 witty / 荒诞 absurd",
+   hard:[["witty","机智风趣的"],["absurd","荒诞的"]],
+   quote:"(#27 on the index: “funny.”)",
+   src:"BetterSpeak · Workhorse Words Index",
+   why:"Witty credits the mind; absurd credits the situation. “Funny” credits nothing.",
+   usage:["A witty discussant — every point landed twice.","The reimbursement process is absurd."]},
+  {id:'u6w13',term:"annoying → grating · tiresome",cat:'Workhorse swaps',
+   gloss:"烦有质感:刺耳磨人 grating / 令人厌倦 tiresome",
+   hard:[["grating","刺耳的、磨人的(grate 摩擦)"],["tiresome","令人厌烦的"]],
+   quote:"(#39 on the index: “annoying.”)",
+   src:"BetterSpeak · Workhorse Words Index",
+   why:"Grating is sensory, tiresome is cumulative — each says how it wears on you.",
+   usage:["The notification sound is grating.","The back-and-forth got tiresome by round three."]},
+  {id:'u6w14',term:"basically · essentially → (delete, or say what you simplified)",cat:'Workhorse swaps',
+   gloss:"口头禅型:多半可直接删;留着就说清你简化了什么",
+   hard:[],
+   quote:"(#6 and #22 on the index: “basically,” “essentially.”)",
+   src:"BetterSpeak · Workhorse Words Index",
+   why:"They promise a simplification that never comes. Cut them and nothing is lost.",
+   usage:["“Basically, the model works” → “The model works.”","If simplifying: “Stripped of controls, the story is…”"]},
+  {id:'u6w15',term:"absolutely → yes · precisely",cat:'Workhorse swaps',
+   gloss:"万能附和词 —— 换成真正的确认:yes / precisely / agreed",
+   hard:[["precisely","正是、恰恰如此"]],
+   quote:"(#12 on the index: “absolutely.”)",
+   src:"BetterSpeak · Workhorse Words Index",
+   why:"Reflex agreement sounds like autopilot. A precise yes sounds like listening.",
+   usage:["“Precisely — and that’s why the control group matters.”","Save “absolutely” for actual absolutes."]},
+  {id:'u6w16',term:"sucks → falls short · disappoints",cat:'Workhorse swaps',
+   gloss:"sucks 情绪足、信息零 —— 说清差在哪:falls short(不达标)/ disappoints(令人失望)",
+   hard:[],quote:"(#20 on the index: “sucks.”)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Complaint without diagnosis. Falls short implies a standard; disappoints implies a hope.",
+   usage:["The battery life falls short.","The ending disappoints — the setup deserved better."]},
+  {id:'u6w17',term:"stupid → shortsighted · pointless",cat:'Workhorse swaps',
+   gloss:"骂之前先诊断:短视 shortsighted / 无意义 pointless",
+   hard:[["shortsighted","短视的、缺乏远见的"]],quote:"(#47 on the index: “stupid.”)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Stupid attacks the person; shortsighted and pointless critique the decision.",
+   usage:["A shortsighted cut to the training budget.","A pointless meeting that could have been an email."]},
+  {id:'u6w18',term:"wild · insane → improbable · staggering",cat:'Workhorse swaps',
+   gloss:"惊叹的精确版:improbable(不可思议)/ staggering(量级惊人)",
+   hard:[["staggering","令人踉跄的→(数字、规模)惊人的"]],quote:"(#24 on the index: “wild.”)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Staggering carries scale; improbable carries odds. Wild carries nothing.",
+   usage:["A staggering 40% of listings were duplicates.","An improbable comeback."]},
+  {id:'u6w19',term:"leverage → use · build on",cat:'Workhorse swaps',
+   gloss:"商业黑话回收:多数时候就是 use;要说『借力』就 build on",
+   hard:[],quote:"(#29 on the index: “leverage.”)",src:"BetterSpeak · Workhorse Words Index",
+   why:"When every verb becomes leverage, no verb means anything.",
+   usage:["We’ll build on last year’s cohort design.","Just say use — it’s stronger."]},
+  {id:'u6w20',term:"literally → (delete, or genuinely)",cat:'Workhorse swaps',
+   gloss:"literally 已被用成语气词 —— 真要强调就用 genuinely",
+   hard:[],quote:"(#4 on the index: “literally.”)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Reserve literally for things that literally happened; genuinely covers sincerity.",
+   usage:["I was genuinely moved.","“The server literally caught fire” — only if it did."]},
+  {id:'u6w21',term:"cringe · lame → secondhand-embarrassing · feeble",cat:'Workhorse swaps',
+   gloss:"网络语三连的替身:cringe→让人替他尴尬 / lame→无力、站不住",
+   hard:[["feeble","无力的、软弱的"]],quote:"(#3 and #7 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Slang ages fast; plain precise words don’t. Say what made you wince.",
+   usage:["The apology was feeble — three excuses, no ownership.","A secondhand-embarrassing keynote."]},
+  {id:'u6w22',term:"sick · killer → brilliant · devastating",cat:'Workhorse swaps',
+   gloss:"夸厉害的俚语升级:brilliant(才华横溢)/ devastating(碾压级、致命的好)",
+   hard:[["devastating","毁灭性的→(引申)碾压级的"]],quote:"(#5 and #50 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Enthusiasm survives translation into precision — and lands in any room.",
+   usage:["A devastating rebuttal — two sentences, done.","A brilliant identification trick."]},
+  {id:'u6w23',term:"tons · a bunch → scores of · a wealth of",cat:'Workhorse swaps',
+   gloss:"数量词升级:scores of(数十计)/ a wealth of(丰富的一整批)",
+   hard:[["scores of","几十、大量(score=20)"]],quote:"(#15 and #21 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Vague quantity is wasted information — even approximate precision beats “tons.”",
+   usage:["A wealth of archival data.","Scores of listings, none verified."]},
+  {id:'u6w24',term:"toxic → corrosive · demoralizing",cat:'Workhorse swaps',
+   gloss:"toxic 万物皆可贴 —— 说清毒在哪:corrosive(腐蚀关系)/ demoralizing(消磨士气)",
+   hard:[["corrosive","腐蚀性的"],["demoralizing","令人士气低落的"]],quote:"(#14 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"“Toxic” diagnoses nothing. Corrosive says it eats trust; demoralizing says it drains will.",
+   usage:["A corrosive review culture.","Weekly reorgs are demoralizing."]},
+  {id:'u6w25',term:"sus → questionable · dubious",cat:'Workhorse swaps',
+   gloss:"sus 的成人版:questionable(存疑)/ dubious(可疑、不可靠)",
+   hard:[["dubious","可疑的、靠不住的"]],quote:"(#13 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Same suspicion, court-admissible wording.",
+   usage:["A dubious exclusion restriction.","The timing is questionable at best."]},
+  {id:'u6w26',term:"no-brainer · win-win → an easy call · good for both sides",cat:'Workhorse swaps',
+   gloss:"会议室两件套 —— 说人话:an easy call / good for both sides",
+   hard:[],quote:"(#28 and #38 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Board-room shorthand reads as borrowed thought; plain speech reads as yours.",
+   usage:["Given the price, it’s an easy call.","The data-sharing deal is good for both sides."]},
+  {id:'u6w27',term:"vibes → atmosphere · undercurrent",cat:'Workhorse swaps',
+   gloss:"vibes 的可言说版:atmosphere(氛围)/ undercurrent(暗流、潜在情绪)",
+   hard:[["undercurrent","暗流;潜藏的情绪"]],quote:"(#34 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"“Vibes” gestures; atmosphere and undercurrent describe — one visible, one hidden.",
+   usage:["The seminar had a generous atmosphere.","An undercurrent of worry ran through the Q&A."]},
+  {id:'u6w28',term:"pissed → furious · exasperated",cat:'Workhorse swaps',
+   gloss:"生气分档:furious(盛怒)/ exasperated(被磨到没脾气)",
+   hard:[["exasperated","恼火到无奈的"]],quote:"(#46 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Anger has grades; naming the grade tells people how to respond.",
+   usage:["Exasperated after the third data request.","Furious is for breaches, not typos."]},
+  {id:'u6w29',term:"depressed(滥用)→ discouraged · drained",cat:'Workhorse swaps',
+   gloss:"日常低落别借临床词:discouraged(受挫)/ drained(被抽干)—— 把 depressed 留给真正的抑郁",
+   hard:[["drained","精疲力竭的(drain 排空)"]],quote:"(#23 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Precision here is kindness twice over — to your mood and to the word’s clinical weight.",
+   usage:["Discouraged by the desk reject, not depressed.","Drained after back-to-back teaching days."]},
+  {id:'u6w30',term:"irregardless · addicting → regardless · addictive",cat:'Workhorse swaps',
+   gloss:"两个『长得像词的词』:标准说法是 regardless / addictive",
+   hard:[["irregardless","非标准词(双重否定构词);用 regardless"]],quote:"(#42 and #49 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Tiny corrections with outsized credibility returns — these two get noticed.",
+   usage:["Regardless of specification, the sign holds.","Short-form video is engineered to be addictive."]},
+  {id:'u6w31',term:"best · pretty (good) → strongest · fairly",cat:'Workhorse swaps',
+   gloss:"best 滥用成口头禅→strongest(最有力的);pretty good 的 pretty 是对冲→fairly 或直接删",
+   hard:[],quote:"(#8 and #26 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Superlatives inflate and hedges deflate — both hide your real estimate.",
+   usage:["Our strongest specification, not our best one.","Fairly robust — or just: robust."]},
+  {id:'u6w32',term:"unbelievable · fantastic → astounding · marvelous",cat:'Workhorse swaps',
+   gloss:"惊叹二件套的替身:astounding(令人震惊)/ marvelous(妙极,带一点复古的郑重)",
+   hard:[["astounding","令人震惊的(astound 使惊骇)"]],quote:"(#35 and #36 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Both originals literally claim disbelief and fantasy — words that stopped meaning themselves.",
+   usage:["An astounding response rate.","A marvelous seminar question."]},
+  {id:'u6w33',term:"famous · iconic → celebrated · defining",cat:'Workhorse swaps',
+   gloss:"famous 只说知名度;celebrated(备受推崇)/ defining(定义了一个时代/领域)说出为什么",
+   hard:[["celebrated","受赞誉的"],["defining","起定义作用的"]],quote:"(#45 and #25 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Fame is a headcount; celebration and definition are judgments — say the judgment.",
+   usage:["A celebrated result in market design.","The defining paper of that literature."]},
+  {id:'u6w34',term:"whatever · triggered → it doesn’t change the answer · stung",cat:'Workhorse swaps',
+   gloss:"whatever 是关门;说清『这不影响结论』。triggered 被网络用烂;真实感受用 stung(刺痛)/ provoked",
+   hard:[["stung","被刺痛(sting 的过去分词)"]],quote:"(#41 and #40 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Dismissal and hurt both deserve real words — the slang versions end conversations.",
+   usage:["Noted — and it doesn’t change the answer.","The review stung; the revision helped."]},
+  {id:'u6w35',term:"full-blown · legit(imately) → outright · genuinely",cat:'Workhorse swaps',
+   gloss:"full-blown→outright(彻头彻尾);legit→genuinely(真心地)或 legitimate(正当的)本词",
+   hard:[["outright","完全的、直截了当的"]],quote:"(#33 and #32 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"Casual intensifiers age into noise; the plain adult forms don’t.",
+   usage:["An outright contradiction between Tables 2 and 4.","Genuinely impressed by the robustness section."]},
+  {id:'u6w36',term:"in any way, shape, or form → in any way",cat:'Workhorse swaps',
+   gloss:"六个词说一件事 —— in any way 就够;顺带:cathartic 的脏话(#11)是最强的神经通路,难戒但值得(Day 8)",
+   hard:[["cathartic","宣泄式的(catharsis 情绪宣泄)"]],quote:"(#17 and #11 on the index.)",src:"BetterSpeak · Workhorse Words Index",
+   why:"The tripled form adds syllables, not meaning — the purest padding on the list.",
+   usage:["Not connected in any way.","Swearing rides the strongest neural pathways — prune it last, gently."]},
+ ]},
+{id:'u9',title:'Pruning Dead & Empty Language',zh:'删减套话与废词',from:'Days 9–10 · Dead Phrases & Empty Language · 套话与废词',
+ essence:'Dead phrases are borrowed thought on autopilot; empty language — <b>intensifiers, qualifiers, fillers, operators</b> — is padding. Reduce, don’t eliminate: some familiarity keeps speech human. Rule #9: <b>a sentence grows fuller when empty words are stripped away.</b><br><span style="color:var(--muted)">套话是借来的思想,废词是填充;做减法句子反而更满——减少,不消灭。</span>',
+ words:[
+  {id:'u9w1',term:'at the end of the day → ultimately',cat:'Workhorse swaps',
+   gloss:'烂大街的"说到底" —— 换成自己的话',
+   hard:[],
+   quote:'A speaker who uses this kind of phraseology has gone some distance toward turning himself into a machine.',
+   src:'George Orwell — quoted in the Dead Phrases Index (30 most pervasive, 2024)',
+   why:'Stock phrases mean the noises come out but the mind isn’t involved. Reinterpret each one in your own words.',
+   usage:['Ultimately, the estimate survives every check.','Or make it yours: "when everything settles…"']},
+  {id:'u9w2',term:'low-hanging fruit → the easiest wins',cat:'Workhorse swaps',
+   gloss:'会议室套话 —— 用白话说出它真正的意思',
+   hard:[],
+   quote:'Cliché is the opposite of invention — a missed opportunity to exercise creativity.',
+   src:'Warren Hardgraves, quoted in the Day 9 lecture',
+   why:'The drill: pause on each cliché you overuse and re-say it plainly. The strain is the exercise.',
+   usage:['Let’s take the easiest wins first: fix the tables, then the framing.','Your own words > borrowed metaphors.']},
+  {id:'u9w3',term:'super / really / literally → (delete)',cat:'Workhorse swaps',
+   gloss:'强化词是"廉价的词噪音" —— 删掉后句子反而更有力',
+   hard:[['intensifier','强化词:kind of / really / super / literally / honestly…']],
+   quote:'What she did was super inspiring → What she did was inspiring.',
+   src:'BetterSpeak · Empty Language Index — intensifiers',
+   why:'Fry called them cheap word noise. We pad words believing more words = more emphasis; the opposite is true.',
+   usage:['Cut one intensifier from every sentence today.','Sentences without them sound astonishingly clear.']},
+  {id:'u9w4',term:"…that's just my opinion → (silent period)",cat:'Workhorse swaps',
+   gloss:'侵蚀尾巴:自己拆自己台的结尾 —— 用"心里默念句号"替代',
+   hard:[['erosion tag','侵蚀尾:and yeah / that’s just my opinion / so… yeah']],
+   quote:'Careless final words can erode a great many careful ones.',
+   src:'Rule #10 of Articulacy — fixed by the "silent period" technique',
+   why:'End the sentence in your mind with a firm "period." That one-second gap dissolves the tag.',
+   usage:['Deliver the claim. Period. Silence.','Anchor it physically: blink, or press a finger to your leg.']},
+  {id:'u9w5',term:'in terms of → (bridge with one word)',cat:'Workhorse swaps',
+   gloss:'"就……而言"是连接失败的创可贴 —— 找到那个动词直接说',
+   hard:[['operator','连接短语:when it comes to / with respect to / in terms of']],
+   quote:'Orwell called operators "a packet of aspirins always at one’s elbow."',
+   src:'BetterSpeak · Empty Language Index — operators',
+   why:'We reach for operators when two ideas won’t connect. Find the verb that connects them instead.',
+   usage:['Not "in terms of finding a solution" — "to solve it."','Practice: rebuild one operator-sentence per day.']},
+  {id:'u9w6',term:"elephant in the room → name it plainly",cat:'Workhorse swaps',
+   gloss:"『房间里的大象』本身也成了套话 —— 直接说出大家在回避什么",
+   hard:[],
+   quote:"(On the Dead Phrases Index.)",
+   src:"BetterSpeak · Dead Phrases Index",
+   why:"The cliché lets you gesture at the problem without naming it. Naming it is the brave part.",
+   usage:["Let’s name what we’ve been avoiding: the power analysis is underpowered.","Say the thing, not the animal."]},
+  {id:'u9w7',term:"think outside the box → say the actual move",cat:'Workhorse swaps',
+   gloss:"与其喊口号,不如说出具体『怎么个不一样』",
+   hard:[],
+   quote:"(On the Dead Phrases Index.)",
+   src:"BetterSpeak · Dead Phrases Index",
+   why:"An instruction with no content. The upgrade is the concrete alternative itself.",
+   usage:["Not “think outside the box” — “what if we flip the control group?”","Replace slogans with moves."]},
+  {id:'u9w8',term:"touch base → a 15-minute check-in Thursday",cat:'Workhorse swaps',
+   gloss:"办公室黑话 —— 换成具体的时间和目的",
+   hard:[],
+   quote:"(On the Dead Phrases Index.)",
+   src:"BetterSpeak · Dead Phrases Index",
+   why:"Vague verbs create vague meetings. Concrete words create concrete calendars.",
+   usage:["“Let’s touch base” → “15 minutes Thursday to settle the sample.”","Specificity is a kindness."]},
+  {id:'u9w9',term:"deep dive → a close read · a real audit",cat:'Workhorse swaps',
+   gloss:"『深潜』已经潜不下去了 —— 说出你实际要做的动作",
+   hard:[],
+   quote:"(On the Dead Phrases Index.)",
+   src:"BetterSpeak · Dead Phrases Index",
+   why:"Everyone deep-dives; nobody says what they’ll actually do. The verb is the value.",
+   usage:["“I’ll do a close read of the appendix.”","“We audited every cell” beats “we did a deep dive.”"]},
+  {id:'u9w10',term:"move the needle → name the metric",cat:'Workhorse swaps',
+   gloss:"指针在哪?什么单位?—— 直接说数字和指标",
+   hard:[],
+   quote:"(On the Dead Phrases Index.)",
+   src:"BetterSpeak · Dead Phrases Index",
+   why:"If there’s a needle, there’s a number. Saying the number is the articulate version.",
+   usage:["“Raise response rates by five points” beats “move the needle.”","Metrics are the anti-cliché."]},
+  {id:'u9w11',term:"take it with a grain of salt → treat it with healthy doubt",cat:'Workhorse swaps',
+   gloss:"下意识的对冲句 —— 说清到底该怀疑什么",
+   hard:[],
+   quote:"Your brain recognizes a familiar situation and instinctively maps it to a dead phrase — the dead-phrase reflex.",
+   src:"Day 9 — the dead-phrase reflex",
+   why:"The reflex example from the lecture itself: hedge with content, not with seasoning.",
+   usage:["“Self-reported data — treat it with healthy doubt.”","Say WHY the doubt: small n, one site, self-report."]},
+  {id:'u9w12',term:"you know · right? → let silence ask",cat:'Workhorse swaps',
+   gloss:"求认同的口头禅让观点显得心虚 —— 陈述完就停",
+   hard:[["qualifier","限定/对冲语:you know, I feel like, that’s just my opinion"]],
+   quote:"Qualifiers whittle away confidence and clarity — like a drop of food dye in clear water.",
+   src:"BetterSpeak · Empty Language Index — qualifiers",
+   why:"Asking for agreement mid-sentence undercuts the sentence. State it; the pause invites response.",
+   usage:["Delete one “you know” per paragraph.","End the claim. Let the silence do the asking."]},
+  {id:'u9w13',term:"um · uh · like · so → pause instead",cat:'Workhorse swaps',
+   gloss:"四大填充词 —— 它们是『来吧灵感』的声音;换成半拍沉默",
+   hard:[["filler","填充词:嘴用来填空的声音"]],
+   quote:"Fillers occur when we’re not fully conscious of our word choice — the mouth reaches for the most accessible sounds.",
+   src:"BetterSpeak · Empty Language Index — the big four",
+   why:"The start of a sentence is its most unconscious part. Start half a beat late and the filler dies.",
+   usage:["Silence reads as confidence; “um” reads as loading.","Drill: one conversation today with deliberate half-beat starts."]},
+  {id:'u9w14',term:"secret sauce · Achilles heel → the real mechanism · the weak joint",cat:'Workhorse swaps',
+   gloss:"两个最老的比喻 —— 说出真实的机制/薄弱点",
+   hard:[["Achilles heel","阿喀琉斯之踵:致命弱点(本身是好典故,只是用滥了)"]],
+   quote:"(Both on the Dead Phrases Index.)",
+   src:"BetterSpeak · Dead Phrases Index",
+   why:"Worn metaphors signal borrowed analysis. Fresh words force you to actually analyze.",
+   usage:["“The weak joint is the matching step.”","“The mechanism is trust, not price.”"]},
+  {id:'u9w15',term:"in a nutshell → the short version",cat:'Workhorse swaps',
+   gloss:"『一言以蔽之』的套话版 —— 用自己的话给摘要开头",
+   hard:[],quote:"(On the Dead Phrases Index.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"Announce the summary in your own words and it already sounds fresher.",
+   usage:["The short version: the effect is real but small.","Or skip the wrapper — just give the summary."]},
+  {id:'u9w16',term:"blood, sweat, and tears → name the actual cost",cat:'Workhorse swaps',
+   gloss:"1940 年它是天才原创(丘吉尔),如今是套话 —— 说出真实的代价",
+   hard:[["toil","辛劳(丘吉尔原句:blood, toil, tears and sweat)"]],
+   quote:"I have nothing to offer but blood, toil, tears and sweat.",
+   src:"Winston Churchill (1940) — brilliant then, cliché now; on the Dead Phrases Index",
+   why:"The life cycle of a cliché: every dead phrase was once a fresh invention. Invent your own.",
+   usage:["“Two rebuilds and a lost summer” beats “blood, sweat, and tears.”","Specific costs are always fresher."]},
+  {id:'u9w17',term:"it goes without saying → then don’t say it",cat:'Workhorse swaps',
+   gloss:"『不言而喻』—— 要么别说,要么直接说主张",
+   hard:[],quote:"(On the Dead Phrases Index.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"A phrase that contradicts itself is a phrase on autopilot.",
+   usage:["Drop the wrapper; state the claim.","If it truly goes without saying, silence works."]},
+  {id:'u9w18',term:"time will tell → we’ll know by [when]",cat:'Workhorse swaps',
+   gloss:"『时间会证明』是放弃预测 —— 说出具体的时间点",
+   hard:[],quote:"(On the Dead Phrases Index.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"The cliché dodges commitment; a date creates it.",
+   usage:["We’ll know by the October data release.","Deadlines are the articulate version of destiny."]},
+  {id:'u9w19',term:"on the same page → aligned on X",cat:'Workhorse swaps',
+   gloss:"『同一页』—— 说清到底在哪件事上一致",
+   hard:[],quote:"(On the Dead Phrases Index.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"Alignment without an object is a feeling, not an agreement.",
+   usage:["We’re aligned on the sample; still apart on the outcome measure.","Name the page, not the metaphor."]},
+  {id:'u9w20',term:"piece of cake · not rocket science → straightforward",cat:'Workhorse swaps',
+   gloss:"两个『这很简单』的套话 —— straightforward 更准也更谦逊",
+   hard:[],quote:"(Both on the Dead Phrases Index.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"“Not rocket science” belittles; “straightforward” informs.",
+   usage:["The merge is straightforward — one key, two files.","Simple for you may not be simple for them."]},
+  {id:'u9w21',term:"bite the bullet → accept the cost",cat:'Workhorse swaps',
+   gloss:"『咬子弹』—— 直接说:接受这个代价",
+   hard:[],quote:"(On the Dead Phrases Index.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"Say the cost out loud and the decision gets easier to own.",
+   usage:["We accept the smaller sample and move on.","Name the bullet before you bite it."]},
+  {id:'u9w22',term:"right off the bat → from the first minute",cat:'Workhorse swaps',
+   gloss:"棒球黑话 —— from the first minute / immediately",
+   hard:[],quote:"(On the Dead Phrases Index.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"Sports idioms exclude half your listeners; time words include everyone.",
+   usage:["From the first minute, the referee flagged the framing.","Immediately is one word and always works."]},
+  {id:'u9w23',term:"go the extra mile → name the unasked-for extra",cat:'Workhorse swaps',
+   gloss:"『多走一英里』—— 直接说做了什么分外之事",
+   hard:[],quote:"(On the Dead Phrases Index.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"The specific extra is the compliment; the mileage is filler.",
+   usage:["She re-ran the whole pipeline overnight — unasked.","Praise deeds, not distance."]},
+  {id:'u9w24',term:"in this day and age → today",cat:'Workhorse swaps',
+   gloss:"六个音节换一个词:today",
+   hard:[],quote:"(On the Dead Phrases Index.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"The purest subtraction demo in the whole index.",
+   usage:["Today, replication is table stakes.","Shorter openers, stronger sentences."]},
+  {id:'u9w25',term:"in my opinion · me personally → (delete)",cat:'Workhorse swaps',
+   gloss:"你说的话当然是你的观点 —— 直接说主张,声明反而减分",
+   hard:[],quote:"(On the Dead Phrases Index — and cousins of the qualifier family.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"Ownership is implied by speaking; the disclaimer only withdraws confidence.",
+   usage:["“The mechanism is trust.” Full stop.","Save the hedge for genuine uncertainty — then hedge with content."]},
+  {id:'u9w26',term:"spill the beans · ball in your court → tell us · your call now",cat:'Workhorse swaps',
+   gloss:"两个游戏隐喻:直接说『告诉我们』/『现在由你决定』",
+   hard:[],quote:"(Both on the Dead Phrases Index.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"Borrowed game imagery outsources your sentence; plain verbs own it.",
+   usage:["Your call now — we’ve sent the revised draft.","Just tell us what the committee decided."]},
+  {id:'u9w27',term:"across the board · big picture → in every group · the whole argument",cat:'Workhorse swaps',
+   gloss:"『全线』说清范围:in every group / at every level;『大局』说清对象:the whole argument / the full system",
+   hard:[],quote:"(Both on the Dead Phrases Index.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"Scope words are only useful when the scope is named.",
+   usage:["Prices rose in every category we track.","Zoom out to the whole argument: does the mechanism survive?"]},
+  {id:'u9w28',term:"get the ball rolling · take it to the next level → start · name the level",cat:'Workhorse swaps',
+   gloss:"『把球滚起来』= start / kick off(说第一步是什么);『下一个层次』——哪个层次?说出来",
+   hard:[],quote:"(Both on the Dead Phrases Index.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"Momentum language without a first step is a wish, not a plan.",
+   usage:["Let’s start: I’ll draft the intro tonight.","Next level = a second data source, specifically."]},
+  {id:'u9w29',term:"to say the least · in all likelihood → (delete) · probably",cat:'Workhorse swaps',
+   gloss:"to say the least 是装谦虚的强调,多半可删;in all likelihood 五音节 = probably 三音节",
+   hard:[],quote:"(Both on the Dead Phrases Index.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"Understatement theater and inflated probability both blur the estimate.",
+   usage:["The timeline is tight. (Full stop — no “to say the least.”)","Probably fine by Friday."]},
+  {id:'u9w30',term:"ins and outs · on my radar · huge fan · wow factor → (say the real thing)",cat:'Workhorse swaps',
+   gloss:"细节说 details / mechanics;在关注 = I’m tracking it;huge fan = 说你欣赏什么;wow factor = 说哪里惊艳",
+   hard:[],quote:"(All on the Dead Phrases Index — with avoid-like-the-plague, best bet, and for-all-intents-and-purposes.)",src:"BetterSpeak · Dead Phrases Index",
+   why:"The residue of the index in one sweep: each has a plain, specific replacement.",
+   usage:["I admire her patience with messy data (not: huge fan).","The wow is the single-file design — name it."]},
+ ]},
+{id:'u7',title:'Dedicated Terms & Lexical Gaps',zh:'专属词与词汇缺口',from:'Day 11 · Preemptive Linguistic Precision · 预先的语言精确',
+ essence:'Mid-sentence stumbles are often a <b>lexical gap</b>: a better phrasing exists but you can’t reach it. Log the clumsy sentence, polish it later, and <b>pre-decide dedicated terms</b> for ideas you discuss often. In-the-moment precision comes from ahead-of-time deliberation.<br><span style="color:var(--muted)">卡壳=词汇缺口;记下烂句子事后打磨,给常说的概念预定专属词。</span>',
+ words:[
+  {id:'u7w1',term:'artificial desires',cat:'Lexical gaps',
+   gloss:'人造欲望 —— 别人让你以为你需要的假需求',
+   hard:[['artificial','人工的、非天然的']],
+   quote:'"These fake things that people are convinced they need because of other people"… later I found: artificial desires.',
+   src:'BetterSpeak · his own closed lexical gap',
+   why:'What a closed gap looks like: fifteen rambling words compressed into two precise ones.',
+   usage:['Social media manufactures artificial desires.',"Notice ideas you talk around — that's your gap. Log it, polish it later."]},
+  {id:'u7w2',term:'half-baked product',cat:'Dedicated terms',
+   gloss:'半成品 —— 字面"烤了一半",指不成熟的东西',
+   hard:[['half-baked','烤了一半→(想法/产品)不成熟的、欠考虑的']],
+   quote:'Steve Jobs would say "half-baked product" when referencing an unfinished project.',
+   src:'Steve Jobs — per BetterSpeak Day 11 (dedicated terms)',
+   why:"Jobs didn't improvise this — he pre-decided that unfinished things are “half-baked.” One idea, one fixed term.",
+   usage:["I don't want to submit a half-baked draft — give me one more week.",'Pick dedicated terms for things you evaluate often: papers, code, ideas.']},
+  {id:'u7w3',term:'infantile desires',cat:'Dedicated terms',
+   gloss:'婴儿式的欲望 —— 形容成年人的孩子气',
+   hard:[['infantile','婴儿的、幼稚的(infant 婴儿;比 childish 更书面、更冷)']],
+   quote:'Stephen Fry liked to say "infantile desires" when referencing immature adult behavior.',
+   src:'Stephen Fry — per BetterSpeak Day 11 (dedicated terms)',
+   why:'"Childish" is what everyone says; "infantile" is cooler and more clinical — Fry decided it in advance.',
+   usage:['The comment section was a parade of infantile desires.','A sharp word — safer for phenomena than for people.']},
+  {id:'u7w4',term:'the American conscience',cat:'Dedicated terms',
+   gloss:'美利坚的良知 —— MLK 谈道德议题时的专属词',
+   hard:[['conscience','良知、良心(注意不是 conscious)']],
+   quote:'King always spoke of "the American conscience" when he discussed morality in America.',
+   src:'Martin Luther King — per BetterSpeak Day 11 (dedicated terms)',
+   why:'Pre-decided vocabulary for a recurring theme — that’s why he never fumbled it.',
+   usage:['Decide your own: what do YOU call research that cuts corners?','One recurring idea, one fixed term.']},
+  {id:'u7w5',term:'crowning achievement',cat:'Dedicated terms',
+   gloss:'巅峰之作、加冕之作',
+   hard:[['crowning','加冕的→登顶的、最高的']],
+   quote:'Word pairings like encyclopedic command, noble intentions, crowning achievement… summarize ideas in a fresh combination.',
+   src:'Day 11 — word pairings that close lexical gaps',
+   why:'Two-word pairings are the cheapest precision — collect them.',
+   usage:['The 2019 paper remains her crowning achievement.','Cousins: encyclopedic command, noble intentions, flawed approach.']},
+  {id:'u7w6',term:"encyclopedic command",cat:'Dedicated terms',
+   gloss:"百科全书式的掌握 —— 形容对领域的全面在握",
+   hard:[["command (n.)","掌握、驾驭(a command of X)"]],
+   quote:"Word pairings like encyclopedic command… summarize our ideas in a fresh, creative combination.",
+   src:"Day 11 — word pairings",
+   why:"Two words that would take a sentence to paraphrase — the whole point of pairings.",
+   usage:["She has an encyclopedic command of the transplant literature.","Cousins: working command, intimate command."]},
+  {id:'u7w7',term:"noble intentions · flawed approach",cat:'Dedicated terms',
+   gloss:"高尚的动机、有缺陷的做法 —— 评审场景的万能精确组合",
+   hard:[["flawed","有缺陷的(flaw 瑕疵)"]],
+   quote:"Noble intentions… flawed approach — pairings that close lexical gaps.",
+   src:"Day 11 — word pairings",
+   why:"Half of every referee report, compressed into six fair words.",
+   usage:["Noble intentions, flawed approach — fixable, though.","Praise the aim, name the fix."]},
+  {id:'u7w8',term:"breaches of morality",cat:'Dedicated terms',
+   gloss:"道德的决口 —— 比 immoral behavior 更有画面",
+   hard:[["breach","决口、破坏(breach of contract 违约)"]],
+   quote:"Word pairings like… breaches of morality.",
+   src:"Day 11 — word pairings",
+   why:"“Breach” imports the image of a broken wall — damage plus the duty to repair.",
+   usage:["Data fabrication is a breach of trust before it is a breach of method.","Mold: a breach of + abstract."]},
+  {id:'u7w9',term:"languishing",cat:'Lexical gaps',
+   gloss:"词不达意之痛 —— 明知有更准的说法却够不着的煎熬",
+   hard:[["languish","萎靡、煎熬;Joseph 取其与 anguish(痛苦)的谐音"]],
+   quote:"I describe this feeling as languishing — a linguistic anguish we feel when our words fall short.",
+   src:"BetterSpeak · Day 11",
+   why:"Naming the feeling turns frustration into a signal: a gap to log and close.",
+   usage:["Felt myself languishing in that answer — logging it for polish.","The log is the cure."]},
+  {id:'u7w10',term:"redundancy spiral",cat:'Lexical gaps',
+   gloss:"同义词叠罗汉:endless, countless, unlimited… —— 定一个,删其余",
+   hard:[["redundancy","冗余"]],
+   quote:"There are an endless, countless, unlimited number of things we can do — a redundancy spiral.",
+   src:"BetterSpeak · Day 11",
+   why:"Undecided words fight for the same slot and the sentence wobbles. Decide the term in advance.",
+   usage:["Catch yourself stacking synonyms? Pick one, move forward.","One idea, one word, once."]},
+ ]},
+{id:'u10',title:'Speaking with Structure',zh:'结构化表达',from:'Days 12–13 · Structure & Parallelism · 结构与平行',
+ essence:'You can’t plan a paragraph mid-breath — order comes from <b>connecting simple sentences</b>: repeat your ending words (runway → takeoff), number your points, or save the main clause for last. Two or three linked sentences convince a listener there’s design to your speech.<br><span style="color:var(--muted)">秩序来自连接简单句:尾词接力、数字开列、主句压轴。</span>',
+ words:[
+  {id:'u10w1',term:'I should like to say two things',cat:'Phrases',
+   gloss:'"我想说两点" —— 数字开列,听众永远知道你讲到哪了',
+   hard:[],
+   quote:'I should like to say two things: one intellectual and one moral. The intellectual thing I should want to say is this…',
+   src:'Bertrand Russell, message to future generations (1959)',
+   why:'Numerical ordering: naming your points casts a structure into the future, then you fill it.',
+   usage:['I’d like to make two points: one about the data, one about the theory.','Thought wrappers buy your mind time to organize.']},
+  {id:'u10w2',term:'I disagree with the premise of the question',cat:'Phrases',
+   gloss:'"我不同意这个问题的前提" —— 优雅反守为攻',
+   hard:[['premise','前提、预设']],
+   quote:'King would frequently use "I disagree with the premise of the question" whenever he wanted to challenge the subject.',
+   src:'Martin Luther King — per BetterSpeak Day 12',
+   why:'A pre-decided opener for a recurring situation: pushback without heat.',
+   usage:['I’d push back on the premise: adoption isn’t the bottleneck here.','Store openers for YOUR recurring moments — seminars, referee replies.']},
+  {id:'u10w3',term:'fear leads to anger; anger leads to hate',cat:'Quotes',
+   gloss:'尾词接力(runway → takeoff):上句的结尾 = 下句的开头',
+   hard:[['anadiplosis','尾语重复:重复上句最后的词来开启下句']],
+   quote:'Fear leads to anger. Anger leads to hate. Hate leads to suffering.',
+   src:'Yoda, Star Wars',
+   why:'The runway-takeoff chain makes logic feel inevitable — each sentence hands off to the next.',
+   usage:['Clarity leads to trust. Trust leads to adoption.','Live trick: repeat your own last words, then expand.']},
+  {id:'u10w4',term:'not only… but also',cat:'Phrases',
+   gloss:'"不仅……而且……" —— 一句话里造平衡的最简模具',
+   hard:[['parallelism','平行结构:句内对称带来的平衡感']],
+   quote:'Not only does exercising help you stay fit, but it also boosts your mood for the day.',
+   src:'BetterSpeak · Day 13 (parallelism)',
+   why:'"Not only" opens a held breath; "but also" is the exhale. Bonus: it forces you to find a second angle.',
+   usage:['The result is not only significant but also stable across cohorts.','A few balanced sentences cast a halo over all the rest.']},
+  {id:'u10w5',term:'with each step taken…',cat:'Phrases',
+   gloss:'圆周句:铺垫在前,主句压轴',
+   hard:[['periodic sentence','主句留到最后的句子;常以 when/if/because/with 开头']],
+   quote:'With each step taken, with every obstacle overcome, and through sheer willpower, he achieved his dream of speaking well.',
+   src:'BetterSpeak · Structured Speaking worksheet',
+   why:'Three dependent clauses leap into the air; the final clause catches them. Suspense, then landing.',
+   usage:['After two rebuilds, three audits, and one hard conversation, the paper is finally ready.','Primers: when, if, though, while, because, whether.']},
+  {id:'u10w6',term:"two urgent calls to action",cat:'Phrases',
+   gloss:"数字开列的隆重版:一个立于科学,一个立于人性",
+   hard:[],
+   quote:"I stand before you with two urgent calls to action: one rooted in science, the other in our humanity.",
+   src:"Martin Luther King — from the Thought Wrappers resource",
+   why:"Numerical ordering plus gravity — the frame promises weight before content arrives.",
+   usage:["I come with two asks: one about data access, one about timeline.","Frame first, fill second."]},
+  {id:'u10w7',term:"I’ve shifted my understanding in two ways",cat:'Phrases',
+   gloss:"优雅地承认自己改变了想法 —— 还顺便立好了结构",
+   hard:[],
+   quote:"I’ve shifted my understanding on that really in two ways.",
+   src:"Russell Brand — from the Thought Wrappers resource",
+   why:"Rule #7: an admission of limitation is perceived as the most articulate answer.",
+   usage:["My view has shifted in two ways since the pilot.","Changing your mind, said well, builds credibility."]},
+  {id:'u10w8',term:"one lies in the ingredients, the other in the technique",cat:'Phrases',
+   gloss:"两个秘诀:一在原料,一在手法 —— 对仗的开列",
+   hard:[],
+   quote:"I present to you today two secrets to exceptional cuisine: one lies in the ingredients, the other in the technique.",
+   src:"Anthony Bourdain — from the Thought Wrappers resource",
+   why:"The two halves mirror each other — numerical ordering with built-in parallelism.",
+   usage:["Two secrets to a good seminar: one lies in the question, the other in the pacing.","Mold: one lies in X, the other in Y."]},
+  {id:'u10w9',term:"three facets of well-being",cat:'Phrases',
+   gloss:"三个切面:emotional, physical, spiritual —— 三分法的标准姿势",
+   hard:[["facet","(宝石的)切面;方面"]],
+   quote:"This afternoon, I wish to explore three facets of well-being: emotional, physical, and spiritual.",
+   src:"Ayn Rand — from the Thought Wrappers resource",
+   why:"“Facets” beats “aspects”: it implies one gem turned three ways.",
+   usage:["Three facets of the identification problem: data, timing, and incentives.","Name all three up front, then walk them."]},
+  {id:'u10w10',term:"success is not final — final is the beginning",cat:'Quotes',
+   gloss:"尾词接力示范:上一句的结尾成为下一句的起点",
+   hard:[],
+   quote:"Success is not final. Final is the beginning of a new journey.",
+   src:"Day 12 — anadiplosis examples",
+   why:"The handoff word (final) welds two sentences into one thought.",
+   usage:["The defense is not the end. The end is where the real work starts.","Mold: X is not A. A is B."]},
+  {id:'u10w11',term:"it is the small things, everyday deeds of ordinary folk",cat:'Quotes',
+   gloss:"『真正抵挡黑暗的,是普通人的日常善举』",
+   hard:[["deed","行为、善举"],["folk","人们(民间的、亲切的说法)"]],
+   quote:"They can hold evil in check, but that is not what I have found. I found it is the small things, everyday deeds of ordinary folk.",
+   src:"Gandalf, The Hobbit — quoted in BetterSpeak Day 12",
+   why:"Anadiplosis in the wild: “that is not what I have found. I found…” — the repeat is the pivot.",
+   usage:["It’s not the grand gestures. It’s the small things — the daily replications, the honest footnotes.","Pivot on your own last words."]},
+  {id:'u10w12',term:"despite the blinding snow…",cat:'Phrases',
+   gloss:"圆周句范例:三重铺垫,主句压轴",
+   hard:[["periodic sentence","圆周句:主句留到最后"]],
+   quote:"Despite the blinding snow, the freezing temperatures, and the dangerous ice roads, we made it to the airport on time.",
+   src:"BetterSpeak · Day 12 (periodic-sentence examples)",
+   why:"The suspense is structural: the listener can’t leave until the main clause lands.",
+   usage:["Despite the missing wave, the recode, and one very long weekend, the results replicated.","Primers: despite, when, if, because, while."]},
+  {id:'u10w13',term:"to believe in love, to be ready to give up anything for it…",cat:'Phrases',
+   gloss:"to 引导的圆周句:三个不定式起飞,一个主句接住",
+   hard:[],
+   quote:"To believe in love, to be ready to give up anything for it, to be willing to risk your life for it — that is the true essence of love.",
+   src:"BetterSpeak · Day 12 (periodic-sentence examples)",
+   why:"The to-clauses “leap into the air believing a verbal hero will catch them” — and the last clause does.",
+   usage:["To collect the data, to clean it twice, to doubt it daily — that is the empirical life.","Mold: To X, to Y, to Z — that is W."]},
+  {id:'u10w14',term:"I’d like to pursue two thoughts here",cat:'Phrases',
+   gloss:"『我想沿着两条思路说』—— 会议里最顺手的开列句",
+   hard:[],quote:"I’d like to pursue two thoughts here. The first concerns…",
+   src:"John F. Kennedy — from the Thought Wrappers resource",
+   why:"Pursue makes thinking sound like motion — gentler than “I have two points.”",
+   usage:["I’d like to pursue two thoughts: the data, then the framing.","For seminars and panels."]},
+  {id:'u10w15',term:"so, I’ve got two main takes on this",cat:'Phrases',
+   gloss:"随意场合的数字开列 —— 结构感不必正襟危坐",
+   hard:[],quote:"So, I’ve got two main takes on this novel. First off, the way it tackles friendship — it’s something else.",
+   src:"Stephen Fry — from the Thought Wrappers resource",
+   why:"Proof that numerical ordering works in casual registers too.",
+   usage:["Two takes on that paper: love the data, doubt the mechanism.","Casual container, organized content."]},
+  {id:'u10w16',term:'two fascinating aspects of this science empire',cat:'Phrases',
+   gloss:"科普场合的数字开列 —— empire 一词给学科加了疆域感",
+   hard:[],
+   quote:"Today’s conversation will aim to uncover two fascinating aspects of this science empire.",
+   src:"Isaac Asimov — from the Thought Wrappers resource",
+   why:"“Science empire” smuggles a metaphor into the wrapper itself — two devices in one opener.",
+   usage:["Two aspects of this data empire deserve our attention.","Wrappers can carry imagery, not just numbers."]},
+  {id:'u10w17',term:'there are a great number of things I like — three, in fact',cat:'Phrases',
+   gloss:"先夸张后精确的开列:欲扬先抑的小幽默",
+   hard:[],
+   quote:"There are a great number of things that I like very much about it. Three, in fact.",
+   src:"Frank Sinatra — from the Thought Wrappers resource",
+   why:"The swerve from “a great number” to “three” gets a smile AND sets the structure.",
+   usage:["There is so much to admire here. Two things, specifically.","Humor + order in one breath."]},
+ ]},
+{id:'u14',title:'Clarity & the Pause',zh:'清晰与停顿',from:'Day 14 · Clarity on Command · 一句话的清晰',
+ essence:'Clarity is the most valuable linguistic currency — and its secret ingredient is <b>the pause</b>. The mouth constantly tries to outrun the mind; stopping is the hardest skill in all of speaking. Recipe: <b>economical words · one direction · a pause after the point.</b><br><span style="color:var(--muted)">清晰是硬通货,秘诀是停顿;闭嘴是说话里最难的功夫。</span>',
+ words:[
+  {id:'u14w1',term:'the compressed spring line',cat:'Phrases',
+   gloss:"压缩弹簧句 —— 把一个想法压进一句话,像上满的弹簧",
+   hard:[["compressed","被压缩的"]],
+   quote:"Instead of releasing a torrent of unhinged words bouncing in all directions, challenge yourself to compress your thought into a single sentence.",
+   src:"BetterSpeak · Day 14 — the core drill",
+   why:"The constraint IS the clarity: one sentence forces you to find the essence.",
+   usage:["Before speaking in a meeting: what’s my one sentence?","Drill: 3-minute timer, one idea, one line."]},
+  {id:'u14w2',term:'give the gift of silence',cat:'Phrases',
+   gloss:"把沉默当礼物 —— 说完重点,停,让话生效",
+   hard:[],
+   quote:"Pausing is that breath above water we can give ourselves — and it’s the greatest gift we can give our listener.",
+   src:"BetterSpeak · Day 14",
+   why:"The pause lets words stir emotion; barreling on erases them.",
+   usage:["Land the point. Count one beat. Then continue.","Gift wrap: silence after the sentence that matters."]},
+  {id:'u14w3',term:'lost in the ocean of our language',cat:'Phrases',
+   gloss:"淹没在自己语言的海里 —— 越说越找不到想法",
+   hard:[],
+   quote:"Our mind can only hold so much before we become lost in the ocean of our language.",
+   src:"BetterSpeak · Day 14",
+   why:"Names the drowning feeling — and the pause is the breath above water.",
+   usage:["Mid-ramble? Stop. Surface. One sentence.","The ocean metaphor pairs with the spring drill."]},
+  {id:'u14w4',term:'the mouth overtakes the mind',cat:'Phrases',
+   gloss:"嘴超车了脑子 —— 明知句子跑偏还继续说,指望半路遇到想法",
+   hard:[["overtake","超车、超过"]],
+   quote:"Our mouth is constantly trying to overtake our mind… we continue to speak because we’re convinced that somewhere along the way we’ll find our idea.",
+   src:"BetterSpeak · Day 14",
+   why:"The diagnosis behind fillers: “um” is the sound of the mouth waiting for the mind.",
+   usage:["Feel the overtake? Brake with a period.","Thinking silence beats speaking noise."]},
+  {id:'u14w5',term:'clarity is linguistic currency',cat:'Phrases',
+   gloss:"清晰是语言的硬通货 —— 人们追随把话说清楚的人",
+   hard:[["currency","货币、通货"]],
+   quote:"Clarity, I’m convinced, is one of the most valuable forms of linguistic currency… we listen and labor on behalf of those who have achieved clarity.",
+   src:"BetterSpeak · Day 14",
+   why:"Why quotes spread: the essence of an idea in the fewest words. Clarity buys attention.",
+   usage:["Spend fewer words; earn more attention.","A quotable line is clarity compounding."]},
+ ]},
+{id:'u11',title:'Rhythm & Cinema Lines',zh:'节奏与台词',from:'Day 15 · Unlocking Rhythm · 解锁节奏',
+ essence:'Sentences are music: stressed and unstressed syllables in patterns. You don’t need meter theory — <b>a few beats back-to-back is enough.</b> Learn it by ear: listen to great lines and repeat them aloud.<br><span style="color:var(--muted)">句子是音乐;不用背格律,几拍连续的节奏就够——靠听和跟读吸收。</span>',
+ words:[
+  {id:'u11w1',term:'what we do in life echoes in eternity',cat:'Quotes',
+   gloss:'今生所为,回响于永恒',
+   hard:[['echo','回响(动词)'],['eternity','永恒']],
+   quote:'What we do in life echoes in eternity.',
+   src:'Gladiator (2000)',
+   why:'Memorable for its rhythm, not rare words — say it aloud and feel the beat.',
+   usage:['Steal the shape: what we X now echoes in Y.','Repeat after the clip — rhythm is learned by ear.']},
+  {id:'u11w2',term:'the time that is given to us',cat:'Quotes',
+   gloss:'"我们能决定的,只是如何使用被给予的时间"',
+   hard:[],
+   quote:'All you have to decide is what to do with the time that is given to us.',
+   src:'Gandalf, The Fellowship of the Ring',
+   why:'The course’s recurring example: near-iambic stretches make it land — imagine it in uptalk and it collapses.',
+   usage:['A complete way to end a hard conversation.','Note the downward inflection on "given to us."']},
+  {id:'u11w3',term:'hope is a good thing, maybe the best of things',cat:'Quotes',
+   gloss:'希望是好东西,也许是最好的东西 —— 好东西不会死',
+   hard:[],
+   quote:'Hope is a good thing, maybe the best of things, and no good thing ever dies.',
+   src:'The Shawshank Redemption (1994)',
+   why:'Built almost entirely of workhorse words — rhythm and repetition redeem them. The exception that teaches the rule.',
+   usage:['Sometimes plain words + rhythm beat precise words.','Read aloud: notice the three-part build.']},
+  {id:'u11w4',term:'knowing the path vs walking the path',cat:'Quotes',
+   gloss:'知道路 ≠ 走这条路',
+   hard:[],
+   quote:"There's a difference between knowing the path and walking the path.",
+   src:'Morpheus, The Matrix (1999)',
+   why:'Perfect parallel halves — same words, one swap (knowing / walking). Balance makes it stick.',
+   usage:['There’s a difference between reading the method and running the method.','Mold: knowing X vs doing X.']},
+  {id:'u11w5',term:'I never saved anything for the swim back',cat:'Quotes',
+   gloss:'"我从不为回程留力气" —— 全力以赴的隐喻',
+   hard:[],
+   quote:'You want to know how I did it? This is how I did it, Anton: I never saved anything for the swim back.',
+   src:'Gattaca (1997)',
+   why:'A metaphor carrying a whole philosophy — plus anadiplosis ("how I did it… This is how I did it").',
+   usage:['On the job market I never saved anything for the swim back.','Deploy at the end — it’s a closer.']},
+  {id:'u11w6',term:"it’s never too late to be whoever you want to be",cat:'Quotes',
+   gloss:"什么时候开始都不晚 —— 长句的温柔节奏",
+   hard:[],
+   quote:"For what it’s worth: it’s never too late or, in my case, too early to be whoever you want to be. There’s no time limit… We can make the best or the worst of it.",
+   src:"The Curious Case of Benjamin Button — from the Cinema Lines resource",
+   why:"A rhythm built on soft repetition (too late / too early; the best / the worst).",
+   usage:["For pep talks and career changes.","Note the paired opposites carrying the beat."]},
+  {id:'u11w7',term:"governments should be afraid of their people",cat:'Quotes',
+   gloss:"倒装对称(AB→BA):人民不该怕政府;政府应该怕人民",
+   hard:[["chiasmus","回环/交错反复:后半句是前半句的镜像"]],
+   quote:"People should not be afraid of their governments. Governments should be afraid of their people.",
+   src:"V for Vendetta — from the Cinema Lines resource",
+   why:"Swap the halves and the sentence argues itself — the mirror does the logic.",
+   usage:["Mold: X shouldn’t fear Y; Y should fear X.","Ask not what your country… — same machine."]},
+  {id:'u11w8',term:"the average piece of junk is probably more meaningful than our criticism",cat:'Quotes',
+   gloss:"普通的作品也比评论它的批评更有意义 —— 谦卑的长句",
+   hard:[["in the grand scheme of things","从大局看"]],
+   quote:"The bitter truth we critics must face is that, in the grand scheme of things, the average piece of junk is probably more meaningful than our criticism designating it so.",
+   src:"Ratatouille, Anton Ego’s review — from the Cinema Lines resource",
+   why:"A long build to a humbling landing — periodic rhythm in service of grace.",
+   usage:["For talks about reviewing and criticism.","The new needs friends — the speech’s other keeper."]},
+  {id:'u11w9',term:"you got a dream, you gotta protect it",cat:'Quotes',
+   gloss:"有梦就守住它 —— 口语的鼓点",
+   hard:[],
+   quote:"Don’t ever let somebody tell you you can’t do something. Not even me… You got a dream, you gotta protect it. If you want somethin’, go get it. Period.",
+   src:"The Pursuit of Happyness — from the Cinema Lines resource",
+   why:"Street-plain words, drum-tight rhythm — proof register doesn’t gate eloquence.",
+   usage:["Short clauses. Hard stops. Period.","Say it aloud; feel the punches land."]},
+  {id:'u11w10',term:"the people no one imagines anything of",cat:'Quotes',
+   gloss:"『无人看好的人,做成无人敢想的事』—— 镜像结构",
+   hard:[],
+   quote:"Sometimes it is the people no one imagines anything of who do the things that no one can imagine.",
+   src:"The Imitation Game — from the Cinema Lines resource",
+   why:"“No one imagines / no one can imagine” — one verb, folded twice, unforgettable.",
+   usage:["For underdog stories and admissions talks.","Fold a verb back on itself and listen."]},
+  {id:'u11w11',term:"society grows great when old men plant trees…",cat:'Quotes',
+   gloss:"『前人栽树,后人乘凉』的英文版 —— 谚语级的节奏",
+   hard:[],
+   quote:"Society grows great when old men plant trees in whose shade they know they shall never sit.",
+   src:"Greek proverb — quoted in BetterSpeak Day 15",
+   why:"The lecture’s own demo: iambic stretches (grows GREAT when OLD men PLANT trees) make it sing.",
+   usage:["For mentorship, tenure letters, and commencement lines.","Scan it aloud: da-DUM da-DUM."]},
+  {id:'u11w12',term:"Tyger Tyger, burning bright",cat:'Quotes',
+   gloss:"完美格律的样本(扬抑格 DUM-da)—— 诗为什么是诗",
+   hard:[["trochee","扬抑格:重-轻(和 iamb 相反)"]],
+   quote:"Tyger Tyger, burning bright, in the forests of the night; what immortal hand or eye, could frame thy fearful symmetry?",
+   src:"William Blake — quoted in BetterSpeak Day 15",
+   why:"Perfect meter is what separates poem from prose — you only need a few beats of it in speech.",
+   usage:["Recite it in your 3×5 practice; let the mouth learn the drumline.","Notice: every syllable placed on purpose."]},
+  {id:'u11w13',term:"two roads diverged in a yellow wood",cat:'Quotes',
+   gloss:"抑扬格(iamb, da-DUM)样本 —— 最贴近自然英语的节奏",
+   hard:[["diverge","分岔、岔开"]],
+   quote:"Two roads diverged in a yellow wood… I took the one less traveled by, and that has made all the difference.",
+   src:"Robert Frost, “The Road Not Taken” — from the Metrical Feet index",
+   why:"Iambic meter mimics natural speech — why Frost sounds like wisdom said aloud.",
+   usage:["Read it aloud: da-DUM da-DUM carries you.","The iamb is the default heartbeat of English."]},
+  {id:'u11w14',term:"once upon a midnight dreary",cat:'Quotes',
+   gloss:"扬抑格(trochee, DUM-da)样本 —— 重拍开头,自带紧迫和命令感",
+   hard:[["dreary","阴沉的、沉闷的"]],
+   quote:"Once upon a midnight dreary, while I pondered, weak and weary… suddenly there came a tapping, as of some one gently rapping, rapping at my chamber door.",
+   src:"Edgar Allan Poe, “The Raven” — from the Metrical Feet index",
+   why:"Trochees hit first and fall away — urgency and dread in the meter itself.",
+   usage:["Open a warning sentence on the stress: “Nobody checked the merge.”","Front-stress = command register."]},
+  {id:'u11w15',term:"half a league, half a league, half a league onward",cat:'Quotes',
+   gloss:"抑抑扬格(anapest, da-da-DUM)样本 —— 奔马般的推进感",
+   hard:[["league","里格(约三英里,旧长度单位)"]],
+   quote:"Half a league, half a league, half a league onward — all in the valley of Death rode the six hundred.",
+   src:"Tennyson, “The Charge of the Light Brigade” — from the Metrical Feet index",
+   why:"The galloping da-da-DUM IS the cavalry — meter as motion.",
+   usage:["For momentum: “and we built, and we shipped, and we won.”","Stack two light beats before the punch."]},
+  {id:'u11w16',term:"this is the forest primeval",cat:'Quotes',
+   gloss:"扬抑抑格(dactyl, DUM-da-da)样本 —— 庄严、仪式般的开场",
+   hard:[["primeval","原始的、太初的"]],
+   quote:"This is the forest primeval. The murmuring pines and the hemlocks, bearded with moss…",
+   src:"Longfellow, “Evangeline” — from the Metrical Feet index",
+   why:"Dactyls toll like bells — the ceremonial register, for grandeur and solemnity.",
+   usage:["Openers that consecrate: “This is the work of a decade.”","One dactylic line can set a whole talk’s register."]},
+ ]},
+{id:'uPo',title:'Poetry Lines',zh:'诗行',from:'Days 4 & 15 · the Recite practice · 朗诵素材',
+ essence:'From the course poem list. Poems are concentrated meter and eternal elements — the Recite third of the 3×5 workout. <b>Read every line aloud</b>; that is the entire exercise.<br><span style="color:var(--muted)">诗是浓缩的节奏与永恒元素;出声朗读,这就是全部练习。</span>',
+ words:[
+  {id:'uPow1',term:'I am the master of my fate, I am the captain of my soul',cat:'Quotes',
+   gloss:"我是我命运的主人,我是我灵魂的船长",hard:[],
+   quote:"It matters not how strait the gate, how charged with punishments the scroll: I am the master of my fate, I am the captain of my soul.",
+   src:"William Ernest Henley, “Invictus” — on the course poem list",
+   why:"Anaphora (I am…) plus twin metaphors (master / captain) — four beats of pure iamb.",
+   usage:["Mandela recited it in prison — context that gives it weight.","Recite aloud; land hard on fate and soul."]},
+  {id:'uPow2',term:'rage, rage against the dying of the light',cat:'Quotes',
+   gloss:"怒斥,怒斥光明的消逝",hard:[["rage","怒吼、怒斥(此处动词)"]],
+   quote:"Do not go gentle into that good night… Rage, rage against the dying of the light.",
+   src:"Dylan Thomas — on the course poem list",
+   why:"A refrain built on repetition and an eternal element (light) — the most famous villanelle in English.",
+   usage:["For defiance in the face of decline.","The doubled verb — rage, rage — is instant intensity, no adverbs."]},
+  {id:'uPow3',term:'if you can keep your head when all about you are losing theirs',cat:'Quotes',
+   gloss:"若众人皆失方寸而你仍能清醒 —— 整首诗是一个巨大的圆周句",hard:[],
+   quote:"If you can keep your head when all about you are losing theirs and blaming it on you… you’ll be a Man, my son!",
+   src:"Rudyard Kipling, “If—” — on the course poem list",
+   why:"Thirty if-clauses leaping into the air, one final clause catching them all — the ultimate periodic sentence.",
+   usage:["Micro-version: If you can X when everyone Y, you can Z.","Keep one’s head = 保持冷静,本身就是好短语。"]},
+  {id:'uPow4',term:'we are the music makers, and we are the dreamers of dreams',cat:'Quotes',
+   gloss:"我们是音乐的创造者,我们是梦的做梦人",hard:[],
+   quote:"We are the music makers, and we are the dreamers of dreams… we are the movers and shakers of the world for ever, it seems.",
+   src:"Arthur O’Shaughnessy, “Ode” — on the course poem list",
+   why:"Where “movers and shakers” was born — and “dreamers of dreams” doubles the noun into music.",
+   usage:["For toasts to creative teams.","Mold: the X-ers of X (dreamers of dreams, singer of songs)."]},
+  {id:'uPow5',term:'I have measured out my life with coffee spoons',cat:'Quotes',
+   gloss:"我用咖啡匙丈量了一生 —— 庸常人生的著名隐喻",hard:[],
+   quote:"I have known the evenings, mornings, afternoons — I have measured out my life with coffee spoons.",
+   src:"T.S. Eliot, “The Love Song of J. Alfred Prufrock” — on the course poem list",
+   why:"A tiny household object made to carry an entire life — metaphor by scale contrast.",
+   usage:["“I’ve measured this semester in committee meetings.”","Mold: I have measured out X with Y."]},
+  {id:'uPow6',term:'danced the skies on laughter-silvered wings',cat:'Quotes',
+   gloss:"驾着被笑声镀银的翅膀在天空起舞",hard:[["laughter-silvered","被笑声镀了银的 —— 自造复合词的典范"]],
+   quote:"Oh! I have slipped the surly bonds of Earth and danced the skies on laughter-silvered wings.",
+   src:"John Gillespie Magee, “High Flight” — on the course poem list",
+   why:"Compound-word invention — poets weld words; speakers may borrow the welds.",
+   usage:["Coin one compound this week (data-drunk, deadline-bruised).","The Challenger address borrowed this poem — see Resonant Phrases."]},
+  {id:'uPow7',term:'season of mists and mellow fruitfulness',cat:'Quotes',
+   gloss:"雾霭与甜熟果实的季节 —— 秋天最著名的开场",hard:[["mellow","柔熟的、醇厚的"]],
+   quote:"Season of mists and mellow fruitfulness, close bosom-friend of the maturing sun.",
+   src:"John Keats, “To Autumn” — on the course poem list",
+   why:"M-alliteration (mists / mellow / maturing) painting warmth — sound as temperature.",
+   usage:["Pittsburgh Octobers deserve this line.","Read aloud: feel how the m’s slow you down."]},
+  {id:'uPow8',term:'regret nothing',cat:'Quotes',
+   gloss:"两个词的祈使句 —— 短句的权威",hard:[],
+   quote:"Regret nothing. Not the cruel novels you read to the end just to find out who killed the cook.",
+   src:"Dorianne Laux, “Antilamentation” — on the course poem list",
+   why:"A two-word imperative followed by a long, specific catalogue — length contrast at its best.",
+   usage:["Open strong and short; elaborate after.","Provost’s variety rule, demonstrated by a poet."]},
+  {id:'uPow9',term:'beauty is truth, truth beauty',cat:'Quotes',
+   gloss:"美即是真,真即是美 —— 回环(AB→BA)的千古范本",
+   hard:[["Grecian","希腊的(Grecian urn 希腊古瓮)"]],
+   quote:"Beauty is truth, truth beauty — that is all ye know on earth, and all ye need to know.",
+   src:"John Keats, “Ode on a Grecian Urn” — on the course poem list",
+   why:"Chiasmus at its purest: four words, mirrored, complete.",
+   usage:["Mold: X is Y, Y X.","Clarity is kindness, kindness clarity."]},
+  {id:'uPow10',term:'arrive where we started and know the place for the first time',cat:'Quotes',
+   gloss:"探索的终点,是回到起点、初识此地",
+   hard:[["cease","停止"]],
+   quote:"We shall not cease from exploration, and the end of all our exploring will be to arrive where we started and know the place for the first time.",
+   src:"T.S. Eliot, “Four Quartets” — on the course poem list",
+   why:"A periodic build that lands on paradox — the most quoted lines about learning itself.",
+   usage:["For retrospectives and graduations.","Research in one sentence, honestly."]},
+  {id:'uPow11',term:'nobody, not even the rain, has such small hands',cat:'Quotes',
+   gloss:"『没有谁,连雨也没有,生着这样小的手』—— 温柔到不讲道理的收尾",
+   hard:[],
+   quote:"…nobody, not even the rain, has such small hands.",
+   src:"E.E. Cummings, “somewhere i have never travelled” — on the course poem list",
+   why:"An impossible comparison (rain’s hands) that works purely by feeling — evocative language beyond logic.",
+   usage:["Study, don’t imitate — this register is for poems and love letters.","Note the interrupting clause: nobody, not even the rain, …"]},
+  {id:'uPow12',term:'I saw the danger, yet I walked along the enchanted way',cat:'Quotes',
+   gloss:"明知危险,仍走上那条着魔的路",
+   hard:[["enchanted","着魔的、迷人的"]],
+   quote:"On Raglan Road on an autumn day I met her first and knew that her dark hair would weave a snare that I might one day rue; I saw the danger, yet I walked along the enchanted way.",
+   src:"Patrick Kavanagh, “On Raglan Road” — on the course poem list",
+   why:"Iambic storytelling with internal rhyme (knew/rue) — recite it and the meter carries you.",
+   usage:["For any clear-eyed leap: I saw the risk, and chose the road.","Also a song — listen to Luke Kelly’s rendition once."]},
+  {id:'uPow13',term:'gaze in thine own heart',cat:'Quotes',
+   gloss:"凝视你自己的心,圣树在那里生长",
+   hard:[["thine","你的(古英语 your)"]],
+   quote:"Beloved, gaze in thine own heart, the holy tree is growing there.",
+   src:"W.B. Yeats, “The Two Trees” — on the course poem list",
+   why:"Eternal elements (heart, tree) in a command — gentle imperatives make memorable openings.",
+   usage:["Openers that invite instead of assert.","Archaic words in tiny doses add ceremony."]},
+ ]},
+{id:'uSp',title:'Speech Bank Lines',zh:'演讲名句',from:'Day 2 · the Speech Bank · 重看素材',
+ essence:'From the course Speech Bank — the Rewatch third of the 3×5 workout. Each line was built to be heard: <b>listen to the original once, then read the transcript aloud.</b><br><span style="color:var(--muted)">演讲名句为「被听见」而造;先听原声一遍,再照文稿朗读。</span>',
+ words:[
+  {id:'uSpw1',term:'we few, we happy few, we band of brothers',cat:'Quotes',
+   gloss:"我们寥寥数人,快乐的数人,我们是兄弟连",hard:[],
+   quote:"From this day to the ending of the world… we in it shall be remembered — we few, we happy few, we band of brothers.",
+   src:"Shakespeare, Henry V — “St Crispin’s Day,” on the Speech Bank",
+   why:"Anaphora (we…) turning scarcity into pride — the pre-battle speech every other one copies.",
+   usage:["For small teams before big pushes.","“Band of brothers” 已成短语 —— 出处在这里。"]},
+  {id:'uSpw2',term:'I’m as mad as hell, and I’m not going to take this anymore',cat:'Quotes',
+   gloss:"我怒不可遏,而且我不会再忍了 —— 愤怒的标准句式",hard:[],
+   quote:"I want you to get up right now… stick your head out and yell: I’m as mad as hell, and I’m not going to take this anymore!",
+   src:"Network (1976) — “Mad Prophet of the Airwaves,” on the Speech Bank",
+   why:"Simile (as mad as hell) + resolution clause — anger given temperature and direction.",
+   usage:["Softened mold: “I’m frustrated, and I’m not letting this slide.”","Feeling + boundary, one sentence."]},
+  {id:'uSpw3',term:'to tame the savageness of man and make gentle the life of this world',cat:'Quotes',
+   gloss:"驯服人性中的野蛮,让人间温柔 —— 收尾的巅峰",hard:[["savageness","野蛮、凶残"]],
+   quote:"Let us dedicate ourselves to what the Greeks wrote so many years ago: to tame the savageness of man and make gentle the life of this world.",
+   src:"Robert F. Kennedy announcing MLK’s death (1968), quoting Aeschylus — on the Speech Bank",
+   why:"A commonplace-book masterstroke: a memorized Greek line retrieved on the worst night imaginable.",
+   usage:["Proof of Day 3: collect now, retrieve when it matters.","“Make gentle the life of this world” — 倒装让它庄重。"]},
+  {id:'uSpw4',term:'a rendezvous with destiny',cat:'Quotes',
+   gloss:"与命运有约",hard:[["rendezvous","/ˈrɑːndeɪvuː/ 约定的会面(法语借词)"]],
+   quote:"You and I have a rendezvous with destiny.",
+   src:"Ronald Reagan, “A Time for Choosing” (1964) — on the Speech Bank",
+   why:"Borrowed French elegance + an eternal element (destiny) — six words that launched a career.",
+   usage:["“This cohort has a rendezvous with the data.”","He borrowed it from FDR — collectors collect from collectors."]},
+  {id:'uSpw5',term:'the future doesn’t belong to the fainthearted; it belongs to the brave',cat:'Quotes',
+   gloss:"未来不属于怯懦者,它属于勇敢的人",hard:[["fainthearted","怯懦的(faint 微弱 + heart)"]],
+   quote:"The future doesn’t belong to the fainthearted; it belongs to the brave.",
+   src:"Ronald Reagan, the Challenger address (1986) — on the Speech Bank",
+   why:"Antithesis on one axis (fainthearted vs brave): denial, then affirmation — the 1-2 punch.",
+   usage:["Mold: X doesn’t belong to A; it belongs to B.","Written in hours, remembered for decades — structure travels."]},
+  {id:'uSpw6',term:'I always knew what the right path was… it was too damn hard',cat:'Quotes',
+   gloss:"我一直知道哪条是正路 —— 但那条路太难了",hard:[],
+   quote:"Now I have come to the crossroads in my life. I always knew what the right path was. Without exception, I knew. But I never took it. You know why? It was too damn hard.",
+   src:"Scent of a Woman (1992) — on the Speech Bank",
+   why:"Short sentences, hard stops, one confession — clarity carrying moral weight.",
+   usage:["For honesty about hard choices.","The power lives in the full stops. Read it with them."]},
+  {id:'uSpw7',term:'the man with the muck-rake, who could look no way but downward',cat:'Quotes',
+   gloss:"手持粪耙、只会朝下看的人 —— 只挖烂泥、看不见星空的批评者",hard:[["muck-rake","粪耙(muck 污泥;muckraker 后指揭黑记者)"]],
+   quote:"…the man who could look no way but downward, with the muck-rake in his hands; who was offered a celestial crown… but would neither look up nor regard the crown.",
+   src:"Theodore Roosevelt, “The Man with the Muck-rake” (1906) — on the Speech Bank",
+   why:"A borrowed allegory (from Bunyan) that named an era of journalism — images outlive arguments.",
+   usage:["For critique culture: don’t become the man with the muck-rake.","Borrow allegories; credit them; keep them short."]},
+  {id:'uSpw8',term:'I dream things that never were and say why not',cat:'Quotes',
+   gloss:"『有人看见现实问为什么;我梦见未有之事,问为什么不』",
+   hard:[],
+   quote:"Some men see things as they are and say why. I dream things that never were and say why not.",
+   src:"Ted Kennedy’s eulogy for RFK (1968), quoting his brother — on the Speech Bank",
+   why:"Twin sentences, one pivot (why → why not) — the antithesis that defined a family’s politics.",
+   usage:["For proposals: others ask why; we ask why not.","Structure: same frame, one flipped word."]},
+  {id:'uSpw9',term:'the world is a business, Mr. Beale',cat:'Quotes',
+   gloss:"『世界是一家公司』—— 一句话的冷酷宇宙观",
+   hard:[],
+   quote:"You are an old man who thinks in terms of nations and peoples… The world is a college of corporations… The world is a business, Mr. Beale.",
+   src:"Network (1976), “The New World Order” — on the Speech Bank",
+   why:"A monologue that repeats its thesis in shrinking forms until five words carry it all.",
+   usage:["Compress your thesis to five words and see if it survives.","Direct address (Mr. Beale) pins the listener."]},
+ ]},
+{id:'uR',ordered:true,title:'The 10 Rules of Articulacy',zh:'十条军规',from:'Course capstone · the lock-screen rules · 全课压缩',
+ essence:'The whole program compressed into ten principles (the course ships them as phone wallpaper). Each rule is a memory handle for a unit you’ve already trained — <b>enforce one rule per week.</b><br><span style="color:var(--muted)">全课压缩成十条军规;一周执行一条。</span>',
+ words:[
+  {id:'uRw1',term:'Rule 1 — consciously select your words',cat:'Phrases',gloss:"口才始于『有意识地选词』—— 对抗嘴的自动驾驶",hard:[],quote:"Articulacy increases when you consciously select your words.",src:"BetterSpeak · The 10 Rules",why:"The master switch: every other rule assumes you are awake at the wheel.",usage:["One conversation a day in full manual mode.","Autopilot words are borrowed; chosen words are yours."]},
+  {id:'uRw2',term:'Rule 2 — the surface lexicon is the ceiling',cat:'Phrases',gloss:"脱口而出的上限 = 活跃词库的大小(Day 2)",hard:[],quote:"Effortless articulacy is limited to the size of your surface lexicon.",src:"BetterSpeak · The 10 Rules",why:"Why this app exists: practice moves words from recognized to reachable.",usage:["Every 38-use graduation raises the ceiling.","Fluency is inventory, not IQ."]},
+  {id:'uRw3',term:'Rule 3 — a better word is seconds away',cat:'Phrases',gloss:"更好的词就在几秒之外 —— 停顿是通往它的桥(Day 8)",hard:[],quote:"A better word is seconds away.",src:"BetterSpeak · The 10 Rules",why:"The workhorse cure in one line: the first word is a reflex; the second is a choice.",usage:["Half-beat pause before adjectives.","Let good die so nourishing can live."]},
+  {id:'uRw4',term:'Rule 4 — engage the thought longer',cat:'Phrases',gloss:"想得越久,说得越深(Day 11 的预先深思)",hard:[],quote:"The longer you engage a thought, the greater depth you achieve with words.",src:"BetterSpeak · The 10 Rules",why:"Depth is upstream of delivery — lexical gaps close at the desk, not the podium.",usage:["Journal a recurring topic once; speak it better forever.","Depth compounds; hot takes don’t."]},
+  {id:'uRw5',term:'Rule 5 — speech is a product of language environments',cat:'Phrases',gloss:"你的话 = 你的语言环境的平均值(Day 4)",hard:[],quote:"The quality of speech is a product of language environments.",src:"BetterSpeak · The 10 Rules",why:"The diet rule: outputs can’t outrun inputs.",usage:["Rate your inputs; upgrade one.","Feed the circle or watch it shrink."]},
+  {id:'uRw6',term:'Rule 6 — words flow into eloquent molds',cat:'Phrases',gloss:"句子的雄辩来自『模具』:排比、圆周句、平行结构(Days 12–13)",hard:[],quote:"Sentences sound articulate when words flow and fit into eloquent molds.",src:"BetterSpeak · The 10 Rules",why:"Structure is reusable; content is disposable. Learn molds, not lines.",usage:["One mold per week: not only… but also.","Molds free your mind to think content."]},
+  {id:'uRw7',term:'Rule 7 — admit limitation, sound articulate',cat:'Phrases',gloss:"承认局限反而最显口才 —— 『这我不确定』是高级表达",hard:[],quote:"An admission of limitation is perceived as the most articulate answer.",src:"BetterSpeak · The 10 Rules",why:"Counterintuitive and liberating: honesty reads as mastery.",usage:["“I don’t know — but here’s how I’d find out.”","Scholars live on this rule."]},
+  {id:'uRw8',term:'Rule 8 — silence is the hardest part',cat:'Phrases',gloss:"沉默是口才中最难的部分(Day 14)—— 也是最后学会的",hard:[],quote:"Silence is the hardest part of speaking articulately.",src:"BetterSpeak · The 10 Rules",why:"The mouth wants to outrun the mind; the pause is the discipline.",usage:["Land the point. One beat. Continue.","Master this rule last — and most."]},
+  {id:'uRw9',term:'Rule 9 — strip empty words',cat:'Phrases',gloss:"删掉空词,句子反而更满(Day 10)",hard:[],quote:"A sentence grows fuller when empty words are stripped away.",src:"BetterSpeak · The 10 Rules",why:"Subtraction as addition — the paradox that powers the pruning units.",usage:["Cut one intensifier per sentence today.","Weight comes from absence."]},
+  {id:'uRw10',term:'Rule 10 — endings can erode everything',cat:'Phrases',gloss:"草率的结尾会侵蚀前面所有认真(Day 6)",hard:[],quote:"Careless final words can erode a great many careful ones.",src:"BetterSpeak · The 10 Rules",why:"Recency rules memory: the last words are the ones that stay.",usage:["Silent period at every full stop.","Never end on “…yeah, so.”"]},
+ ]},
+{id:'u15',ordered:true,title:'The 3×5 Workout',zh:'每日训练',from:'Final · Putting It All Together · 收官:整合为日课',
+ essence:'Knowledge isn’t the bottleneck — <b>recall in the moment</b> is. The whole course compresses into <b>15 minutes a day</b>: Review your word bank · Rewatch one great speech · Recite poetry aloud. This unit is your permanent routine — the one to revisit forever.<br><span style="color:var(--muted)">每天15分钟:复习词库·重看演讲·朗读诗——学完课程后的终身日课。</span>',
+ words:[
+  {id:'u15w1',term:'the 3×5 linguistic workout',cat:'Phrases',
+   gloss:"每天 3 段 × 5 分钟 = 15 分钟的语言训练:Review · Rewatch · Recite",
+   hard:[],
+   quote:"Three five-minute sessions for a total of fifteen minutes per day on enriching your speech.",
+   src:"BetterSpeak · the final lecture",
+   why:"The entire program folded into a sustainable daily shape — small enough to never skip.",
+   usage:["Sunday, Tuesday, Thursday — his cadence; pick yours.","Put it next to your morning coffee."]},
+  {id:'u15w2',term:'Review — five minutes with your word bank',cat:'Phrases',
+   gloss:"复习:过一遍词库(= 这个 app 的 Practice);顺手补 workhorse、填 lexical gap",
+   hard:[],
+   quote:"The first five minutes is spent reviewing content from your commonplace book… you can also record yourself reading the words and play it back during the day.",
+   src:"The 3×5 worksheet — part 1",
+   why:"Keeps the shrinking circle open; the audio-playback trick adds a second sense.",
+   usage:["This app IS your Review block.","Record your ⭐ focus list; play it in the car."]},
+  {id:'u15w3',term:'Rewatch — one speech, 5–7 times',cat:'Phrases',
+   gloss:"重看:一周一篇演讲,重看5-7遍;每遍盯一个层次(修辞→废词→节奏→结构→气场)",
+   hard:[],
+   quote:"Ideally, you rewatch the same speech 5–7 times. Each time you’ll identify a different quality — the rhetorical devices, empty language, metrical feet, sentence structure, or spirit of delivery.",
+   src:"The 3×5 worksheet — part 2 (the American Rhetoric Index)",
+   why:"Depth beats variety: the fifth viewing teaches what the first can’t.",
+   usage:["This week: “I Have a Dream.” Pass 1: anaphora. Pass 2: endings…","One speech a week, from the Speech Bank."]},
+  {id:'u15w4',term:'Recite — poetry aloud',cat:'Phrases',
+   gloss:"朗诵:五分钟读诗出声 —— 练节奏,也顺便摄入永恒元素",
+   hard:[],
+   quote:"Reading poems not only conditions your mouth to dispense metrical feet, but exposes you to eternal elements that shape your perception.",
+   src:"The 3×5 worksheet — part 3",
+   why:"The mouth is a muscle; poems are its barbells.",
+   usage:["Two minutes of “If—” out loud counts.","Rotate: Invictus → Still I Rise → Do Not Go Gentle."]},
+  {id:'u15w5',term:'the 10 Rules of Articulacy',cat:'Phrases',
+   gloss:"十条军规 —— 全课程压缩成十句(锁屏壁纸版);例:#3 更好的词就在几秒外;#8 沉默最难;#9 删空词句子更满;#10 草率的结尾毁掉一切",
+   hard:[],
+   quote:"Articulacy increases when you consciously select your words… A better word is seconds away… Silence is the hardest part… A sentence grows fuller when empty words are stripped away… Careless final words can erode a great many careful ones.",
+   src:"The 10 Rules of Articulacy (course wallpaper)",
+   why:"The reference card for everything you’ve learned — worth keeping on the lock screen.",
+   usage:["Pick ONE rule per week to enforce.","Rule #8 is the one to master last — and most."]},
+  {id:'u15w6',term:'full of intention and invention',cat:'Quotes',
+   gloss:"课程的告别句:愿你的每个词都『有意图、有创造』",
+   hard:[["invention","创造、发明;此处指语言上的原创"]],
+   quote:"May your words, from now until your last, be full of intention and invention — for though we have nothing great to say, we can at least say it well.",
+   src:"BetterSpeak · the final lecture’s closing line",
+   why:"Intention (chosen, not autopilot) + invention (yours, not borrowed) — the course in four words.",
+   usage:["A toast-worthy line for any ending.","The standard: was that sentence intended and invented?"]},
+ ]},
+];
+const PRON={
+ 'starve':'/stɑːrv/','utilize':'/ˈjuːtəlaɪz/','phenomenon':'/fəˈnɑːmɪnən/','objective':'/əbˈdʒektɪv/','liquidate':'/ˈlɪkwɪdeɪt/',
+ 'shrapnel':'/ˈʃræpnəl/','bridle':'/ˈbraɪdl/','array':'/əˈreɪ/','ills':'/ɪlz/','ripple':'/ˈrɪpl/','dawn':'/dɔːn/','selective':'/sɪˈlektɪv/',
+ 'content':'/ˈkɑːntent/','character':'/ˈkærəktər/','trial':'/ˈtraɪəl/','tribulation':'/ˌtrɪbjəˈleɪʃn/','jaws':'/dʒɔːz/','injustice':'/ɪnˈdʒʌstɪs/',
+ 'mighty':'/ˈmaɪti/','sobriety':'/səˈbraɪəti/','desolate':'/ˈdesələt/','infiltrate':'/ˈɪnfɪltreɪt/','abet':'/əˈbet/','quest':'/kwest/',
+ 'grimace':'/ˈɡrɪməs/','chilling':'/ˈtʃɪlɪŋ/','dimension':'/daɪˈmenʃn/','lousy':'/ˈlaʊzi/','the skinny':'/ˈskɪni/','steadfast':'/ˈstedfæst/',
+ 'endure':'/ɪnˈdʊr/','swoon':'/swuːn/','faintly':'/ˈfeɪntli/','ashes':'/ˈæʃɪz/','dust':'/dʌst/','borne away':'/bɔːrn/','ceaselessly':'/ˈsiːsləsli/',
+ 'multitude':'/ˈmʌltɪtuːd/','weep/wept':'/wiːp, wept/','enchanted':'/ɪnˈtʃæntɪd/','mote':'/moʊt/','surly':'/ˈsɜːrli/','bonds':'/bɑːndz/',
+ 'marred':'/mɑːrd/','grudge':'/ɡrʌdʒ/','the promised land':'/ˈprɑːmɪst/','stream':'/striːm/','battlefield':'/ˈbætlfiːld/',
+ 'avalanche (v.)':'/ˈævəlæntʃ/','harvest':'/ˈhɑːrvɪst/','decaffeinated':'/ˌdiːˈkæfɪneɪtɪd/','socket':'/ˈsɑːkɪt/','crescent':'/ˈkresnt/',
+ 'lavatory':'/ˈlævətɔːri/','shin':'/ʃɪn/','choke':'/tʃoʊk/','joust':'/dʒaʊst/','nourishing':'/ˈnɜːrɪʃɪŋ/','vivid':'/ˈvɪvɪd/',
+ 'restorative':'/rɪˈstɔːrətɪv/','remarkable':'/rɪˈmɑːrkəbl/','heartening':'/ˈhɑːrtnɪŋ/','intriguing':'/ɪnˈtriːɡɪŋ/','illuminating':'/ɪˈluːmɪneɪtɪŋ/',
+ 'dazzling':'/ˈdæzlɪŋ/','astonishing':'/əˈstɑːnɪʃɪŋ/','sloppy':'/ˈslɑːpi/','gracious':'/ˈɡreɪʃəs/','composed':'/kəmˈpoʊzd/',
+ 'consequential':'/ˌkɑːnsəˈkwenʃl/','witty':'/ˈwɪti/','absurd':'/əbˈsɜːrd/','grating':'/ˈɡreɪtɪŋ/','tiresome':'/ˈtaɪərsəm/',
+ 'precisely':'/prɪˈsaɪsli/','intensifier':'/ɪnˈtensɪfaɪər/','qualifier':'/ˈkwɑːlɪfaɪər/','filler':'/ˈfɪlər/','operator':'/ˈɑːpəreɪtər/',
+ 'erosion tag':'/ɪˈroʊʒn/','Achilles heel':'/əˈkɪliːz hiːl/','artificial':'/ˌɑːrtɪˈfɪʃl/','half-baked':'/ˌhæf ˈbeɪkt/','infantile':'/ˈɪnfəntaɪl/',
+ 'conscience':'/ˈkɑːnʃəns/','crowning':'/ˈkraʊnɪŋ/','command (n.)':'/kəˈmænd/','flawed':'/flɔːd/','breach':'/briːtʃ/','languish':'/ˈlæŋɡwɪʃ/',
+ 'redundancy':'/rɪˈdʌndənsi/','premise':'/ˈpremɪs/','anadiplosis':'/ˌænədɪˈploʊsɪs/','parallelism':'/ˈpærəlelɪzəm/','periodic sentence':'/ˌpɪriˈɑːdɪk/',
+ 'facet':'/ˈfæsɪt/','deed':'/diːd/','folk':'/foʊk/','chiasmus':'/kaɪˈæzməs/','in the grand scheme of things':'/skiːm/','trochee':'/ˈtroʊkiː/',
+ 'echo':'/ˈekoʊ/','eternity':'/ɪˈtɜːrnəti/','ascent':'/əˈsent/','deception':'/dɪˈsepʃn/','extemporaneous':'/ɪkˌstempəˈreɪniəs/',
+ 'monotonous':'/məˈnɑːtənəs/','crescendo':'/krəˈʃendoʊ/','compressed':'/kəmˈprest/','overtake':'/ˌoʊvərˈteɪk/','currency':'/ˈkɜːrənsi/',
+ 'invention':'/ɪnˈvenʃn/','encyclopedic':'/ɪnˌsaɪkləˈpiːdɪk/','word primer':'/ˈpraɪmər/','key':'/kiː/','inflated':'/ɪnˈfleɪtɪd/'
+};
+const PICKUPS=[
+  {id:'uPw1',term:'parsimonious',cat:'Words',
+   gloss:'(模型/解释)简约的 —— 用最少的假设讲清最多的事;本义也指吝啬',
+   hard:[['parsimonious','/ˌpɑːrsɪˈmoʊniəs/ 简约的;吝啬的']],
+   quote:'We prefer the parsimonious specification — two controls, same story.',
+   src:'Picked up 2026-07-08 · seminar vocabulary',
+   why:'A reviewers’ favorite: praises a lean model, indicts a bloated one.',
+   usage:['The parsimonious model wins on out-of-sample fit.','Occam’s razor, adjectivized.']},
+  {id:'uPw2',term:'serendipity',cat:'Words',
+   gloss:'机缘巧合的美好发现 —— 无心插柳',
+   hard:[['serendipity','/ˌserənˈdɪpəti/ 意外之喜']],
+   quote:'The finding was pure serendipity — we were chasing a different question.',
+   src:'Picked up 2026-07-08',
+   why:'Names the happiest kind of research accident.',
+   usage:['Serendipity favors the prepared dataset.','For discoveries, not casino luck.']},
+];
+if(PICKUPS.length)UNITS.push({id:'uP',title:'My Pickups',zh:'我的生词',from:'Ongoing · curated with Coach · 持续积累',
+ essence:'Words you pick up from real life — papers, seminars, shows — turned into full cards. Tell Coach <b>“记词 X”</b> in chat: it gets annotated and appears here (and in the practice pool). This unit is the engine that outlives the course.<br><span style="color:var(--muted)">生活里捡到的词,交给 Coach 加工成完整词卡——持续生长的一关。</span>',
+ words:PICKUPS});
+const ALLWORDS=UNITS.flatMap(u=>u.words.map(w=>({...w,unit:u.id})));
+
+/* ============ STATE ============ */
+let state=load();
+function load(){
+  try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.words){ALLWORDS.forEach(w=>{if(!s.words[w.id])s.words[w.id]={learned:false,star:false,uses:0,next:0}});return s;}}catch(e){}
+  const fresh={words:{},custom:[],streak:0,lastDay:0,reps:0};
+  ALLWORDS.forEach(w=>fresh.words[w.id]={learned:false,star:false,uses:0,next:0});
+  try{const old=JSON.parse(localStorage.getItem(V2KEY));
+    if(old&&old.cards){
+      fresh.custom=old.cards.filter(c=>!String(c.id).startsWith('seed')).map(c=>({id:c.id,term:c.term,meaning:c.meaning||'',example:c.example||'',source:c.source||'',cat:c.cat||'Words',star:!!c.star,learned:true,uses:c.uses||0,next:c.next||today()}));
+      fresh.streak=old.streak||0;fresh.lastDay=old.lastDay||0;fresh.reps=old.reps||0;
+      old.cards.filter(c=>String(c.id).startsWith('seed')).forEach(c=>{
+        const m=ALLWORDS.find(w=>w.term===c.term); if(m){fresh.words[m.id]={learned:!!c.learned,star:!!c.star,uses:c.uses||0,next:c.next||0};}
+      });
+    }
+  }catch(e){}
+  return fresh;
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function esc(s){return (s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+function ws(id){if(!state.words[id])state.words[id]={learned:false,star:false,uses:0,next:0};return state.words[id]}
+
+/* ============ LEARN ============ */
+let inUnit=null, idx=-1;
+function unitLearnedCount(u){return u.words.filter(w=>ws(w.id).learned).length}
+function unitDone(u){return unitLearnedCount(u)===u.words.length}
+function unitUnlocked(i){return true}
+
+function renderLearn(){
+  const area=document.getElementById('learnArea');
+  if(!inUnit){
+    const doneAll=UNITS.every(unitDone);
+    document.getElementById('learnSub').textContent = doneAll
+      ? 'All units complete — Practice is now the main game: repeat each word toward 38 uses.'
+      : 'Twenty themed units — enter any, in any order. Cards shuffle each visit.';
+    area.innerHTML=UNITS.map((u,i)=>{
+      const done=unitDone(u),n=unitLearnedCount(u);
+      const cls=done?'done':(n>0?'active':'');
+      const icon=done?'✓':(i+1);
+      return `<div class="unit ${cls}" onclick="enterUnit('${u.id}')">
+        <div class="badge">${icon}</div>
+        <div><div class="ut">${esc(u.title)}${u.zh?` <span class="uz">· ${esc(u.zh)}</span>`:''}</div><div class="um">${esc(u.from)} · ${u.words.length} entries</div></div>
+        <div class="prog">${n}/${u.words.length}</div>
+      </div>`;
+    }).join('');
+    updateBadges();return;
+  }
+  const u=inUnit;
+  if(idx===-1){
+    area.innerHTML=`<div class="card">
+      <span class="cat-chip">UNIT ${UNITS.indexOf(u)+1} · ${esc(u.from)}</span>
+      <div class="term" style="font-size:24px">${esc(u.title)}${u.zh?`<br><span style="font-size:17px;color:var(--wood-dk)">${esc(u.zh)}</span>`:''}</div>
+      <div class="blk"><span class="lbl">Why this matters</span>${u.essence}</div>
+      <div class="row">
+        <button class="btn ghost slim" onclick="exitUnit()">← Home</button>
+        <button class="btn primary" onclick="go(0)">Start →</button>
+      </div></div>`;
+    return;
+  }
+  const w=(u._sess||u.words)[idx], s=ws(w.id);
+  area.innerHTML=`<div class="card">
+     <button class="starbtn ${s.star?'on':''}" onclick="toggleStar('${w.id}')" title="focus">★</button>
+     <span class="cat-chip">${esc(w.cat)}</span>
+     <div class="term">${esc(w.term)}</div>
+     <div class="blk"><span class="lbl">Meaning</span>${esc(w.gloss)}</div>
+     ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">Word notes</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class=\"ipa\">${PRON[h[0]]}</span>`:''} — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
+     <div class="blk"><span class="lbl">Source</span><div class="quote"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(w.src)}</span></div></div>
+     <div class="blk"><span class="lbl">Why it matters</span>${esc(w.why)}</div>
+     <div class="blk"><span class="lbl">Usage</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+     <div class="stepdots">${idx+1} / ${u.words.length}</div>
+     <div class="row">
+       <button class="btn ghost slim" onclick="exitUnit()">⌂ Home</button>
+       <button class="btn ghost slim" onclick="go(${idx-1})">← Back</button>
+       <button class="btn primary" onclick="learnNext()">Next →</button>
+     </div></div>`;
+}
+function enterUnit(id){inUnit=UNITS.find(u=>u.id===id);inUnit._sess=inUnit.ordered?[...inUnit.words]:[...inUnit.words].sort(()=>Math.random()-.5);idx=-1;renderLearn();window.scrollTo(0,0)}
+function exitUnit(){inUnit=null;idx=-1;renderLearn()}
+function go(i){ if(i<-1)i=-1; idx=i; renderLearn(); window.scrollTo(0,0)}
+function learnNext(){
+  const u=inUnit,w=(u._sess||u.words)[idx],s=ws(w.id);
+  if(!s.learned){s.learned=true;s.next=today();}
+  save();
+  if(idx+1<u.words.length){go(idx+1);}
+  else{
+    const area=document.getElementById('learnArea');
+    const i=UNITS.indexOf(u), nxt=UNITS[i+1];
+    area.innerHTML=`<div class="card done-msg"><div class="big">Unit ${i+1} complete</div>
+      ${u.words.length} entries added to your practice pool.<br><br>
+      <div class="row" style="justify-content:center">
+        <button class="btn ghost slim" onclick="exitUnit()">Home</button>
+        ${nxt?`<button class="btn primary slim" onclick="enterUnit('${nxt.id}')">Next unit →</button>`:`<button class="btn primary slim" onclick="switchTo('practice')">Practice →</button>`}
+      </div></div>`;
+    updateBadges();
+  }
+}
+
+/* ============ PRACTICE ============ */
+function practicePool(){
+  const cur=ALLWORDS.filter(w=>ws(w.id).learned).map(w=>({kind:'cur',w,s:ws(w.id)}));
+  const cus=state.custom.map(c=>({kind:'cus',w:c,s:c}));
+  return [...cur,...cus].filter(x=>x.s.uses<38);
+}
+let pracQ=[],pc=null,extra=false;
+function buildPrac(forceExtra){
+  extra=!!forceExtra;
+  const pool=practicePool(), t=today();
+  let q=pool.filter(x=>x.s.next<=t);
+  if(forceExtra&&!q.length){ q=[...pool].sort(()=>Math.random()-.5).slice(0,5); }
+  q.forEach(x=>x._r=Math.random());
+  q.sort((a,b)=>(b.s.star-a.s.star)||(a.s.next-b.s.next)||(a.s.uses-b.s.uses)||(a._r-b._r));
+  pracQ=q;pc=q[0]||null;
+}
+function renderPrac(forceExtra){
+  buildPrac(forceExtra);
+  const nStar=pracQ.filter(x=>x.s.star).length;
+  document.getElementById('pracSub').textContent = pracQ.length? `${pracQ.length} due · order: ⭐ focus → schedule (1·3·7·14·30d) → fewest reps${nStar?` · ${nStar} in focus`:''}` : '';
+  const area=document.getElementById('pracArea');
+  if(!pc){
+    const pool=practicePool();
+    area.innerHTML=`<div class="card done-msg"><div class="big">All caught up ✦</div>
+      ${pool.length?`Nothing due right now.<div class="row" style="justify-content:center;margin-top:14px"><button class="btn soft slim" onclick="renderPrac(true)">Extra practice · 5 random</button></div>`:'Complete your first unit in Learn to unlock practice.'}
+      </div>`;
+    updateBadges();return;
+  }
+  const x=pc,w=x.w,s=x.s;
+  area.innerHTML=`<div class="card">
+     <button class="starbtn ${s.star?'on':''}" id="pStar" onclick="pracStar()" title="focus">★</button>
+     <span class="cat-chip">${esc(x.kind==='cur'?w.cat:(w.cat||'Words'))}</span>
+     <div class="term">${esc(w.term)}</div>
+     <div class="meter"><i style="width:${Math.min(100,s.uses/38*100)}%"></i></div>
+     <div class="meter-lbl">used ${s.uses} / ~38 · ${s.star?'⭐ focus — returns daily':(s.uses===0?'first rep':'scheduled review')}${extra?' · extra session':''}</div>
+     <div class="prompt">Write a sentence you'd actually say:</div>
+     <textarea id="answer" placeholder="In a meeting, a paper, a conversation…"></textarea>
+     <div class="reveal" id="reveal">
+       ${x.kind==='cur'?`
+         <div class="blk"><span class="lbl">Meaning</span>${esc(w.gloss)}</div>
+         <div class="blk"><div class="quote"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(w.src)}</span></div></div>
+         <div class="blk"><span class="lbl">Usage</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`
+       :`${w.meaning?`<div class="blk"><span class="lbl">Meaning</span>${esc(w.meaning)}</div>`:''}
+         ${w.example?`<div class="blk"><div class="quote"><span class="q">“${esc(w.example)}”</span>${w.source?`<span class="src">— ${esc(w.source)}</span>`:''}</div></div>`:''}
+         ${w.why?`<div class="blk"><span class="lbl">Why it matters</span>${esc(w.why)}</div>`:''}
+         ${(w.usage&&w.usage.length)?`<div class="blk"><span class="lbl">Usage</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}`}
+     </div>
+     <div class="row" id="pRow1"><button class="btn primary" onclick="checkPrac()">Check →</button></div>
+     <div class="row" id="pRow2" style="display:none">
+       <button class="btn soft" onclick="finishPrac(true)">☆ Needs work — focus</button>
+       <button class="btn primary" onclick="finishPrac(false)">Count it ✓</button>
+     </div></div>`;
+  updateBadges();
+}
+function pracStar(){const s=pc.s;s.star=!s.star;save();document.getElementById('pStar').classList.toggle('on',s.star);renderStats();}
+function checkPrac(){document.getElementById('reveal').classList.add('show');document.getElementById('pRow1').style.display='none';document.getElementById('pRow2').style.display='flex';}
+function finishPrac(keepFocus){
+  const s=pc.s; s.uses++; state.reps++;
+  if(keepFocus){ s.star=true; s.next=today()+DAY; }
+  else{ s.star=false; const step=Math.min(INTERVALS.length-1,Math.floor(s.uses/2)); s.next=today()+INTERVALS[step]*DAY; }
+  bumpStreak(); save(); renderPrac(extra); renderStats();
+}
+function bumpStreak(){const t=today(); if(state.lastDay!==t){state.streak=(state.lastDay===t-DAY)?state.streak+1:1; state.lastDay=t; renderStreak();}}
+
+/* ============ BANK ============ */
+let bankFilter='All';
+const CATS=['Words','Phrases','Similes','Alliterations','Quotes','Workhorse swaps','Lexical gaps','Dedicated terms','Custom'];
+function bankItems(){
+  const cur=ALLWORDS.map(w=>({kind:'cur',id:w.id,term:w.term,meaning:w.gloss,source:w.src,cat:w.cat,s:ws(w.id)}));
+  const cus=state.custom.map(c=>({kind:'cus',id:c.id,term:c.term,meaning:c.meaning,source:c.source,cat:c.cat||'Words',s:c}));
+  return [...cur,...cus];
+}
+function renderFilters(){
+  const all=bankItems();
+  const counts={'All':all.length,'⭐ Focus':all.filter(x=>x.s.star).length};
+  CATS.forEach(c=>{const n=all.filter(x=>x.cat===c).length;if(n)counts[c]=n;});
+  document.getElementById('filters').innerHTML=Object.keys(counts).map(f=>
+    `<button class="fchip ${bankFilter===f?'on':''}" onclick="setFilter('${f}')">${f} · ${counts[f]}</button>`).join('');
+}
+function setFilter(f){bankFilter=f;renderBank();}
+function renderBank(){
+  renderFilters();
+  const el=document.getElementById('bankList');
+  let items=bankItems();
+  if(bankFilter==='⭐ Focus')items=items.filter(x=>x.s.star);
+  else if(bankFilter!=='All')items=items.filter(x=>x.cat===bankFilter);
+  if(!items.length){el.innerHTML=`<div class="empty">Nothing here yet.</div>`;return;}
+  const groups=(bankFilter==='All'||bankFilter==='⭐ Focus')?CATS:[bankFilter];
+  el.innerHTML=groups.map(cat=>{
+    const g=items.filter(x=>x.cat===cat); if(!g.length)return '';
+    return `<div class="grp-title">${cat} · ${g.length}</div>`+g.map(x=>`
+      <div class="entry">
+        <button class="estar ${x.s.star?'on':''}" onclick="toggleStar('${x.id}')">★</button>
+        <div style="flex:1">
+          <div class="t">${esc(x.term)} ${x.s.uses>=38?'<span class="grad">✦ AUTOMATIC</span>':(!x.s.learned?'<span class="newtag">NEW</span>':'')}</div>
+          ${x.meaning?`<div class="mm">${esc(x.meaning)}</div>`:''}
+          ${x.source?`<div class="mm" style="font-size:12px">— ${esc(x.source)}</div>`:''}
+          <div class="uses">used ${x.s.uses}/38</div>
+        </div>
+        ${x.kind==='cus'?`<button class="x" onclick="del('${x.id}')">×</button>`:''}
+      </div>`).join('');
+  }).join('');
+}
+function toggleForm(){document.getElementById('miniform').classList.toggle('show');document.getElementById('fKey').value=localStorage.getItem('bs_key')||'';const q=document.getElementById('quickTerm').value.trim();if(q)document.getElementById('fTerm').value=q;}
+let _af=null;
+async function autoFill(){
+  const term=(document.getElementById('fTerm').value||document.getElementById('quickTerm').value).trim();
+  if(!term){alert('Type a word or phrase first.');return;}
+  document.getElementById('fTerm').value=term;
+  const btn=document.getElementById('afBtn');btn.textContent='… filling';btn.disabled=true;_af=null;
+  try{
+    const key=(localStorage.getItem('bs_key')||'').trim();
+    if(key){await afClaude(term,key);}else{await afDict(term);}
+  }catch(e){alert('Auto-fill hit a snag: '+e.message+'. You can still fill fields by hand.');}
+  btn.textContent='✨ Auto-fill the rest';btn.disabled=false;
+}
+async function afDict(term){
+  let ipa='',def='',ex='';
+  try{const r=await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(term));
+    if(r.ok){const j=await r.json();const e0=j[0]||{};
+      ipa=e0.phonetic||(((e0.phonetics||[]).find(p=>p.text)||{}).text)||'';
+      const m=(e0.meanings||[])[0]||{};const d=(m.definitions||[])[0]||{};def=d.definition||'';ex=d.example||'';}
+  }catch(e){}
+  let zh='';
+  try{const r2=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(term)+'&langpair=en|zh-CN');
+    if(r2.ok){const j2=await r2.json();zh=((j2.responseData||{}).translatedText||'').trim();if(zh.toLowerCase()===term.toLowerCase())zh='';}
+  }catch(e){}
+  if(!def&&!zh)throw new Error('no dictionary result');
+  document.getElementById('fMeaning').value=[ipa,def,zh?('— '+zh):''].filter(Boolean).join(' ');
+  if(ex)document.getElementById('fExample').value=ex;
+  if(!document.getElementById('fSource').value)document.getElementById('fSource').value='Auto-filled · dictionary';
+}
+async function afClaude(term,key){
+  const body={model:'claude-haiku-4-5',max_tokens:600,messages:[{role:'user',content:'You are VocabularyGPT, a linguistics professor, poet, and renowned writer (per the BetterSpeak course prompts): you have rich, expressive vocabulary, speak with clarity and precision, and avoid needlessly complex language. Create a vocabulary card for "'+term+'" for a Chinese-native academic training articulate English speech. Reply ONLY with JSON: {"ipa":"/…/","gloss_en":"one plain line","gloss_zh":"简洁中文释义","example":"one natural sentence using it (academic/professional life if apt)","source":"register note or who says this","why":"one line on why this word is worth owning","usage":["short line 1","short line 2"]}'}]};
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error('API '+r.status);
+  const j=await r.json();const t=((j.content||[])[0]||{}).text||'';
+  const m=t.match(/\{[\s\S]*\}/);if(!m)throw new Error('unparseable reply');
+  const c=JSON.parse(m[0]);
+  document.getElementById('fMeaning').value=[c.ipa,c.gloss_en,c.gloss_zh?('— '+c.gloss_zh):''].filter(Boolean).join(' ');
+  document.getElementById('fExample').value=c.example||'';
+  document.getElementById('fSource').value=c.source||'AI-annotated';
+  _af={why:c.why||'',usage:Array.isArray(c.usage)?c.usage.slice(0,2):[]};
+}
+function saveForm(){
+  const term=document.getElementById('fTerm').value.trim(); if(!term)return;
+  state.custom.push({id:'c'+Date.now(),term,meaning:document.getElementById('fMeaning').value.trim(),example:document.getElementById('fExample').value.trim(),source:document.getElementById('fSource').value.trim(),cat:document.getElementById('fCat').value,why:(_af&&_af.why)||'',usage:(_af&&_af.usage)||[],star:false,learned:true,uses:0,next:today()});_af=null;
+  ['fTerm','fMeaning','fExample','fSource','quickTerm'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('miniform').classList.remove('show');
+  save(); renderBank(); renderStats(); updateBadges();
+}
+document.getElementById('quickTerm').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=e.target.value.trim();if(v){state.custom.push({id:'c'+Date.now(),term:v,meaning:'',example:'',source:'',cat:'Words',star:false,learned:true,uses:0,next:today()});e.target.value='';save();renderBank();renderStats();updateBadges();}}});
+function del(id){state.custom=state.custom.filter(c=>c.id!==id);save();renderBank();renderStats();updateBadges();}
+function toggleStar(id){
+  const cus=state.custom.find(c=>c.id===id);
+  if(cus)cus.star=!cus.star; else {const s=ws(id);s.star=!s.star;}
+  save();
+  const v=currentView();
+  if(v==='learn')renderLearn(); else if(v==='bank')renderBank();
+  renderStats();
+}
+
+/* ============ DRILLS ============ */
+const MC_ADJ=['smoky','refried','decaffeinated','hollow','understated','zigzagged','frosty','sparkling','toasted','dusty','clouded'];
+const MC_NOUN=['conversation','railroad','rainbow','rainforest','eyebrows','coffee','squirrel','surfboard','wood stove','reef','aroma','deadline','inbox','seminar','dataset','commute'];
+let mcPair=null;
+function mcNew(){
+  mcPair=[MC_ADJ[Math.floor(Math.random()*MC_ADJ.length)],MC_NOUN[Math.floor(Math.random()*MC_NOUN.length)]];
+  document.getElementById('mcPrompt').innerHTML=`<span class="lbl">Your collision(练习册词表随机)</span><div class="quote"><span class="q" style="font-style:normal;font-size:18px"><b>${mcPair[0]}</b> × <b>${mcPair[1]}</b></span><span class="src">Method ① “${mcPair[0]}” 自带什么特质? ② “${mcPair[1]}” 怎么也能有这个特质?</span></div>`;
+  document.getElementById('mcOut').innerHTML='';document.getElementById('mcAnswer').value='';
+}
+async function mcCheck(){
+  const ans=document.getElementById('mcAnswer').value.trim();
+  if(!ans){alert('Write your collision sentence first.');return;}
+  const out=document.getElementById('mcOut');
+  state.reps++;bumpStreak();save();
+  const key=(localStorage.getItem('bs_key')||'').trim();
+  if(!key){
+    out.innerHTML=`<span class="lbl">Offline self-check</span><div class="tip">Day 7 三问自检:① 借来的特质清楚吗? ② 画面出人意料吗? ③ 还能顺着这个 frame 再说一句吗?<br>范例:“Even the rainbow this afternoon has been decaffeinated.” — 在 Bank → AI key 里加个 key 可获得真实点评。</div>`;
+    return;
+  }
+  out.innerHTML='<div class="tip">… asking the coach</div>';
+  try{
+    const t=await aiText(`You are a BetterSpeak metaphor coach (Day 7: the two-question method — what trait does my idea have? what else has that trait?). The student was given the collision "${mcPair?mcPair.join(' × '):'free choice'}" and wrote: "${ans}". Reply in 4 short lines, bilingual-friendly plain English: 1) verdict (fresh / works / forced) + one reason; 2) the trait their metaphor borrows; 3) one improved version; 4) one way to extend the frame one more sentence. No preamble.`);
+    out.innerHTML=`<span class="lbl">Coach feedback</span><div class="tip" style="white-space:pre-wrap">${esc(t)}</div>`;
+  }catch(e){out.innerHTML=`<div class="tip">AI feedback failed (${esc(e.message)}) — offline self-check still applies.</div>`;}
+}
+const ER_WORDS=['good','nice','cringe','literally','sick','basically','lame','best','amazing','interesting','absolutely','sus','toxic','tons','cool','important','bad','sucks','bunch','essentially','depressed','wild','iconic','pretty','funny','no brainer','leverage','big','thing','legit','full-blown','vibes','unbelievable','fantastic','honestly','win-win','annoying','triggered','whatever','irregardless','huge','awesome','famous','pissed','stupid','basic','addicting','killer','really','very','just','kind of','sort of','super','totally','virtually','pretty much','you know','i feel like','um','uh','like','so','stuff','actually','at the end of the day','deep dive','touch base','low-hanging fruit','move the needle','in terms of','when it comes to'];
+async function erCheck(){
+  const inp=document.getElementById('erInput').value.trim();
+  if(!inp){alert('Paste a sentence first.');return;}
+  const out=document.getElementById('erOut');
+  state.reps++;bumpStreak();save();
+  const low=' '+inp.toLowerCase().replace(/[^a-z' ]/g,' ')+' ';
+  const hits=[...new Set(ER_WORDS.filter(w=>low.includes(' '+w+' ')))];
+  let html= hits.length
+    ? `<span class="lbl">Offline scan(对照课程词表)</span><div class="tip">⚠️ ${hits.map(h=>'<b>'+esc(h)+'</b>').join(' · ')} — ${hits.length} 个万能词/废词。每个都在 Workhorse Upgrades / Pruning 关有升级卡。</div>`
+    : `<div class="tip">✅ Offline scan:课程词表内无命中(扫描只认识课程清单)。</div>`;
+  out.innerHTML=html;
+  const key=(localStorage.getItem('bs_key')||'').trim();
+  if(!key)return;
+  out.innerHTML=html+'<div class="tip">… asking VocabularyGPT</div>';
+  try{
+    const t=await aiText(`You are VocabularyGPT (BetterSpeak Day 8): a linguistics professor and poet who prizes clarity over complexity and never recommends needlessly big words. Diagnose this sentence a student actually said: "${inp}". Reply in 5 short lines: 1) its workhorse/vague/empty words; 2) for the single worst offender, three precise alternatives fitted to this exact context; 3) the full sentence rewritten with the best choice; 4) anything already strong; 5) one-line takeaway. No preamble.`);
+    out.innerHTML=html+`<span class="lbl">VocabularyGPT</span><div class="tip" style="white-space:pre-wrap">${esc(t)}</div>`;
+  }catch(e){out.innerHTML=html+`<div class="tip">AI feedback failed (${esc(e.message)}).</div>`;}
+}
+async function aiText(prompt){
+  const key=(localStorage.getItem('bs_key')||'').trim(); if(!key)throw new Error('no key');
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5',max_tokens:450,messages:[{role:'user',content:prompt}]})});
+  if(!r.ok)throw new Error('API '+r.status);
+  const j=await r.json();return ((j.content||[])[0]||{}).text||'';
+}
+
+/* ============ STATS / NAV ============ */
+function renderStats(){
+  const t=today(),pool=bankItems();
+  document.getElementById('sUnits').textContent=UNITS.filter(unitDone).length+' / '+UNITS.length;
+  document.getElementById('sLearned').textContent=pool.filter(x=>x.s.learned).length;
+  document.getElementById('sStar').textContent=pool.filter(x=>x.s.star).length;
+  document.getElementById('sReps').textContent=state.reps;
+  document.getElementById('sGrad').textContent=pool.filter(x=>x.s.uses>=38).length;
+  document.getElementById('sDue').textContent=practicePool().filter(x=>x.s.next<=t).length;
+  const learned=pool.filter(x=>x.s.learned);
+  const avg=learned.length?learned.reduce((s,x)=>s+Math.min(38,x.s.uses),0)/learned.length/38:0;
+  const stage=Math.max(1,Math.min(9,Math.round(1+avg*8)));
+  document.getElementById('ascentBar').style.width=(stage/9*100)+'%';
+  const names=['','Innocent Ignorance','The Awakening','Verbal Rebranding','Confidence Catalyst','Perfection Deception','Natural Expression','Structural Mastery','Simple Eloquence','Golden Tongue'];
+  document.getElementById('ascentLbl').textContent=`Stage ${stage} — ${names[stage]} · aim for Stage 6`;
+}
+function renderStreak(){document.getElementById('streak').innerHTML=state.streak>0?`🔥 <b>${state.streak}</b>-day`:'start your streak'}
+function updateBadges(){
+  const nL=ALLWORDS.filter(w=>!ws(w.id).learned).length;
+  const nP=practicePool().filter(x=>x.s.next<=today()).length;
+  const bl=document.getElementById('bLearn'),bp=document.getElementById('bPrac');
+  bl.textContent=nL||'';bl.style.display=nL?'inline':'none';
+  bp.textContent=nP||'';bp.style.display=nP?'inline':'none';
+}
+function currentView(){const b=document.querySelector('nav button.on');return b?b.dataset.v:'learn'}
+function switchTo(v){document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));
+  ['learn','practice','drills','bank','stats'].forEach(k=>document.getElementById('v-'+k).style.display=(k===v)?'block':'none');
+  if(v==='learn')renderLearn(); if(v==='practice')renderPrac(); if(v==='drills'&&!mcPair)mcNew(); if(v==='bank')renderBank(); if(v==='stats')renderStats();
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='learn'){inUnit=null;idx=-1;}switchTo(b.dataset.v);});
+
+
+/* init */
+renderLearn(); renderStreak(); renderStats(); updateBadges();
+</script>
+</body>
+</html>
