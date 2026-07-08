@@ -169,7 +169,8 @@
       <div class="blk" id="shQuote"></div>
       <div class="row">
         <button class="btn ghost slim" onclick="shNew()">🎲 New line</button>
-        <button class="btn ghost slim" onclick="shListen()">🔊 Listen</button>
+        <button class="btn ghost slim" onclick="shListen()">🔊 TTS</button>
+        <button class="btn ghost slim" onclick="if(shCur&&hasOrig(shCur))window.open(origUrl(shCur));else alert('这条是课程自产内容,没有历史原声。')">▶︎ Original</button>
         <button class="btn primary slim" id="shRecBtn" onclick="shRec()">● Record</button>
       </div>
       <div id="shLive" class="tip" style="display:none"></div>
@@ -2892,7 +2893,7 @@ function renderLearn(){
      <div class="term">${esc(w.term)}<button class="sayb" onclick="say(ALLWORDS.find(x=>x.id==='${w.id}').term)" title="listen">🔊</button></div>
      <div class="blk"><span class="lbl">Meaning</span>${esc(w.gloss)}</div>
      ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">Word notes</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class=\"ipa\">${PRON[h[0]]}</span>`:''} — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
-     <div class="blk"><span class="lbl">Source</span><div class="quote"><span class="q">“${esc(w.quote)}”<button class="sayb" onclick="say(ALLWORDS.find(x=>x.id==='${w.id}').quote)" title="hear it read">🔊</button></span><span class="src">— ${esc(w.src)}</span></div></div>
+     <div class="blk"><span class="lbl">Source</span><div class="quote"><span class="q">“${esc(w.quote)}”<button class="sayb" onclick="say(ALLWORDS.find(x=>x.id==='${w.id}').quote)" title="clear TTS reference">🔊</button>${hasOrig(w)?`<a class="sayb" style="text-decoration:none" href="${origUrl(w)}" target="_blank" title="hear the ORIGINAL delivery">▶︎</a>`:''}</span><span class="src">— ${esc(w.src)}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">original ↗</a>':''}</span></div></div>
      <div class="blk"><span class="lbl">Why it matters</span>${esc(w.why)}</div>
      <div class="blk"><span class="lbl">Usage</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
      <div class="stepdots">${idx+1} / ${u.words.length}</div>
@@ -3007,7 +3008,7 @@ function renderItem(){
       <div class="reveal" id="reveal">
         ${x.kind==='cur'?`
           <div class="blk"><span class="lbl">Meaning</span>${esc(w.gloss)}</div>
-          <div class="blk"><div class="quote"><span class="q">“${esc(w.quote)}”<button class="sayb" onclick="say(sess.q[sess.i].w.quote)">🔊</button></span><span class="src">— ${esc(w.src)}</span></div></div>
+          <div class="blk"><div class="quote"><span class="q">“${esc(w.quote)}”<button class="sayb" onclick="say(sess.q[sess.i].w.quote)">🔊</button></span><span class="src">— ${esc(w.src)}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green)">original ↗</a>':''}</span></div></div>
           <div class="blk"><span class="lbl">Usage</span><ul class="usage">${(w.usage||[]).map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`
         :`${w.meaning?`<div class="blk"><span class="lbl">Meaning</span>${esc(w.meaning)}</div>`:''}
           ${w.example?`<div class="blk"><div class="quote"><span class="q">“${esc(w.example)}”</span>${w.source?`<span class="src">— ${esc(w.source)}</span>`:''}</div></div>`:''}
@@ -3177,6 +3178,13 @@ function makeRec(onText,onEnd){
   r.onerror=ev=>{if(ev.error!=='no-speech'&&ev.error!=='aborted')alert('Mic error: '+ev.error+' (voice needs the https version + mic permission)');};
   return r;
 }
+function hasOrig(w){return w&&w.quote&&w.src&&!/^BetterSpeak|worksheet|Index|canon supplement$/.test(w.src)&&!w.src.startsWith('BetterSpeak')&&!w.src.startsWith('Picked up');}
+function origUrl(w){
+  const who=(w.src||'').split('—')[0].split(',')[0].replace(/[“”"]/g,'').trim();
+  const snippet=toksKeep(w.quote).slice(0,8).join(' ');
+  return 'https://www.youtube.com/results?search_query='+encodeURIComponent(snippet+' '+who);
+}
+function toksKeep(t){return t.replace(/[“”]/g,'').split(/\s+/).filter(Boolean);}
 function toks(t){return t.toLowerCase().replace(/[’']/g,"'").replace(/[^a-z' ]+/g,' ').split(/\s+/).filter(Boolean);}
 
 /* ---- Shadow Reading ---- */
@@ -3184,7 +3192,8 @@ let shCur=null,shR=null,shOn=false;
 function shPool(){return ALLWORDS.filter(w=>{const n=toks(w.quote).length;return n>=6&&n<=26;});}
 function shNew(){
   const p=shPool(); shCur=p[Math.floor(Math.random()*p.length)];
-  document.getElementById('shQuote').innerHTML=`<div class="quote"><span class="q">“${esc(shCur.quote)}”</span><span class="src">— ${esc(shCur.src)}</span></div>`;
+  document.getElementById('shQuote').innerHTML=`<div class="quote"><span class="q">“${esc(shCur.quote)}”</span><span class="src">— ${esc(shCur.src)}${hasOrig(shCur)?' · <a href="'+origUrl(shCur)+'" target="_blank" style="color:var(--green)">original ↗</a>':''}</span></div>
+   <div style="font-size:12px;color:var(--muted);margin-top:6px">🔊 = 清晰参照(逐词) · ▶︎ 原声 = 语感来源(节奏与气场,课程 Rewatch 的正主)</div>`;
   document.getElementById('shOut').innerHTML='';document.getElementById('shLive').style.display='none';
 }
 function shListen(){if(shCur)say(shCur.quote);}
