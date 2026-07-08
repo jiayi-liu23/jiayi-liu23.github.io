@@ -2939,8 +2939,11 @@ function exType(x){
   const u=x.s.uses||0, t=String(x.w.term);
   if(u>=4) return 'write';
   if(t.includes('→')) return 'swap';
-  const qtext=((x.kind==='cur'?x.w.quote:x.w.example)||'').toLowerCase();
-  if(keyWord(t)&&qtext.includes(keyWord(t))) return 'cloze';
+  // cloze ONLY for real, person-attributed famous lines — never course-internal prose
+  if(x.kind==='cur'&&hasOrig(x.w)){
+    const qtext=(x.w.quote||'').toLowerCase();
+    if(keyWord(t)&&qtext.includes(keyWord(t))) return 'cloze';
+  }
   return (x.kind==='cus'&&!x.w.meaning)?'write':'recall';
 }
 function norm(s){return String(s||'').toLowerCase().replace(/[’']/g,"'").replace(/[^a-z' ]+/g,' ').replace(/\s+/g,' ').trim();}
