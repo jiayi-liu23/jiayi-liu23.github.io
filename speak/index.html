@@ -79,6 +79,16 @@
   .btn.ghost{background:#fff;border:1px solid var(--hair);color:var(--ink)}
   .btn.soft{background:var(--sage);color:var(--green)}
   .btn.slim{flex:0 0 auto}
+  .opt{display:block;width:100%;text-align:left;margin-top:8px;padding:12px 14px;border:1px solid var(--hair);border-radius:12px;background:#fff;font-family:var(--sans);font-size:14.5px;color:var(--ink);cursor:pointer;transition:background .15s}
+  .opt:hover{background:#FCFAF6}
+  .opt.ok{background:var(--sage);border-color:var(--green);color:var(--green);font-weight:700}
+  .opt.bad{background:#F7E5DF;border-color:var(--terra);color:var(--terra)}
+  .opt:disabled{cursor:default;opacity:.9}
+  .sessbar{height:8px;background:var(--sage);border-radius:20px;margin:2px 0 14px;overflow:hidden}
+  .sessbar i{display:block;height:100%;background:var(--wood);border-radius:20px;transition:width .3s}
+  .sayb{background:none;border:none;font-size:17px;cursor:pointer;vertical-align:middle;margin-left:6px;opacity:.65}
+  .sayb:hover{opacity:1}
+  .xp{color:var(--gold);font-weight:700}
 
   .meter{height:7px;background:var(--sage);border-radius:20px;overflow:hidden;margin:14px 0 4px}
   .meter i{display:block;height:100%;background:var(--wood);border-radius:20px}
@@ -2029,6 +2039,12 @@ function save(){localStorage.setItem(KEY,JSON.stringify(state))}
 function esc(s){return (s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
 function ws(id){if(!state.words[id])state.words[id]={learned:false,star:false,uses:0,next:0};return state.words[id]}
 
+/* ============ AUDIO + XP ============ */
+function say(t){try{if(!t)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/…/g,'.'));u.lang='en-US';u.rate=0.95;speechSynthesis.speak(u);}catch(e){}}
+const XP_GOAL=50;
+function xpToday(){const t=today();if(state.xpDay!==t){state.xpDay=t;state.xpNow=0;}return state.xpNow||0;}
+function addXP(n){const t=today();if(state.xpDay!==t){state.xpDay=t;state.xpNow=0;}state.xpNow=(state.xpNow||0)+n;state.xp=(state.xp||0)+n;save();renderStreak();}
+
 /* ============ LEARN ============ */
 let inUnit=null, idx=-1;
 function unitLearnedCount(u){return u.words.filter(w=>ws(w.id).learned).length}
@@ -2042,7 +2058,9 @@ function renderLearn(){
     document.getElementById('learnSub').textContent = doneAll
       ? 'All units complete — Practice is now the main game: repeat each word toward 38 uses.'
       : 'Twenty themed units — enter any, in any order. Cards shuffle each visit.';
-    area.innerHTML=UNITS.map((u,i)=>{
+    const cont=UNITS.find(u=>!unitDone(u)&&unitLearnedCount(u)>0)||UNITS.find(u=>!unitDone(u));
+    const hero=cont?`<div class="card" style="margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="enterUnit('${cont.id}')"><div style="font-size:26px">▶</div><div><div style="font-weight:700">Continue: ${esc(cont.title)}</div><div style="font-size:12.5px;color:var(--muted)">${unitLearnedCount(cont)}/${cont.words.length} · pick up where you left off</div></div></div>`:'';
+    area.innerHTML=hero+UNITS.map((u,i)=>{
       const done=unitDone(u),n=unitLearnedCount(u);
       const cls=done?'done':(n>0?'active':'');
       const icon=done?'✓':(i+1);
@@ -2070,10 +2088,10 @@ function renderLearn(){
   area.innerHTML=`<div class="card">
      <button class="starbtn ${s.star?'on':''}" onclick="toggleStar('${w.id}')" title="focus">★</button>
      <span class="cat-chip">${esc(w.cat)}</span>
-     <div class="term">${esc(w.term)}</div>
+     <div class="term">${esc(w.term)}<button class="sayb" onclick="say(ALLWORDS.find(x=>x.id==='${w.id}').term)" title="listen">🔊</button></div>
      <div class="blk"><span class="lbl">Meaning</span>${esc(w.gloss)}</div>
      ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">Word notes</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class=\"ipa\">${PRON[h[0]]}</span>`:''} — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
-     <div class="blk"><span class="lbl">Source</span><div class="quote"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(w.src)}</span></div></div>
+     <div class="blk"><span class="lbl">Source</span><div class="quote"><span class="q">“${esc(w.quote)}”<button class="sayb" onclick="say(ALLWORDS.find(x=>x.id==='${w.id}').quote)" title="hear it read">🔊</button></span><span class="src">— ${esc(w.src)}</span></div></div>
      <div class="blk"><span class="lbl">Why it matters</span>${esc(w.why)}</div>
      <div class="blk"><span class="lbl">Usage</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
      <div class="stepdots">${idx+1} / ${u.words.length}</div>
@@ -2088,7 +2106,7 @@ function exitUnit(){inUnit=null;idx=-1;renderLearn()}
 function go(i){ if(i<-1)i=-1; idx=i; renderLearn(); window.scrollTo(0,0)}
 function learnNext(){
   const u=inUnit,w=(u._sess||u.words)[idx],s=ws(w.id);
-  if(!s.learned){s.learned=true;s.next=today();}
+  if(!s.learned){s.learned=true;s.next=today();addXP(3);}
   save();
   if(idx+1<u.words.length){go(idx+1);}
   else{
@@ -2104,67 +2122,148 @@ function learnNext(){
   }
 }
 
-/* ============ PRACTICE ============ */
+/* ============ PRACTICE (session engine) ============ */
 function practicePool(){
   const cur=ALLWORDS.filter(w=>ws(w.id).learned).map(w=>({kind:'cur',w,s:ws(w.id)}));
   const cus=state.custom.map(c=>({kind:'cus',w:c,s:c}));
   return [...cur,...cus].filter(x=>x.s.uses<38);
 }
-let pracQ=[],pc=null,extra=false;
-function buildPrac(forceExtra){
-  extra=!!forceExtra;
-  const pool=practicePool(), t=today();
+const SESSION_SIZE=8;
+let sess=null;
+function exType(x){
+  const u=x.s.uses||0;
+  if(x.kind==='cus'){return (x.w.meaning? (u<2?'mc':'write') : 'write');}
+  if(u<1)return 'mc';
+  if(u<4){const t=x.w.term.toLowerCase(),q=(x.w.quote||'').toLowerCase();return q.includes(t)?'cloze':'mc';}
+  return 'write';
+}
+function distractors(x,n){
+  const cat=x.kind==='cur'?x.w.cat:(x.w.cat||'Words');
+  let pool=ALLWORDS.filter(w=>w.id!==x.w.id&&w.cat===cat);
+  if(pool.length<n)pool=ALLWORDS.filter(w=>w.id!==x.w.id);
+  return pool.sort(()=>Math.random()-.5).slice(0,n).map(w=>w.term);
+}
+function shortT(t){const ws_=t.split(' ');return ws_.length>8?ws_.slice(0,8).join(' ')+'…':t;}
+function buildSession(forceExtra){
+  const pool=practicePool(),t=today();
   let q=pool.filter(x=>x.s.next<=t);
-  if(forceExtra&&!q.length){ q=[...pool].sort(()=>Math.random()-.5).slice(0,5); }
+  if(forceExtra&&!q.length)q=[...pool].sort(()=>Math.random()-.5);
   q.forEach(x=>x._r=Math.random());
   q.sort((a,b)=>(b.s.star-a.s.star)||(a.s.next-b.s.next)||(a.s.uses-b.s.uses)||(a._r-b._r));
-  pracQ=q;pc=q[0]||null;
+  q=q.slice(0,SESSION_SIZE);
+  q.forEach(x=>{x._type=exType(x);x._redone=false;});
+  sess={q,i:0,right:0,miss:0,extra:!!forceExtra,total:q.length};
+  return q.length>0;
 }
 function renderPrac(forceExtra){
-  buildPrac(forceExtra);
-  const nStar=pracQ.filter(x=>x.s.star).length;
-  document.getElementById('pracSub').textContent = pracQ.length? `${pracQ.length} due · order: ⭐ focus → schedule (1·3·7·14·30d) → fewest reps${nStar?` · ${nStar} in focus`:''}` : '';
   const area=document.getElementById('pracArea');
-  if(!pc){
-    const pool=practicePool();
-    area.innerHTML=`<div class="card done-msg"><div class="big">All caught up ✦</div>
-      ${pool.length?`Nothing due right now.<div class="row" style="justify-content:center;margin-top:14px"><button class="btn soft slim" onclick="renderPrac(true)">Extra practice · 5 random</button></div>`:'Complete your first unit in Learn to unlock practice.'}
-      </div>`;
-    updateBadges();return;
+  if(!sess||sess.i>=sess.q.length||forceExtra===true){
+    if(!buildSession(forceExtra)){
+      const pool=practicePool();
+      document.getElementById('pracSub').textContent='';
+      area.innerHTML=`<div class="card done-msg"><div class="big">All caught up ✦</div>
+        ${pool.length?`Nothing due right now.<div class="row" style="justify-content:center;margin-top:14px"><button class="btn soft slim" onclick="renderPrac(true)">Extra practice · random ${Math.min(SESSION_SIZE,pool.length)}</button></div>`:'Complete your first unit in Learn to unlock practice.'}
+        </div>`;
+      updateBadges();return;
+    }
   }
-  const x=pc,w=x.w,s=x.s;
-  area.innerHTML=`<div class="card">
-     <button class="starbtn ${s.star?'on':''}" id="pStar" onclick="pracStar()" title="focus">★</button>
-     <span class="cat-chip">${esc(x.kind==='cur'?w.cat:(w.cat||'Words'))}</span>
-     <div class="term">${esc(w.term)}</div>
-     <div class="meter"><i style="width:${Math.min(100,s.uses/38*100)}%"></i></div>
-     <div class="meter-lbl">used ${s.uses} / ~38 · ${s.star?'⭐ focus — returns daily':(s.uses===0?'first rep':'scheduled review')}${extra?' · extra session':''}</div>
-     <div class="prompt">Write a sentence you'd actually say:</div>
-     <textarea id="answer" placeholder="In a meeting, a paper, a conversation…"></textarea>
-     <div class="reveal" id="reveal">
-       ${x.kind==='cur'?`
-         <div class="blk"><span class="lbl">Meaning</span>${esc(w.gloss)}</div>
-         <div class="blk"><div class="quote"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(w.src)}</span></div></div>
-         <div class="blk"><span class="lbl">Usage</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`
-       :`${w.meaning?`<div class="blk"><span class="lbl">Meaning</span>${esc(w.meaning)}</div>`:''}
-         ${w.example?`<div class="blk"><div class="quote"><span class="q">“${esc(w.example)}”</span>${w.source?`<span class="src">— ${esc(w.source)}</span>`:''}</div></div>`:''}
-         ${w.why?`<div class="blk"><span class="lbl">Why it matters</span>${esc(w.why)}</div>`:''}
-         ${(w.usage&&w.usage.length)?`<div class="blk"><span class="lbl">Usage</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}`}
-     </div>
-     <div class="row" id="pRow1"><button class="btn primary" onclick="checkPrac()">Check →</button></div>
-     <div class="row" id="pRow2" style="display:none">
-       <button class="btn soft" onclick="finishPrac(true)">☆ Needs work — focus</button>
-       <button class="btn primary" onclick="finishPrac(false)">Count it ✓</button>
-     </div></div>`;
+  renderItem();
+}
+function renderItem(){
+  const area=document.getElementById('pracArea');
+  if(sess.i>=sess.q.length){return renderSummary();}
+  const x=sess.q[sess.i],w=x.w,s=x.s,type=x._type;
+  document.getElementById('pracSub').textContent=`Session ${sess.i+1} / ${sess.q.length} · ⭐ focus first → schedule → fewest reps`;
+  const bar=`<div class="sessbar"><i style="width:${(sess.i/sess.q.length)*100}%"></i></div>`;
+  const starBtn=`<button class="starbtn ${s.star?'on':''}" id="pStar" onclick="pracStar()" title="focus">★</button>`;
+  const meter=`<div class="meter"><i style="width:${Math.min(100,s.uses/38*100)}%"></i></div><div class="meter-lbl">used ${s.uses} / ~38 · ${s.star?'⭐ focus':(s.uses===0?'first rep':'review')}${x._redone?' · retry':''}</div>`;
+  if(type==='mc'){
+    const gloss=x.kind==='cur'?w.gloss:(w.meaning||'');
+    const opts=[w.term,...distractors(x,3)].sort(()=>Math.random()-.5);
+    area.innerHTML=bar+`<div class="card">${starBtn}
+      <span class="cat-chip">${esc(x.kind==='cur'?w.cat:(w.cat||'Words'))}</span>
+      <div class="prompt" style="margin-top:10px">Which word or phrase means:</div>
+      <div class="quote"><span class="q" style="font-style:normal">${esc(gloss)}</span></div>
+      <div style="margin-top:12px">${opts.map(o=>`<button class="opt" onclick="answerOpt(this,${o===w.term})">${esc(shortT(o))}</button>`).join('')}</div>
+    </div>`;
+  }else if(type==='cloze'){
+    const re=new RegExp(w.term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i');
+    const blanked=w.quote.replace(re,'＿＿＿＿');
+    const opts=[w.term,...distractors(x,3)].sort(()=>Math.random()-.5);
+    area.innerHTML=bar+`<div class="card">${starBtn}
+      <span class="cat-chip">${esc(w.cat)}</span>
+      <div class="prompt" style="margin-top:10px">Complete the line:</div>
+      <div class="quote"><span class="q">“${esc(blanked)}”</span><span class="src">— ${esc(w.src)}</span></div>
+      <div style="margin-top:12px">${opts.map(o=>`<button class="opt" onclick="answerOpt(this,${o===w.term})">${esc(shortT(o))}</button>`).join('')}</div>
+    </div>`;
+  }else{
+    area.innerHTML=bar+`<div class="card">${starBtn}
+      <span class="cat-chip">${esc(x.kind==='cur'?w.cat:(w.cat||'Words'))}</span>
+      <div class="term">${esc(w.term)}<button class="sayb" onclick="say(sess.q[sess.i].w.term)">🔊</button></div>
+      ${meter}
+      <div class="prompt">Write a sentence you'd actually say:</div>
+      <textarea id="answer" placeholder="In a meeting, a paper, a conversation…"></textarea>
+      <div class="reveal" id="reveal">
+        ${x.kind==='cur'?`
+          <div class="blk"><span class="lbl">Meaning</span>${esc(w.gloss)}</div>
+          <div class="blk"><div class="quote"><span class="q">“${esc(w.quote)}”<button class="sayb" onclick="say(sess.q[sess.i].w.quote)">🔊</button></span><span class="src">— ${esc(w.src)}</span></div></div>
+          <div class="blk"><span class="lbl">Usage</span><ul class="usage">${(w.usage||[]).map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`
+        :`${w.meaning?`<div class="blk"><span class="lbl">Meaning</span>${esc(w.meaning)}</div>`:''}
+          ${w.example?`<div class="blk"><div class="quote"><span class="q">“${esc(w.example)}”</span>${w.source?`<span class="src">— ${esc(w.source)}</span>`:''}</div></div>`:''}
+          ${w.why?`<div class="blk"><span class="lbl">Why it matters</span>${esc(w.why)}</div>`:''}
+          ${(w.usage&&w.usage.length)?`<div class="blk"><span class="lbl">Usage</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}`}
+      </div>
+      <div class="row" id="pRow1"><button class="btn primary" onclick="checkPrac()">Check →</button></div>
+      <div class="row" id="pRow2" style="display:none">
+        <button class="btn soft" onclick="finishWrite(true)">☆ Needs work — focus</button>
+        <button class="btn primary" onclick="finishWrite(false)">Count it ✓</button>
+      </div>
+    </div>`;
+  }
   updateBadges();
 }
-function pracStar(){const s=pc.s;s.star=!s.star;save();document.getElementById('pStar').classList.toggle('on',s.star);renderStats();}
+function pracStar(){const s=sess.q[sess.i].s;s.star=!s.star;save();document.getElementById('pStar').classList.toggle('on',s.star);renderStats();}
+function scheduleOK(s){const step=Math.min(INTERVALS.length-1,Math.floor(s.uses/2));s.next=today()+INTERVALS[step]*DAY;}
+function answerOpt(btn,correct){
+  const x=sess.q[sess.i],s=x.s;
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  if(correct){
+    btn.classList.add('ok');
+    s.uses++;state.reps++;sess.right++;addXP(x._type==='cloze'?8:5);scheduleOK(s);
+    say(x.w.term);
+    bumpStreak();save();
+    setTimeout(()=>{sess.i++;renderItem();},800);
+  }else{
+    btn.classList.add('bad');
+    document.querySelectorAll('.opt').forEach(b=>{if(b.textContent===shortT(x.w.term))b.classList.add('ok');});
+    sess.miss++;s.next=today()+DAY;
+    if(!x._redone){const clone={...x,_redone:true};sess.q.push(clone);sess.total++;}
+    save();
+    setTimeout(()=>{sess.i++;renderItem();},1600);
+  }
+}
 function checkPrac(){document.getElementById('reveal').classList.add('show');document.getElementById('pRow1').style.display='none';document.getElementById('pRow2').style.display='flex';}
-function finishPrac(keepFocus){
-  const s=pc.s; s.uses++; state.reps++;
-  if(keepFocus){ s.star=true; s.next=today()+DAY; }
-  else{ s.star=false; const step=Math.min(INTERVALS.length-1,Math.floor(s.uses/2)); s.next=today()+INTERVALS[step]*DAY; }
-  bumpStreak(); save(); renderPrac(extra); renderStats();
+function finishWrite(keepFocus){
+  const x=sess.q[sess.i],s=x.s;
+  s.uses++;state.reps++;sess.right++;
+  if(keepFocus){s.star=true;s.next=today()+DAY;addXP(6);}
+  else{s.star=false;scheduleOK(s);addXP(10);}
+  bumpStreak();save();sess.i++;renderItem();renderStats();
+}
+function renderSummary(){
+  const area=document.getElementById('pracArea');
+  const pct=sess.total?Math.round(100*sess.right/(sess.right+sess.miss||1)):0;
+  document.getElementById('pracSub').textContent='';
+  area.innerHTML=`<div class="card done-msg">
+    <div class="big">Session complete 🎉</div>
+    <div style="font-size:15px;margin:6px 0">${sess.right} ✓ · ${sess.miss} ✗ · <span class="xp">⚡ ${xpToday()} / ${XP_GOAL} today</span></div>
+    <div style="font-size:13px;color:var(--muted)">${xpToday()>=XP_GOAL?'Daily goal met — the streak is safe. 🔥':'Keep going — '+(XP_GOAL-xpToday())+' XP to today’s goal.'}</div>
+    <div class="row" style="justify-content:center;margin-top:16px">
+      <button class="btn primary slim" onclick="sess=null;renderPrac()">Next session →</button>
+      <button class="btn ghost slim" onclick="switchTo('learn')">Home</button>
+    </div></div>`;
+  sess.i=1e9; sess.done=true;
+  updateBadges();renderStats();
 }
 function bumpStreak(){const t=today(); if(state.lastDay!==t){state.streak=(state.lastDay===t-DAY)?state.streak+1:1; state.lastDay=t; renderStreak();}}
 
@@ -2334,7 +2433,7 @@ function renderStats(){
   const names=['','Innocent Ignorance','The Awakening','Verbal Rebranding','Confidence Catalyst','Perfection Deception','Natural Expression','Structural Mastery','Simple Eloquence','Golden Tongue'];
   document.getElementById('ascentLbl').textContent=`Stage ${stage} — ${names[stage]} · aim for Stage 6`;
 }
-function renderStreak(){document.getElementById('streak').innerHTML=state.streak>0?`🔥 <b>${state.streak}</b>-day`:'start your streak'}
+function renderStreak(){const x=xpToday();document.getElementById('streak').innerHTML=`<span class=\"xp\">⚡ ${x}/${XP_GOAL}</span> · `+(state.streak>0?`🔥 <b>${state.streak}</b>-day`:'start your streak')}
 function updateBadges(){
   const nL=ALLWORDS.filter(w=>!ws(w.id).learned).length;
   const nP=practicePool().filter(x=>x.s.next<=today()).length;
