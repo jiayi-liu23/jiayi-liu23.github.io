@@ -3209,7 +3209,7 @@ let shCur=null,shR=null,shOn=false;
 function shPool(){return ALLWORDS.filter(w=>{const n=toks(w.quote).length;return n>=6&&n<=26;});}
 function shNew(){
   const p=shPool(); shCur=p[Math.floor(Math.random()*p.length)];
-  document.getElementById('shQuote').innerHTML=`<div class="quote"><span class="q">“${esc(shCur.quote)}”</span><span class="src">— ${esc(shCur.src)}${hasOrig(shCur)?' · <a href="'+origUrl(shCur)+'" target="_blank" style="color:var(--green)">${origLabel(w)}</a>':''}</span></div>
+  document.getElementById('shQuote').innerHTML=`<div class="quote"><span class="q">“${esc(shCur.quote)}”</span><span class="src">— ${esc(shCur.src)}${hasOrig(shCur)?' · <a href="'+origUrl(shCur)+'" target="_blank" style="color:var(--green)">'+origLabel(shCur)+'</a>':''}</span></div>
    <div style="font-size:12px;color:var(--muted);margin-top:6px">🔊 = 清晰参照(逐词) · ▶︎ 原声 = 语感来源(节奏与气场,课程 Rewatch 的正主)</div>`;
   document.getElementById('shOut').innerHTML='';document.getElementById('shLive').style.display='none';
 }
