@@ -160,7 +160,7 @@
   </div>
   <nav>
     <button data-v="today" class="on"><span class="ico">☀️</span>Today</button>
-    <button data-v="learn"><span class="ico">📖</span>Learn<span class="bdg" id="bLearn"></span></button>
+    <button data-v="learn"><span class="ico">📖</span>Learn</button>
     <button data-v="practice"><span class="ico">✍️</span>Practice<span class="bdg" id="bPrac"></span></button>
     <button data-v="stats"><span class="ico">📈</span>Progress</button>
   </nav>
@@ -3361,10 +3361,8 @@ function renderStats(){
 }
 function renderStreak(){const x=xpToday();document.getElementById('streak').innerHTML=`<span class=\"xp\">⚡ ${x}/${XP_GOAL}</span> · `+(state.streak>0?`🔥 <b>${state.streak}</b>-day`:'start your streak')}
 function updateBadges(){
-  const nL=ALLWORDS.filter(w=>!ws(w.id).learned).length;
   const nP=practicePool().filter(x=>x.s.next<=today()).length;
-  const bl=document.getElementById('bLearn'),bp=document.getElementById('bPrac');
-  bl.textContent=nL||'';bl.style.display=nL?'inline':'none';
+  const bp=document.getElementById('bPrac');
   bp.textContent=nP||'';bp.style.display=nP?'inline':'none';
 }
 function currentView(){const b=document.querySelector('nav button.on');return b?b.dataset.v:'learn'}
