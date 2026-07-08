@@ -27,10 +27,14 @@
   .logo small{display:block;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
   .streak{font-size:13px;color:var(--muted);font-weight:600}
   .streak b{color:var(--terra)}
-  nav{max-width:680px;margin:0 auto;padding:8px 18px 0;display:flex;gap:20px}
-  nav button{background:none;border:none;font-family:var(--sans);font-size:14.5px;font-weight:600;color:var(--muted);padding:6px 0 12px;cursor:pointer;border-bottom:2px solid transparent}
+  nav{max-width:680px;margin:0 auto;padding:10px 18px 0;display:flex;gap:28px}
+  nav button{background:none;border:none;font-family:var(--sans);font-size:15px;font-weight:600;color:var(--muted);padding:6px 2px 13px;cursor:pointer;border-bottom:2px solid transparent;display:flex;align-items:center;gap:7px;transition:color .15s}
+  nav button:hover{color:var(--ink)}
   nav button.on{color:var(--ink);border-bottom-color:var(--wood)}
-  nav button .bdg{font-size:11px;background:var(--sage);color:var(--green);border-radius:10px;padding:1px 7px;margin-left:4px;font-weight:700}
+  nav button .ico{font-size:14px;opacity:.55;filter:grayscale(35%)}
+  nav button.on .ico{opacity:1;filter:none}
+  nav button .bdg{font-size:10.5px;background:#EFE9DE;color:var(--muted);border-radius:9px;padding:1px 7px;margin-left:2px;font-weight:700}
+  nav button.on .bdg{background:var(--sage);color:var(--green)}
 
   h2.sec{font-family:var(--serif);font-size:21px;font-weight:600;color:var(--wood-dk);margin:26px 0 4px}
   .sub{font-size:13.5px;color:var(--muted);margin-bottom:16px}
@@ -153,10 +157,10 @@
     </div>
   </div>
   <nav>
-    <button data-v="today" class="on">Today</button>
-    <button data-v="learn">Learn<span class="bdg" id="bLearn"></span></button>
-    <button data-v="practice">Practice<span class="bdg" id="bPrac"></span></button>
-    <button data-v="stats">Progress</button>
+    <button data-v="today" class="on"><span class="ico">☀️</span>Today</button>
+    <button data-v="learn"><span class="ico">📖</span>Learn<span class="bdg" id="bLearn"></span></button>
+    <button data-v="practice"><span class="ico">✍️</span>Practice<span class="bdg" id="bPrac"></span></button>
+    <button data-v="stats"><span class="ico">📈</span>Progress</button>
   </nav>
 </header>
 
@@ -191,26 +195,20 @@
 
 <div class="wrap">
   <section id="v-today">
-    <h2 class="sec">Today</h2>
-    <div class="sub">The course’s 3×5 routine, as a daily loop.</div>
-    <div id="todayArea"></div>
+    <div id="todayArea" style="margin-top:18px"></div>
   </section>
 
   <section id="v-learn" style="display:none">
-    <h2 class="sec">Learn</h2>
-    <div class="sub" id="learnSub">Twenty themed units — enter any, in any order. Cards shuffle each visit.</div>
-    <div id="learnArea"></div>
+    <div id="learnArea" style="margin-top:18px"></div>
   </section>
 
   <section id="v-practice" style="display:none">
-    <h2 class="sec">Practice</h2>
-    <div class="sub" id="pracSub"></div>
+    <div class="sub" id="pracSub" style="margin-top:18px"></div>
     <div id="pracArea"></div>
   </section>
 
   <section id="v-stats" style="display:none">
-    <h2 class="sec">Progress</h2>
-    <div class="sub">A word becomes automatic after ~38 uses — that’s when it enters your surface lexicon.</div>
+    <div style="margin-top:18px"></div>
     <div class="stat-grid">
       <div class="stat"><div class="n" id="sUnits">0</div><div class="l">units completed</div></div>
       <div class="stat"><div class="n" id="sLearned">0</div><div class="l">words learned</div></div>
@@ -2863,7 +2861,7 @@ function renderLearn(){
   const area=document.getElementById('learnArea');
   if(!inUnit){
     const doneAll=UNITS.every(unitDone);
-    document.getElementById('learnSub').textContent = doneAll
+    void = doneAll
       ? 'All units complete — Practice is now the main game: repeat each word toward 38 uses.'
       : 'Twenty themed units — enter any, in any order. Cards shuffle each visit.';
     const cont=UNITS.find(u=>!unitDone(u)&&unitLearnedCount(u)>0)||UNITS.find(u=>!unitDone(u));
