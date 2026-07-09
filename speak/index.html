@@ -3793,8 +3793,8 @@ function buildSession(forceExtra){
   return q.length>0;
 }
 /* ---- Shuffle: random card browsing (no quizzes) ---- */
-const SHUF_SCOPES=[['all','All cards'],['fam','Famous lines'],['star','Focus'],['new','Unseen'],['mine','My Pickups']];
-const SCOPE_DESC={all:'Every card in the bank.',fam:'Lines with a real, person-attributed source.',star:'Cards you starred ★.',new:'Cards you haven\u2019t opened in Lessons yet.',mine:'Words you added with ＋ (and gifts from friends).'};
+const SHUF_SCOPES=[['all','All cards'],['fam','Famous lines'],['star','Focus'],['mine','My Pickups']];
+const SCOPE_DESC={all:'Every card in the bank.',fam:'Lines with a real, person-attributed source.',star:'Cards you starred ★.',mine:'Words you added with ＋ (and gifts from friends).'};
 let shufCur=null, shufRecent=[];
 function cardState(w){ if(w._cus){return state.custom.find(c=>c.id===w.id)||{}; } return ws(w.id); }
 function shufAll(){
@@ -3802,12 +3802,11 @@ function shufAll(){
   const cus=state.custom.map(c=>({id:c.id,term:c.term,cat:c.cat||'Words',gloss:c.meaning||'',hard:[],quote:c.example||'',src:(c.gift?'From '+c.gift+' 🎁'+(c.source?' · '+c.source:''):c.source||''),why:c.why||'',whyzh:c.whyzh||'',usage:c.usage||[],_cus:true,unit:'uP'}));
   return base.concat(cus);
 }
-function shufScope(){return state.shufScope||'all'}
+function shufScope(){const s=state.shufScope||'all';return SHUF_SCOPES.some(p=>p[0]===s)?s:'all';}
 function shufPool(){
   const sc=shufScope(); let p=shufAll();
   if(sc==='fam')p=p.filter(w=>hasOrig(w));
   else if(sc==='star')p=p.filter(w=>cardState(w).star);
-  else if(sc==='new')p=p.filter(w=>!w._cus&&!ws(w.id).learned);
   else if(sc==='mine')p=p.filter(w=>w.unit==='uP');
   return p;
 }
@@ -3815,7 +3814,7 @@ function setShufScope(sc){state.shufScope=sc;save();shufCur=null;shufRecent=[];r
 function shufDraw(){
   const pool=shufPool();
   if(!pool.length){
-    const msg={fam:'No famous lines in this scope yet.',star:'Nothing starred yet — tap the ★ on any card and it gathers here.',new:'Nothing new left — you have seen every card. 🎉',mine:'No pickups yet — add words with ＋ in the header.'}[shufScope()]||'No cards here yet.';
+    const msg={fam:'No famous lines in this scope yet.',star:'Nothing starred yet — tap the ★ on any card and it gathers here.',mine:'No pickups yet — add words with ＋ in the header.'}[shufScope()]||'No cards here yet.';
     document.getElementById('pracArea').innerHTML=`<div class="card done-msg">${msg}</div>`;return;
   }
   let cand=pool.filter(w=>!shufRecent.includes(w.id));
