@@ -2854,7 +2854,7 @@ function renderToday(){
      <span class="cat-chip">Line of the day</span>
      <div class="term" style="font-size:20px">${esc(w.term)}</div>
      <div class="quote" style="margin-top:10px"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div>
-     </div>`;
+     </div>${friendsCard()}`;
 }
 
 /* ============ LEARN ============ */
@@ -2916,7 +2916,7 @@ function exitUnit(){inUnit=null;idx=-1;renderLearn()}
 function go(i){ if(i<-1)i=-1; idx=i; renderLearn(); window.scrollTo(0,0)}
 function learnNext(){
   const u=inUnit,uw=(u._sess||unitWords(u)),w=uw[idx];
-  if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.next=today();addXP(5);bumpStreak();tl().learned++;}}
+  if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.next=today();addXP(5);bumpStreak();tl().learned++;syncNow();}}
   save();
   if(idx+1<uw.length){go(idx+1);}
   else{
@@ -3001,7 +3001,7 @@ function shufDraw(){
   shufRecent.push(w.id); if(shufRecent.length>12)shufRecent.shift();
   shufCur=w;
   if(!w._cus){const s=ws(w.id); if(!s.learned){s.learned=true;s.next=today();}}
-  tl().sessions++; state.reps=(state.reps||0)+1; addXP(5); bumpStreak(); save();
+  tl().sessions++; state.reps=(state.reps||0)+1; addXP(5); bumpStreak(); save(); syncNow();
   renderShufCard(); renderStats();
 }
 function shufToggleStar(){ if(!shufCur)return; const st=cardState(shufCur); st.star=!st.star; save(); renderShufCard(); renderStats(); }
@@ -3408,6 +3408,42 @@ function renderStats(){
 }
 function renderStreak(){const x=xpToday(),xd=Math.min(x,XP_GOAL);document.getElementById('streak').innerHTML=`<span class=\"xp\">⚡ ${xd}/${XP_GOAL}${x>=XP_GOAL?' ✓':''}</span> · `+(state.streak>0?`🔥 <b>${state.streak}</b>-day`:'start your streak')}
 function updateBadges(){}
+
+/* ---- Friends sync (Cloudflare Worker circle, 2-3 people) ---- */
+const SYNC_URL='';  // filled in after the worker is deployed
+function syncCfg(){try{return JSON.parse(localStorage.getItem('bs_sync')||'null')}catch(e){return null}}
+let _syncLast=0;
+async function syncNow(force){
+  const cfg=syncCfg(); if(!SYNC_URL||!cfg||!cfg.name||!cfg.key) return;
+  const now=Date.now(); if(!force&&now-_syncLast<30000) return; _syncLast=now;
+  try{
+    const stats={day:today(),xp:xpToday(),streak:state.streak||0,learnedToday:tl().learned,flips:tl().sessions,words:ALLWORDS.filter(w=>ws(w.id).learned).length};
+    const r=await fetch(SYNC_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key:cfg.key,name:cfg.name,stats})});
+    if(!r.ok) return;
+    const d=await r.json();
+    window._friends=(d.members||[]).filter(m=>m&&m.name&&m.name.toLowerCase()!==cfg.name.toLowerCase());
+    if(currentView()==='today')renderToday();
+  }catch(e){}
+}
+function joinCircle(){
+  const name=document.getElementById('fsName').value.trim(),key=document.getElementById('fsKey').value.trim();
+  if(!name||!key)return;
+  localStorage.setItem('bs_sync',JSON.stringify({name,key}));
+  renderToday(); syncNow(true);
+}
+function friendsCard(){
+  if(!SYNC_URL) return '';
+  const cfg=syncCfg();
+  if(!cfg) return `<div class="card" style="margin-top:14px"><span class="cat-chip">Friends</span>
+    <div style="font-size:13.5px;color:var(--muted);margin:8px 0">Share progress with your circle — pick a display name and enter the circle key.</div>
+    <div class="row" style="flex-wrap:wrap;gap:8px"><input id="fsName" class="tin" placeholder="Your name" style="flex:1;min-width:120px"><input id="fsKey" class="tin" placeholder="Circle key" style="flex:1;min-width:120px"><button class="btn primary slim" onclick="joinCircle()">Join</button></div></div>`;
+  const fs=window._friends;
+  const rows=(fs&&fs.length)?fs.map(m=>{
+    const st=m.stats||{}, fresh=st.day===today();
+    return `<div class="tdrow"><div class="tick">👤</div><div style="flex:1"><div class="tt">${esc(m.name)}</div><div class="td">🔥 ${st.streak||0}-day · ⚡ ${fresh?(st.xp||0):0} today · ${st.words||0} words</div></div></div>`;
+  }).join(''):`<div style="font-size:13.5px;color:var(--muted)">No one else here yet — send your friends the app link and the circle key.</div>`;
+  return `<div class="card" style="margin-top:14px"><span class="cat-chip">Friends</span>${rows}</div>`;
+}
 function resetToday(){
   if(!confirm('Reset today — XP, flips, and daily checklist go back to zero. Words already learned stay learned. Continue?'))return;
   state.xpNow=0;state.xpDay=today();
@@ -3435,6 +3471,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v
 
 /* init */
 renderToday(); renderStreak(); renderStats(); updateBadges();
+syncNow(true);
 </script>
 </body>
 </html>
