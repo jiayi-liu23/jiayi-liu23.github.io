@@ -229,7 +229,11 @@
       <div style="font-family:var(--serif);font-size:16px;color:var(--wood-dk);margin-bottom:8px">⭐ Focus words</div>
       <div id="focusList" style="font-size:14px"></div>
     </div>
-    
+    <div style="margin-top:20px;text-align:center;font-size:13px;color:var(--muted)">
+      <a href="javascript:void(0)" onclick="resetToday()" style="color:var(--muted)">Reset today</a>
+      &nbsp;·&nbsp;
+      <a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted)">Start over</a>
+    </div>
   </section>
 </div>
 
@@ -3393,8 +3397,8 @@ function renderStats(){
   document.getElementById('sGrad').textContent=pickupCards().length;
   document.getElementById('sDue').textContent=tl().sessions;
   const learned=pool.filter(x=>x.s.learned);
-  const avg=learned.length?learned.reduce((s,x)=>s+Math.min(38,x.s.uses),0)/learned.length/38:0;
-  const stage=Math.max(1,Math.min(9,Math.round(1+avg*8)));
+  const frac=pool.length?learned.length/pool.length:0;
+  const stage=Math.max(1,Math.min(9,Math.round(1+frac*8)));
   document.getElementById('ascentBar').style.width=(stage/9*100)+'%';
   const names=['','Innocent Ignorance','The Awakening','Verbal Rebranding','Confidence Catalyst','Perfection Deception','Natural Expression','Structural Mastery','Simple Eloquence','Golden Tongue'];
   document.getElementById('ascentLbl').textContent=`Stage ${stage} — ${names[stage]}`;
@@ -3403,6 +3407,23 @@ function renderStats(){
 }
 function renderStreak(){const x=xpToday(),xd=Math.min(x,XP_GOAL);document.getElementById('streak').innerHTML=`<span class=\"xp\">⚡ ${xd}/${XP_GOAL}${x>=XP_GOAL?' ✓':''}</span> · `+(state.streak>0?`🔥 <b>${state.streak}</b>-day`:'start your streak')}
 function updateBadges(){}
+function resetToday(){
+  if(!confirm('Reset today — XP, flips, and daily checklist go back to zero. Words already learned stay learned. Continue?'))return;
+  state.xpNow=0;state.xpDay=today();
+  state.tl={day:today(),learned:0,sessions:0,line:false};
+  save();renderStreak();renderStats();
+  if(currentView()==='today')renderToday();
+}
+function resetAll(){
+  if(!confirm('Start over — erases ALL progress: learned marks, stars, XP, streak, flip counts. Your My Pickups cards are kept. This cannot be undone. Continue?'))return;
+  state.words={};ALLWORDS.forEach(w=>state.words[w.id]={learned:false,star:false,uses:0,next:0});
+  state.xp=0;state.xpNow=0;state.streak=0;state.lastDay=0;state.reps=0;
+  state.tl={day:today(),learned:0,sessions:0,line:false};
+  shufCur=null;shufRecent=[];
+  save();renderStreak();renderStats();
+  const v=currentView();
+  if(v==='today')renderToday(); if(v==='learn'){inUnit=null;idx=-1;renderLearn();} if(v==='practice')renderPrac();
+}
 function currentView(){const b=document.querySelector('nav button.on');return b?b.dataset.v:'learn'}
 function switchTo(v){document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));
   ['today','learn','practice','stats'].forEach(k=>document.getElementById('v-'+k).style.display=(k===v)?'block':'none');
