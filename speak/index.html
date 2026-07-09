@@ -88,6 +88,8 @@
   .btn.ghost{background:#fff;border:1px solid var(--hair);color:var(--ink)}
   .btn.soft{background:var(--sage);color:var(--green)}
   .btn.slim{flex:0 0 auto}
+  .pill{border:1px solid var(--hair);background:#fff;border-radius:999px;padding:7px 14px;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;flex:0 0 auto}
+  .pill.on{background:var(--wood-dk);border-color:var(--wood-dk);color:#fff}
   .opt{display:block;width:100%;text-align:left;margin-top:8px;padding:12px 14px;border:1px solid var(--hair);border-radius:12px;background:#fff;font-family:var(--sans);font-size:14.5px;color:var(--ink);cursor:pointer;transition:background .15s}
   .opt:hover{background:#FCFAF6}
   .opt.ok{background:var(--sage);border-color:var(--green);color:var(--green);font-weight:700}
@@ -100,7 +102,7 @@
   .sayb{background:none;border:none;font-size:17px;cursor:pointer;vertical-align:middle;margin-left:6px;opacity:.65}
   .sayb:hover{opacity:1}
   .xp{color:var(--gold);font-weight:700}
-  .hicon{background:none;border:1px solid var(--hair);border-radius:10px;width:34px;height:34px;font-size:16px;cursor:pointer;color:var(--ink)}
+  .hicon{background:none;border:1px solid var(--hair);border-radius:10px;width:38px;height:38px;font-size:17px;cursor:pointer;color:var(--ink)}
   .hicon:hover{background:#fff}
   .tdrow{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--hair)}
   .tdrow:last-child{border-bottom:none}
@@ -194,7 +196,7 @@ body{padding-bottom:env(safe-area-inset-bottom, 0px)}
       <option>Alliterations</option><option>Quotes</option><option>Workhorse swaps</option>
       <option>Lexical gaps</option><option>Dedicated terms</option><option>Custom</option>
     </select>
-    <div class="row"><button class="btn primary" onclick="saveForm()">Save → My Pickups</button><button class="btn ghost" onclick="togglePanel('add')">Close</button></div>
+    <div class="row"><button class="btn primary" onclick="saveForm()">Save → My Pickups</button><button class="btn ghost slim" onclick="togglePanel('add')">Close</button></div>
   </div>
   <div class="miniform" id="searchPanel" style="margin-top:14px">
     <label>Search all cards</label>
@@ -3306,8 +3308,8 @@ function renderToday(){
    <div class="card">
      <div class="meter"><i style="width:${Math.min(100,x/XP_GOAL*100)}%"></i></div>
      <div class="meter-lbl"><span class="xp">⚡ ${Math.min(x,XP_GOAL)} / ${XP_GOAL} today</span>${x>=XP_GOAL?' ✓':''}</div>
-     <div class="tdrow"><div class="tick">📖</div><div style="flex:1"><div class="tt">Lessons</div><div class="td">${T.learned} ${T.learned===1?'card':'cards'} learned today</div></div><button class="btn ghost slim" onclick="switchTo('learn')">Lessons →</button></div>
-     <div class="tdrow"><div class="tick">🎴</div><div style="flex:1"><div class="tt">Shuffle</div><div class="td">${T.sessions} ${T.sessions===1?'card':'cards'} flipped today</div></div><button class="btn ghost slim" onclick="switchTo('practice')">Shuffle →</button></div>
+     <div class="tdrow" style="cursor:pointer" onclick="switchTo('learn')"><div class="tick">📖</div><div style="flex:1"><div class="tt">Lessons</div><div class="td">${T.learned} ${T.learned===1?'card':'cards'} learned today</div></div><div style="color:var(--muted);font-size:18px">›</div></div>
+     <div class="tdrow" style="cursor:pointer" onclick="switchTo('practice')"><div class="tick">🎴</div><div style="flex:1"><div class="tt">Shuffle</div><div class="td">${T.sessions} ${T.sessions===1?'card':'cards'} flipped today</div></div><div style="color:var(--muted);font-size:18px">›</div></div>
    </div>
    <div class="card" style="margin-top:14px;cursor:pointer" onclick="switchTo('learn');togglePanel('search');document.getElementById('srchQ').value='';showCard('${w.id}')">
      <span class="cat-chip">Line of the day</span>
@@ -3403,7 +3405,7 @@ function renderStudy(){
   `<div class="card" style="margin-top:14px">
     <span class="cat-chip">The arc · 全篇弧线</span>
     <div class="blk" style="margin-top:6px">${esc(st.arc)}<div class="whyzh">${esc(st.arczh)}</div></div>
-    <div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="exitStudy()">⌂ All studies</button><button class="btn primary slim" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button></div>
+    <div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="exitStudy()">⌂ All studies</button><button class="btn ghost slim" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button></div>
   </div>`;
 }
 
@@ -3487,9 +3489,9 @@ function learnNext(){
     const list=UNITS.filter(x=>!x.tool), i2=list.indexOf(u), nxt=i2>=0?list[i2+1]:null;
     area.innerHTML=`<div class="card done-msg"><div class="big">${i2>=0?('Unit '+(i2+1)):esc(u.title)} complete</div>
       ${(u._sess||u.words).length} entries added to the shuffle deck.<br><br>
-      <div class="row" style="justify-content:center">
+      <div class="row">
         <button class="btn ghost slim" onclick="exitUnit()">⌂ All units</button>
-        ${nxt?`<button class="btn primary slim" onclick="enterUnit('${nxt.id}')">Next unit →</button>`:`<button class="btn primary slim" onclick="switchTo('practice')">Shuffle →</button>`}
+        ${nxt?`<button class="btn primary" onclick="enterUnit('${nxt.id}')">Next unit →</button>`:`<button class="btn primary" onclick="switchTo('practice')">Shuffle →</button>`}
       </div></div>`;
     updateBadges();
   }
@@ -3586,7 +3588,7 @@ function renderShufCard(){
 }
 function renderPrac(){
   const sc=shufScope();
-  document.getElementById('pracSub').innerHTML='<div class="row" style="flex-wrap:wrap;gap:6px">'+SHUF_SCOPES.map(p=>`<button class="btn ${p[0]===sc?'primary':'ghost'} slim" onclick="setShufScope('${p[0]}')">${p[1]}</button>`).join('')+'</div>';
+  document.getElementById('pracSub').innerHTML='<div class="row" style="flex-wrap:wrap;gap:8px;margin-top:0">'+SHUF_SCOPES.map(p=>`<button class="pill ${p[0]===sc?'on':''}" onclick="setShufScope('${p[0]}')">${p[1]}</button>`).join('')+'</div>';
   if(!shufCur){shufDraw();}else{renderShufCard();}
 }
 function makeGen(){
