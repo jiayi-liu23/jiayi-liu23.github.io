@@ -169,11 +169,6 @@ body{padding-bottom:env(safe-area-inset-bottom, 0px)}
     <label>Word / phrase</label><input id="fTerm">
     <div class="row" style="margin-top:10px">
       <button class="btn soft slim" id="afBtn" onclick="autoFill()">✨ Auto-fill the rest</button>
-      <button class="btn ghost slim" id="aiKeyBtn" onclick="document.getElementById('aiKeyRow').style.display=document.getElementById('aiKeyRow').style.display==='block'?'none':'block'">AI key…</button>
-    </div>
-    <div id="aiKeyRow" style="display:none;border:1px dashed var(--hair);border-radius:12px;padding:10px;margin-top:8px">
-      <label>Anthropic API key (optional — richer auto-fill + coach feedback; stored only in this browser)</label>
-      <input id="fKey" placeholder="sk-ant-…" onchange="localStorage.setItem('bs_key',this.value.trim())">
     </div>
     <label>Meaning</label><input id="fMeaning">
     <label>Example sentence (optional)</label><textarea id="fExample"></textarea>
@@ -3296,7 +3291,7 @@ function renderToday(){
   document.getElementById('todayArea').innerHTML=`${noticesHtml()}
    <div class="card">
      <div class="meter"><i style="width:${Math.min(100,x/XP_GOAL*100)}%"></i></div>
-     <div class="meter-lbl"><span class="xp">⚡ ${Math.min(x,XP_GOAL)} / ${XP_GOAL} today</span>${x>=XP_GOAL?' ✓':''}</div>
+     <div class="meter-lbl"><span class="xp">⚡ ${Math.min(x,XP_GOAL)} / ${XP_GOAL} today</span>${x>=XP_GOAL?' ✓':''}<span style="color:var(--muted)"> · any card today keeps the 🔥</span></div>
      <div class="tdrow" style="cursor:pointer" onclick="switchTo('learn')"><div class="tick">📖</div><div style="flex:1"><div class="tt">Lessons</div><div class="td">${T.learned} ${T.learned===1?'card':'cards'} learned today</div></div><div style="color:var(--muted);font-size:18px">›</div></div>
      <div class="tdrow" style="cursor:pointer" onclick="switchTo('practice')"><div class="tick">🎴</div><div style="flex:1"><div class="tt">Shuffle</div><div class="td">${T.sessions} ${T.sessions===1?'card':'cards'} flipped today</div></div><div style="color:var(--muted);font-size:18px">›</div></div>
    </div>
@@ -3584,6 +3579,13 @@ const STUDIES=[
  arczh:"清单笑话赢得全场,涮众人团结全场;一记活板门转折把十二分钟的笑声兑换成信用;一个词的位置对调扛起论点;引文被放气又升级;唯一严肃的段落给时代下诊断;callback 带着修订归来。喜剧在这里是承重结构。"}
 ];
 let inStudy=null;
+function beatVid(i,url){
+  const d=document.getElementById('bv'+i); if(!d)return;
+  if(d.innerHTML){d.innerHTML='';return;}
+  const m=String(url).match(/youtu\.be\/([\w-]+)\?t=(\d+)/);
+  if(!m){window.open(url,'_blank');return;}
+  d.innerHTML='<div style="position:relative;padding-top:56.25%;margin-top:10px;border-radius:12px;overflow:hidden"><iframe src="https://www.youtube-nocookie.com/embed/'+m[1]+'?start='+m[2]+'&autoplay=1&rel=0" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>';
+}
 function enterStudy(id){inStudy=STUDIES.find(s=>s.id===id);inUnit=null;idx=-1;renderLearn();window.scrollTo(0,0)}
 function exitStudy(){inStudy=null;renderLearn();window.scrollTo(0,0)}
 function studiesSection(){
@@ -3607,7 +3609,8 @@ function renderStudy(){
   </div>`+
   st.beats.map((b,i)=>`<div class="card" id="bt${i}" style="margin-top:14px">
     <span class="cat-chip">Beat ${i+1} / ${st.beats.length} · ${esc(b.fn)} · ${esc(b.fnzh)}</span>
-    <div class="quote" style="margin-top:10px"><span class="q">“${esc(b.quote)}”</span><span class="src">— ${esc(st.speaker||'')} · <a href="${b.url}" target="_blank" style="color:var(--green);text-decoration:none">${b.exact?'▶':'↗'}</a></span></div>
+    <div class="quote" style="margin-top:10px"><span class="q">“${esc(b.quote)}”</span><span class="src">— ${esc(st.speaker||'')} · ${b.exact?`<a href="javascript:void(0)" onclick="beatVid(${i},'${b.url}')" style="color:var(--green);text-decoration:none">▶</a>`:`<a href="${b.url}" target="_blank" style="color:var(--green);text-decoration:none">↗</a>`}</span></div>
+    <div id="bv${i}"></div>
     <div class="blk"><span class="lbl">Craft · 手法</span>${esc(b.craft)}<div class="whyzh">${esc(b.craftzh)}</div></div>
     ${b.steal?`<div class="blk"><span class="lbl">Steal this · 拿走就用</span>${esc(b.steal)}</div>`:''}
   </div>`).join('')+
@@ -3683,11 +3686,19 @@ function renderLearn(){
      </div></div>`;
 }
 function enterUnit(id){inUnit=UNITS.find(u=>u.id===id);const uw=unitWords(inUnit);
-  if(inUnit.deck){const un=uw.filter(w=>w._cus?false:!ws(w.id).learned);const pool=un.length?un:uw;inUnit._sess=[...pool].sort(()=>Math.random()-.5).slice(0,20);}
-  else inUnit._sess=inUnit.ordered?[...uw]:[...uw].sort(()=>Math.random()-.5);
-  idx=-1;renderLearn();window.scrollTo(0,0)}
+  if(inUnit.deck){const un=uw.filter(w=>w._cus?false:!ws(w.id).learned);const pool=un.length?un:uw;inUnit._sess=[...pool].sort(()=>Math.random()-.5).slice(0,20);idx=-1;}
+  else if(inUnit.ordered){inUnit._sess=[...uw];idx=(state.upos&&state.upos[id]>0)?state.upos[id]-1:-1;}
+  else{
+    state.uorder=state.uorder||{};
+    let ord=state.uorder[id];
+    if(!ord){ord=[...uw].sort(()=>Math.random()-.5).map(w=>w.id);state.uorder[id]=ord;save();}
+    const byId={};uw.forEach(w=>byId[w.id]=w);
+    inUnit._sess=ord.map(x=>byId[x]).filter(Boolean).concat(uw.filter(w=>!ord.includes(w.id)));
+    idx=(state.upos&&state.upos[id]>0)?state.upos[id]-1:-1;
+  }
+  renderLearn();window.scrollTo(0,0)}
 function exitUnit(){inUnit=null;idx=-1;renderLearn()}
-function go(i){ if(i<-1)i=-1; idx=i; renderLearn(); window.scrollTo(0,0)}
+function go(i){ if(i<-1)i=-1; idx=i; if(inUnit&&!inUnit.deck){state.upos=state.upos||{};state.upos[inUnit.id]=Math.max(0,idx+1);save();} renderLearn(); window.scrollTo(0,0)}
 function learnNext(){
   const u=inUnit,uw=(u._sess||unitWords(u)),w=uw[idx];
   if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.next=today();addXP(5);bumpStreak();tl().learned++;syncNow();}}
@@ -3702,6 +3713,7 @@ function learnNext(){
         <button class="btn ghost slim" onclick="exitUnit()">⌂ All units</button>
         ${nxt?`<button class="btn primary" onclick="enterUnit('${nxt.id}')">Next unit →</button>`:`<button class="btn primary" onclick="switchTo('practice')">Shuffle →</button>`}
       </div></div>`;
+    if(!u.deck){state.upos=state.upos||{};state.upos[u.id]=0;save();}
     updateBadges();
   }
 }
@@ -4069,7 +4081,7 @@ async function aiText(prompt){
 /* ============ ADD / SEARCH PANELS ============ */
 function togglePanel(which){
   const add=document.getElementById('addPanel'),srch=document.getElementById('searchPanel');
-  if(which==='add'){srch.classList.remove('show');add.classList.toggle('show');if(add.classList.contains('show')){document.getElementById('fKey').value=localStorage.getItem('bs_key')||'';if(SYNC_URL&&syncCfg()){document.getElementById('aiKeyBtn').style.display='none';document.getElementById('aiKeyRow').style.display='none';}document.getElementById('fTerm').focus();}}
+  if(which==='add'){srch.classList.remove('show');add.classList.toggle('show');if(add.classList.contains('show')){document.getElementById('fTerm').focus();}}
   else{add.classList.remove('show');srch.classList.toggle('show');if(srch.classList.contains('show')){document.getElementById('srchQ').focus();doSearch(document.getElementById('srchQ').value);}}
 }
 let _af=null;
