@@ -3050,7 +3050,18 @@ function renderToday(){
      <span class="cat-chip">Line of the day</span>
      <div class="term" style="font-size:20px">${esc(w.term)}</div>
      <div class="quote" style="margin-top:10px"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div>
-     </div>${friendsCard()}`;
+     </div>${speechOfDay()}${friendsCard()}`;
+}
+function speechOfDay(){
+  if(typeof STUDIES==='undefined'||!STUDIES.length)return '';
+  const sd=STUDIES[Math.floor(today()/DAY)%STUDIES.length];
+  return `<div class="card" style="margin-top:14px">
+   <span class="cat-chip">Speech of the day</span>
+   <div class="term" style="font-size:19px">${esc(sd.title)}</div>
+   <div style="font-size:13px;color:var(--muted);margin-top:2px">${esc(sd.sub)}</div>
+   <div style="font-size:14px;margin-top:8px">${esc(sd.intro)}<div class="whyzh">${esc(sd.introzh)}</div></div>
+   <div class="row" style="margin-top:12px"><button class="btn primary slim" onclick="switchTo('learn');enterStudy('${sd.id}')">Read the study →</button></div>
+  </div>`;
 }
 
 /* ============ SPEECH STUDIES · 精读 ============ */
