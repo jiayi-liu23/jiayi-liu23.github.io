@@ -143,6 +143,8 @@
   .empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:14px}
 .whyzh{margin-top:5px;color:var(--wood-dk);font-size:13.5px}
 .btn:focus-visible,.pill:focus-visible,.hicon:focus-visible,nav button:focus-visible,.starbtn:focus-visible{outline:2px solid var(--wood);outline-offset:2px}
+.viewin{animation:viewin .22s ease}
+@keyframes viewin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 header{padding-top:calc(env(safe-area-inset-top, 0px))}
 body{padding-bottom:env(safe-area-inset-bottom, 0px)}
 </style>
@@ -3502,15 +3504,42 @@ function todayLine(){
   const p2=pool.length?pool:ALLWORDS.filter(hasOrig);
   return p2[Math.floor(today()/DAY)%p2.length];
 }
+function repCard(){
+  const t=today();
+  const starred=ALLWORDS.filter(x=>ws(x.id).star);
+  const learned=ALLWORDS.filter(x=>ws(x.id).learned);
+  const pool=starred.length?starred:(learned.length?learned:[todayLine()]);
+  return pool[Math.floor(t/DAY)%pool.length];
+}
+function doRep(){
+  const txt=(document.getElementById('repIn').value||'').trim();
+  if(!txt)return;
+  const w=repCard();
+  state.sents=state.sents||[]; state.sents.push({d:today(),term:w.term,t:txt});
+  if(state.sents.length>100)state.sents.shift();
+  tl().rep=true; addXP(10); bumpStreak(); save(); renderToday(); syncNow();
+}
 function renderToday(){
-  const T=tl(),w=todayLine();
+  const T=tl(),w=todayLine(),rw=repCard();
   document.getElementById('todayArea').innerHTML=`${noticesHtml()}
-   <div class="card">
+${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
+     <span class="cat-chip">Welcome</span>
+     <div style="font-size:14px;margin-top:8px">A private word bank for articulate speech. <b>Lessons</b> to study the course, <b>Shuffle</b> to browse the bank — and here, one rep, one line, one speech a day.</div>
+     <div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn ghost slim" onclick="state.welcomed=1;save();renderToday()">Got it</button></div>
+   </div>`}<div class="card">
      <div style="font-size:13px;color:var(--muted)">${T.learned} learned · ${T.sessions} flipped today · any card keeps the 🔥</div>
+   </div>
+   <div class="card" style="margin-top:14px">
+     <span class="cat-chip">Daily rep</span>
+     ${T.rep?`<div style="font-size:14px;margin-top:8px">✓ ${esc(rw.term)} — used, not just seen.</div><div style="font-size:13px;color:var(--muted);margin-top:6px">“${esc((state.sents&&state.sents.length)?state.sents[state.sents.length-1].t:'')}”</div>`
+     :`<div class="term" style="font-size:19px">${esc(rw.term)}</div>
+     <div style="font-size:13.5px;color:var(--muted)">${esc(rw.gloss)}</div>
+     <textarea id="repIn" placeholder="Use it in one sentence from your week — say it aloud, then type it."></textarea>
+     <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button></div>`}
    </div>
    <div class="card" style="margin-top:14px;cursor:pointer" onclick="todayOpen=!todayOpen;renderToday()">
      <span class="cat-chip">Line of the day</span>
-     <div class="term" style="font-size:20px">${esc(w.term)}</div>
+     <div class="term" style="font-size:19px">${esc(w.term)}</div>
      <div class="quote" style="margin-top:10px">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" onclick="event.stopPropagation()" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div>
      ${todayOpen?`<div class="blk"><span class="lbl">Meaning · 释义</span>${esc(w.gloss)}</div>
      ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">In the quote · 拆词</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
@@ -3525,7 +3554,7 @@ function speechOfDay(){
   const sd=STUDIES[Math.floor(today()/DAY)%STUDIES.length];
   return `<div class="card" style="margin-top:14px;cursor:pointer" onclick="switchTo('learn');enterStudy('${sd.id}')">
    <span class="cat-chip">Speech of the day</span>
-   <div class="term" style="font-size:20px">${esc(sd.hookterm||sd.title)}</div>
+   <div class="term" style="font-size:19px">${esc(sd.hookterm||sd.title)}</div>
    <div class="quote" style="margin-top:10px"><span class="q">“${esc(sd.hook)}”</span><span class="src">— ${esc(sd.hooksrc||sd.title)}${sd.hookurl?' · <a href="'+sd.hookurl+'" target="_blank" onclick="event.stopPropagation()" style="color:var(--green);text-decoration:none">▶</a>':''}</span></div>
    <div style="text-align:right;font-size:12px;color:var(--muted);margin-top:8px">read the study →</div>
   </div>`;
@@ -3957,7 +3986,7 @@ function renderLearn(){
   if(idx===-1){
     area.innerHTML=`<div class="card">
       <span class="cat-chip">${UNITS.filter(x=>!x.tool).indexOf(u)>=0?('UNIT '+(UNITS.filter(x=>!x.tool).indexOf(u)+1)+' · '):''}${esc(u.from)}</span>
-      <div class="term" style="font-size:24px">${esc(u.title)}${u.zh?`<br><span style="font-size:17px;color:var(--wood-dk)">${esc(u.zh)}</span>`:''}</div>
+      <div class="term" style="font-size:22px">${esc(u.title)}${u.zh?`<br><span style="font-size:17px;color:var(--wood-dk)">${esc(u.zh)}</span>`:''}</div>
       <div class="blk"><span class="lbl">Why this matters</span>${u.essence}</div>
       <div class="row">
         <button class="btn ghost slim" onclick="exitUnit()">⌂ Lessons</button>
@@ -4355,6 +4384,7 @@ function resetAll(){
 function currentView(){const b=document.querySelector('nav button.on');return b?b.dataset.v:'learn'}
 function switchTo(v){document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));
   ['today','learn','practice'].forEach(k=>document.getElementById('v-'+k).style.display=(k===v)?'block':'none');
+  const sec=document.getElementById('v-'+v);sec.classList.remove('viewin');void sec.offsetWidth;sec.classList.add('viewin');
   if(v==='today')renderToday(); if(v==='learn')renderLearn(); if(v==='practice')renderPrac();
 }
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='learn'){inSteals=false;inStudy=null;inUnit=null;idx=-1;}switchTo(b.dataset.v);});
@@ -4363,6 +4393,9 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v
 /* init */
 renderToday(); renderStreak();  
 syncNow(true);
+(function(){const el=document.getElementById('v-practice');if(!el||!el.addEventListener)return;let x0=null;
+el.addEventListener('touchstart',e=>{x0=e.touches[0].clientX},{passive:true});
+el.addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>60)shufDraw(true);},{passive:true});})();
 if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
 </body>
