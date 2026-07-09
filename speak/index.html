@@ -168,22 +168,16 @@ body{padding-bottom:env(safe-area-inset-bottom, 0px)}
   <div class="miniform" id="addPanel" style="margin-top:14px">
     <label>Word / phrase</label><input id="fTerm">
     <div class="row" style="margin-top:10px">
-      <button class="btn soft slim" id="afBtn" onclick="autoFill()">✨ Auto-fill the rest</button>
+      <button class="btn soft slim" id="afBtn" onclick="autoFill()">✨ Auto-fill</button>
     </div>
     <label>Meaning</label><input id="fMeaning">
-    <label>Example sentence (optional)</label><textarea id="fExample"></textarea>
+    <label>Example (optional)</label><textarea id="fExample"></textarea>
     <label>Source (optional)</label><input id="fSource" placeholder="e.g. heard in seminar / NYT article">
-    <label>Category</label>
-    <select id="fCat">
-      <option>Words</option><option>Phrases</option><option>Similes</option>
-      <option>Alliterations</option><option>Quotes</option><option>Workhorse swaps</option>
-      <option>Lexical gaps</option><option>Dedicated terms</option><option>Custom</option>
-    </select>
+    
     <div class="row"><button class="btn primary" onclick="saveForm()">Save → My Pickups</button><button class="btn ghost slim" onclick="togglePanel('add')">Close</button></div>
   </div>
   <div class="miniform" id="searchPanel" style="margin-top:14px">
-    <label>Search all cards</label>
-    <input id="srchQ" placeholder="Type to search terms, meanings, quotes…" oninput="doSearch(this.value)">
+    <input id="srchQ" placeholder="Search terms, meanings, quotes…" oninput="doSearch(this.value)">
     <div id="srchOut" style="margin-top:10px"></div>
   </div>
 </div>
@@ -208,7 +202,7 @@ body{padding-bottom:env(safe-area-inset-bottom, 0px)}
 <script>
 const KEY='betterspeak_commonplace_v3';
 const V2KEY='betterspeak_commonplace_v2';
-const INTERVALS=[1,3,7,14,30];
+
 const DAY=86400000;
 const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()};
 
@@ -3475,8 +3469,6 @@ const ALLWORDS=UNITS.flatMap(u=>u.words.map(w=>({...w,unit:u.id})));
 
 /* ============ STATE ============ */
 let state=load();
-// one-time rescore (2026-07-08): quiz-era XP inflated today's bar; recompute from real activity
-if(state.xpMigr!=='v2'){const _T=(state.tl&&state.tl.day===today())?state.tl:{learned:0,sessions:0};state.xpNow=((_T.learned||0)+(_T.sessions||0))*5;state.xpDay=today();state.xpMigr='v2';}
 function load(){
   try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.words){ALLWORDS.forEach(w=>{if(!s.words[w.id])s.words[w.id]={learned:false,star:false,uses:0,next:0}});return s;}}catch(e){}
   const fresh={words:{},custom:[],streak:0,lastDay:0,reps:0};
@@ -3499,9 +3491,9 @@ function ws(id){if(!state.words[id])state.words[id]={learned:false,star:false,us
 
 /* ============ AUDIO + XP ============ */
 function sayWord(t){try{if(!t)return;const u=new SpeechSynthesisUtterance(String(t).replace(/\s*\(.*?\)\s*/g,'').split('/')[0]);u.lang='en-US';u.rate=0.85;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
-const XP_GOAL=100;
-function xpToday(){const t=today();if(state.xpDay!==t){state.xpDay=t;state.xpNow=0;}return state.xpNow||0;}
-function addXP(n){const t=today();if(state.xpDay!==t){state.xpDay=t;state.xpNow=0;}state.xpNow=(state.xpNow||0)+n;state.xp=(state.xp||0)+n;state.hist=state.hist||{};state.hist[t]=state.xpNow;Object.keys(state.hist).forEach(k=>{if(+k<t-7*DAY)delete state.hist[k]});save();renderStreak();}
+
+function xpToday(){return (state.hist||{})[today()]||0;}
+function addXP(n){const t=today();state.xp=(state.xp||0)+n;state.hist=state.hist||{};state.hist[t]=(state.hist[t]||0)+n;Object.keys(state.hist).forEach(k=>{if(+k<t-7*DAY)delete state.hist[k]});save();renderStreak();}
 
 /* ============ TODAY ============ */
 function tl(){const t=today();if(!state.tl||state.tl.day!==t)state.tl={day:t,learned:0,sessions:0,line:false};return state.tl;}
@@ -3511,21 +3503,22 @@ function todayLine(){
   return p2[Math.floor(today()/DAY)%p2.length];
 }
 function renderToday(){
-  const T=tl(),x=xpToday(),w=todayLine();
+  const T=tl(),w=todayLine();
   document.getElementById('todayArea').innerHTML=`${noticesHtml()}
    <div class="card">
-     <div class="meter"><i style="width:${Math.min(100,x/XP_GOAL*100)}%"></i></div>
-     <div class="meter-lbl"><span class="xp">⚡ ${Math.min(x,XP_GOAL)} / ${XP_GOAL} today</span>${x>=XP_GOAL?' ✓':''}<span style="color:var(--muted)"> · any card today keeps the 🔥</span></div>
-     <div class="tdrow" style="cursor:pointer" onclick="switchTo('learn')"><div class="tick">📖</div><div style="flex:1"><div class="tt">Lessons</div><div class="td">${T.learned} ${T.learned===1?'card':'cards'} learned today</div></div><div style="color:var(--muted);font-size:18px">›</div></div>
-     <div class="tdrow" style="cursor:pointer" onclick="switchTo('practice')"><div class="tick">🎴</div><div style="flex:1"><div class="tt">Shuffle</div><div class="td">${T.sessions} ${T.sessions===1?'card':'cards'} flipped today</div></div><div style="color:var(--muted);font-size:18px">›</div></div>
+     <div style="font-size:13px;color:var(--muted)">${T.learned} learned · ${T.sessions} flipped today · any card keeps the 🔥</div>
    </div>
-   <div class="card" style="margin-top:14px;cursor:pointer" onclick="switchTo('learn');togglePanel('search');document.getElementById('srchQ').value='';showCard('${w.id}')">
+   <div class="card" style="margin-top:14px;cursor:pointer" onclick="todayOpen=!todayOpen;renderToday()">
      <span class="cat-chip">Line of the day</span>
      <div class="term" style="font-size:20px">${esc(w.term)}</div>
      <div class="quote" style="margin-top:10px">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" onclick="event.stopPropagation()" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div>
-     <div style="text-align:right;font-size:12px;color:var(--muted);margin-top:8px">full card →</div>
+     ${todayOpen?`<div class="blk"><span class="lbl">Meaning · 释义</span>${esc(w.gloss)}</div>
+     ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">In the quote · 拆词</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
+     ${w.why?`<div class="blk"><span class="lbl">Unpack · 解析</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>`:''}
+     ${w.usage&&w.usage.length?`<div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}`:``}
+     <div style="text-align:right;font-size:12px;color:var(--muted);margin-top:8px">${todayOpen?'less ↑':'full card →'}</div>
      </div>${speechOfDay()}${friendsCard()}
-   <div style="margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted)"><a href="javascript:void(0)" onclick="resetToday()" style="color:var(--muted)">Reset today</a>&nbsp;·&nbsp;<a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted)">Start over</a></div>`;
+`;
 }
 function speechOfDay(){
   if(typeof STUDIES==='undefined'||!STUDIES.length)return '';
@@ -3867,8 +3860,6 @@ function renderSteals(){
   const items=stealsList().filter(x=>stealOcc==='all'||x.occ.includes(stealOcc));
   area.innerHTML=`<div class="card">
     <span class="cat-chip">The Steal List · 场合速查</span>
-    <div class="term" style="font-size:22px">Steal this</div>
-    <div style="font-size:13.5px;color:var(--muted);margin-top:4px">Every reusable template from the Speech Studies, browsable by occasion. 精读里所有「拿走就用」的模板,按场合速查。</div>
     <div class="row" style="flex-wrap:wrap;gap:8px;margin-top:12px">${OCCS.map(o=>`<button class="pill ${o[0]===stealOcc?'on':''}" onclick="setOcc('${o[0]}')">${o[1]}</button>`).join('')}</div>
     <div class="row" style="margin-top:12px"><button class="btn ghost slim" onclick="exitSteals()">⌂ Lessons</button></div>
   </div>`+items.map(x=>`<div class="card" style="margin-top:14px">
@@ -3880,7 +3871,7 @@ function renderSteals(){
     </div>
   </div>`).join('');
 }
-let inStudy=null;
+let inStudy=null, todayOpen=false;
 function beatVid(i,url){
   const d=document.getElementById('bv'+i); if(!d)return;
   if(d.innerHTML){d.innerHTML='';return;}
@@ -3893,14 +3884,14 @@ function exitStudy(){inStudy=null;renderLearn();window.scrollTo(0,0)}
 function studiesSection(){
   if(!STUDIES.length)return '';
   return `<div style="margin:24px 0 4px;font-family:var(--serif);font-size:17px;color:var(--wood-dk)">Speech Studies · 精读</div>
-  <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">One great speech, read whole — structure, beats, what to steal.</div>`+
+  <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">One speech, read whole — what to steal.</div>`+
   STUDIES.map(st=>`<div class="unit" onclick="enterStudy('${st.id}')">
     <div class="badge">§</div>
     <div><div class="ut">${esc(st.title)}</div><div class="um">${esc(st.sub)}</div></div>
     <div class="prog">${st.beats.length} beats</div>
   </div>`).join('')+`<div class="unit" onclick="enterSteals()">
     <div class="badge">✂</div>
-    <div><div class="ut">The Steal List <span class="uz">· 场合速查</span></div><div class="um">every “Steal this” template · by occasion</div></div>
+    <div><div class="ut">The Steal List <span class="uz">· 场合速查</span></div><div class="um">every template, by occasion</div></div>
     <div class="prog">${stealsList().length}</div>
   </div>`;
 }
@@ -3923,7 +3914,7 @@ function renderStudy(){
   `<div class="card" style="margin-top:14px">
     <span class="cat-chip">The arc · 全篇弧线</span>
     <div class="blk" style="margin-top:6px">${esc(st.arc)}<div class="whyzh">${esc(st.arczh)}</div></div>
-    <div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="exitStudy()">⌂ All studies</button><button class="btn ghost slim" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button></div>
+    <div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="exitStudy()">⌂ Lessons</button><button class="btn ghost slim" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button></div>
   </div>`;
 }
 
@@ -3942,26 +3933,25 @@ function renderLearn(){
   if(!inUnit){
     const MAIN=UNITS.filter(u=>!u.tool), TOOLS=UNITS.filter(u=>u.tool);
     const cont=MAIN.find(u=>!unitDone(u)&&unitLearnedCount(u)>0)||MAIN.find(u=>!unitDone(u));
-    const hero=cont?`<div class="card" style="margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="enterUnit('${cont.id}')"><div style="font-size:26px">▶</div><div><div style="font-weight:700">Continue: ${esc(cont.title)}</div><div style="font-size:12.5px;color:var(--muted)">${unitLearnedCount(cont)}/${unitWords(cont).length} · pick up where you left off</div></div></div>`:'';
+    const hero=cont?`<div class="card" style="margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="enterUnit('${cont.id}')"><div style="font-size:26px">▶</div><div><div style="font-weight:700">Continue: ${esc(cont.title)}</div><div style="font-size:12.5px;color:var(--muted)">${unitLearnedCount(cont)}/${unitWords(cont).length}</div></div></div>`:'';
     area.innerHTML=hero+MAIN.map((u,i)=>{
       const done=unitDone(u),n=unitLearnedCount(u);
       const cls=done?'done':(n>0?'active':'');
       const icon=done?'✓':(i+1);
       return `<div class="unit ${cls}" onclick="enterUnit('${u.id}')">
         <div class="badge">${icon}</div>
-        <div><div class="ut">${esc(u.title)}${u.zh?` <span class="uz">· ${esc(u.zh)}</span>`:''}</div><div class="um">${esc(u.from)} · ${unitWords(u).length}${u.deck?' in stock · 20 random per visit':' entries'}</div></div>
+        <div><div class="ut">${esc(u.title)}${u.zh?` <span class="uz">· ${esc(u.zh)}</span>`:''}</div><div class="um">${esc(u.from)}${u.deck?' · 20 per visit':''}</div></div>
         <div class="prog">${n}/${unitWords(u).length}</div>
       </div>`;
     }).join('')+studiesSection()+`<div style="margin:24px 0 4px;font-family:var(--serif);font-size:17px;color:var(--wood-dk)">Toolkit · 常备</div>
-  <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Daily routine and your own collection — not lessons, always at hand.</div>`+TOOLS.map(u=>{
-      const n=unitLearnedCount(u);
+  <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Not lessons — always at hand.</div>`+TOOLS.map(u=>{
       return `<div class="unit" onclick="enterUnit('${u.id}')">
         <div class="badge">✦</div>
-        <div><div class="ut">${esc(u.title)}${u.zh?` <span class="uz">· ${esc(u.zh)}</span>`:''}</div><div class="um">${esc(u.from)} · ${unitWords(u).length} entries</div></div>
-        <div class="prog">${n}/${unitWords(u).length}</div>
+        <div><div class="ut">${esc(u.title)}${u.zh?` <span class="uz">· ${esc(u.zh)}</span>`:''}</div><div class="um">${esc(u.from)}</div></div>
+        <div class="prog">${unitWords(u).length}</div>
       </div>`;
-    }).join('');
-    updateBadges();return;
+    }).join('')+`<div style="margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted)"><a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted)">Start over</a></div>`;
+    return;
   }
   const u=inUnit;
   if(idx===-1){
@@ -3970,7 +3960,7 @@ function renderLearn(){
       <div class="term" style="font-size:24px">${esc(u.title)}${u.zh?`<br><span style="font-size:17px;color:var(--wood-dk)">${esc(u.zh)}</span>`:''}</div>
       <div class="blk"><span class="lbl">Why this matters</span>${u.essence}</div>
       <div class="row">
-        <button class="btn ghost slim" onclick="exitUnit()">⌂ All units</button>
+        <button class="btn ghost slim" onclick="exitUnit()">⌂ Lessons</button>
         <button class="btn primary" onclick="go(0)">Start →</button>
       </div></div>`;
     return;
@@ -3987,7 +3977,7 @@ function renderLearn(){
      <div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
      <div class="stepdots">${idx+1} / ${(u._sess||unitWords(u)).length}</div>
      <div class="row">
-       <button class="btn ghost slim" onclick="exitUnit()">⌂ All units</button>
+       <button class="btn ghost slim" onclick="exitUnit()">⌂ Lessons</button>
        <button class="btn ghost slim" onclick="go(${idx-1})">← Back</button>
        <button class="btn primary" onclick="learnNext()">Next →</button>
      </div></div>`;
@@ -4015,55 +4005,19 @@ function learnNext(){
     const area=document.getElementById('learnArea');
     const list=UNITS.filter(x=>!x.tool), i2=list.indexOf(u), nxt=i2>=0?list[i2+1]:null;
     area.innerHTML=`<div class="card done-msg"><div class="big">${i2>=0?('Unit '+(i2+1)):esc(u.title)} complete</div>
-      ${(u._sess||u.words).length} entries added to the shuffle deck.<br><br>
+      ${(u._sess||u.words).length} entries now in Shuffle.<br><br>
       <div class="row">
-        <button class="btn ghost slim" onclick="exitUnit()">⌂ All units</button>
+        <button class="btn ghost slim" onclick="exitUnit()">⌂ Lessons</button>
         ${nxt?`<button class="btn primary" onclick="enterUnit('${nxt.id}')">Next unit →</button>`:`<button class="btn primary" onclick="switchTo('practice')">Shuffle →</button>`}
       </div></div>`;
     if(!u.deck){state.upos=state.upos||{};state.upos[u.id]=0;save();}
-    updateBadges();
+    
   }
 }
 
 /* ============ PRACTICE (session engine) ============ */
 const REF_UNITS=new Set(['u0','uVm','uR','u15']);
-function practicePool(){
-  const cur=ALLWORDS.filter(w=>!REF_UNITS.has(w.unit)&&ws(w.id).learned).map(w=>({kind:'cur',w,s:ws(w.id)}));
-  const cus=state.custom.map(c=>({kind:'cus',w:c,s:c}));
-  return [...cur,...cus].filter(x=>x.s.uses<38);
-}
-const SESSION_SIZE=8;
-let sess=null;
-function exType(x){
-  const u=x.s.uses||0, t=String(x.w.term);
-  if(u>=4) return 'write';
-  if(t.includes('→')) return 'swap';
-  // cloze ONLY for real, person-attributed famous lines — never course-internal prose
-  if(x.kind==='cur'&&hasOrig(x.w)){
-    const qtext=(x.w.quote||'').toLowerCase();
-    if(keyWord(t)&&qtext.includes(keyWord(t))) return 'cloze';
-  }
-  return (x.kind==='cus'&&!x.w.meaning)?'write':'recall';
-}
-function norm(s){return String(s||'').toLowerCase().replace(/[’']/g,"'").replace(/[^a-z' ]+/g,' ').replace(/\s+/g,' ').trim();}
-function lev(a,b){if(a===b)return 0;const m=a.length,n=b.length;if(!m||!n)return m+n;let p=[...Array(n+1).keys()];for(let i=1;i<=m;i++){let c=[i];for(let j=1;j<=n;j++){c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));}p=c;}return p[n];}
-function fuzzyEq(inp,ans){inp=norm(inp);ans=norm(ans);if(!inp)return false;if(inp===ans)return true;const tol=ans.length>=8?2:(ans.length>=5?1:0);return lev(inp,ans)<=tol;}
-function keyWord(t){const stop=new Set(['that','this','with','from','have','been','will','your','their','there','what','when','into','only','every','more','than','like','just']);const ws_=norm(t).split(' ').filter(w=>w.length>=4&&!stop.has(w));return (ws_.sort((a,b)=>b.length-a.length)[0])||null;}
-function hintFor(w){return w?w[0]+'·'.repeat(Math.min(8,Math.max(2,w.length-1))):'';}
-function blankOut(text,word){try{return text.replace(new RegExp('\\b'+word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i'),'＿＿＿');}catch(e){return text;}}
-function buildSession(forceExtra){
-  const pool=practicePool(),t=today();
-  let q=pool.filter(x=>x.s.next<=t);
-  if(forceExtra&&!q.length)q=[...pool].sort(()=>Math.random()-.5);
-  q.forEach(x=>x._r=Math.random());
-  q.sort((a,b)=>(b.s.star-a.s.star)||(a.s.next-b.s.next)||(a.s.uses-b.s.uses)||(a._r-b._r));
-  q=q.slice(0,SESSION_SIZE-1);
-  q.forEach(x=>{x._type=exType(x);x._redone=false;});
-  if(q.length>=2){const g=makeGen();q.splice(1+Math.floor(Math.random()*(q.length-1)),0,g);}
-  sess={q,i:0,right:0,miss:0,extra:!!forceExtra,total:q.length};
-  return q.length>0;
-}
-/* ---- Shuffle: random card browsing (no quizzes) ---- */
+
 const SHUF_SCOPES=[['all','All cards'],['fam','Famous lines'],['star','Focus'],['mine','My Pickups']];
 const SCOPE_DESC={all:'Every card in the bank.',fam:'Lines with a real, person-attributed source.',star:'Cards you starred ★.',mine:'Words you added with ＋ (and gifts from friends).'};
 let shufCur=null, shufRecent=[];
@@ -4085,7 +4039,7 @@ function setShufScope(sc){state.shufScope=sc;save();shufCur=null;shufRecent=[];r
 function shufDraw(){
   const pool=shufPool();
   if(!pool.length){
-    const msg={fam:'No famous lines in this scope yet.',star:'Nothing starred yet — tap the ★ on any card and it gathers here.',mine:'No pickups yet — add words with ＋ in the header.'}[shufScope()]||'No cards here yet.';
+    const msg={fam:'No famous lines yet.',star:'Nothing starred yet — tap ★ on any card.',mine:'No pickups yet — tap ＋ to add one.'}[shufScope()]||'No cards here yet.';
     document.getElementById('pracArea').innerHTML=`<div class="card done-msg">${msg}</div>`;return;
   }
   let cand=pool.filter(w=>!shufRecent.includes(w.id));
@@ -4093,11 +4047,10 @@ function shufDraw(){
   const w=cand[Math.floor(Math.random()*cand.length)];
   shufRecent.push(w.id); if(shufRecent.length>12)shufRecent.shift();
   shufCur=w;
-  if(!w._cus){const s=ws(w.id); if(!s.learned){s.learned=true;s.next=today();}}
   tl().sessions++; state.reps=(state.reps||0)+1; addXP(5); bumpStreak(); save(); syncNow();
-  renderShufCard(); renderStats();
+  renderShufCard(); 
 }
-function shufToggleStar(){ if(!shufCur)return; const st=cardState(shufCur); st.star=!st.star; save(); renderShufCard(); renderStats(); }
+function shufToggleStar(){ if(!shufCur)return; const st=cardState(shufCur); st.star=!st.star; save(); renderShufCard();  }
 function renderShufCard(){
   const w=shufCur, st=cardState(w);
   document.getElementById('pracArea').innerHTML=`<div class="card">
@@ -4119,183 +4072,18 @@ function renderPrac(){
   document.getElementById('pracSub').innerHTML='<div class="row" style="flex-wrap:wrap;gap:8px;margin-top:0">'+SHUF_SCOPES.map(p=>`<button class="pill ${p[0]===sc?'on':''}" onclick="setShufScope('${p[0]}')">${p[1]}</button>`).join('')+'</div><div style="font-size:12px;color:var(--muted);margin:7px 2px 0">'+(SCOPE_DESC[sc]||'')+'</div>';
   if(!shufCur){shufDraw();}else{renderShufCard();}
 }
-function makeGen(){
-  const useRe=(state.reps%2===0);
-  if(useRe){const p=REWRITE_PROMPTS[Math.floor(Math.random()*REWRITE_PROMPTS.length)];return {kind:'gen',gtype:'rewrite',p};}
-  const pair=[MC_ADJ[Math.floor(Math.random()*MC_ADJ.length)],MC_NOUN[Math.floor(Math.random()*MC_NOUN.length)]];
-  return {kind:'gen',gtype:'collide',pair};
-}
-function renderItem(){
-  const area=document.getElementById('pracArea');
-  if(sess.i>=sess.q.length){return renderSummary();}
-  const x=sess.q[sess.i];
-  document.getElementById('pracSub').textContent=`Session ${sess.i+1} / ${sess.q.length}`;
-  const bar0=`<div class="sessbar"><i style="width:${(sess.i/sess.q.length)*100}%"></i></div>`;
-  if(x.kind==='gen'&&x.gtype==='rewrite'){
-    area.innerHTML=bar0+`<div class="card">
-      <span class="cat-chip">Upgrade · 改写</span>
-      <div class="prompt" style="margin-top:10px">Rewrite this sentence — kill the workhorse words, keep the meaning:</div>
-      <div class="quote"><span class="q">“${esc(x.p.s)}”</span></div>
-      <textarea id="genA" placeholder="Your sharper version…"></textarea>
-      <div class="row"><button class="btn primary" onclick="genRewriteCheck()">Check →</button><button class="btn ghost slim" onclick="genSkip()">Skip</button></div>
-      <div id="genOut" class="blk"></div></div>`;
-    updateBadges();return;
-  }
-  if(x.kind==='gen'&&x.gtype==='collide'){
-    area.innerHTML=bar0+`<div class="card">
-      <span class="cat-chip">Metaphor · 碰撞</span>
-      <div class="prompt" style="margin-top:10px">Make this collision work in one sentence:</div>
-      <div class="quote"><span class="q" style="font-style:normal;font-size:18px"><b>${x.pair[0]}</b> × <b>${x.pair[1]}</b></span><span class="src">① what trait does “${x.pair[0]}” carry? ② how could “${x.pair[1]}” have it?</span></div>
-      <textarea id="genA" placeholder="e.g. Even the rainbow this afternoon has been decaffeinated."></textarea>
-      <div class="row"><button class="btn primary" onclick="genCollideCheck()">Check →</button><button class="btn ghost slim" onclick="genSkip()">Skip</button></div>
-      <div id="genOut" class="blk"></div></div>`;
-    updateBadges();return;
-  }
-  const w=x.w,s=x.s,type=x._type;
-  const bar=bar0;
-  const starBtn=`<button class="starbtn ${s.star?'on':''}" id="pStar" onclick="pracStar()" title="focus">★</button>`;
-  const meter=`<div class="meter"><i style="width:${Math.min(100,s.uses/38*100)}%"></i></div><div class="meter-lbl">used ${s.uses} / ~38 · ${s.star?'⭐ focus':(s.uses===0?'first rep':'review')}${x._redone?' · retry':''}</div>`;
-  if(type==='swap'){
-    const parts=w.term.split('→');
-    const offender=parts[0].trim();
-    const right=parts.slice(1).join('→').trim().replace(/[()]/g,'');
-    const answers=right.split(/·|\/|,| or /).map(s=>s.trim()).filter(Boolean);
-    const accepts=[...answers,...answers.map(a=>a.split(' ')[0])];
-    x._ctx={mode:'swap',answers:accepts,reveal:right,tries:0};
-    area.innerHTML=bar+`<div class="card">${starBtn}
-      <span class="cat-chip">Upgrade</span>
-      <div class="prompt" style="margin-top:10px">One sharper word for:</div>
-      <div class="quote"><span class="q" style="font-style:normal;font-size:19px"><b>${esc(offender)}</b></span><span class="src" style="letter-spacing:1px">${answers.map(a=>esc(hintFor(a.split(' ')[0]))).join('  ·  ')}</span></div>
-      <input id="tIn" class="tin" placeholder="One word…" onkeydown="if(event.key==='Enter')tryAnswer()">
-      <div class="row"><button class="btn primary" onclick="tryAnswer()">Check →</button></div>
-      <div id="tOut" class="blk"></div></div>`;
-  }else if(type==='cloze'){
-    const qtext=(x.kind==='cur'?w.quote:w.example)||'';
-    const k=keyWord(w.term);
-    x._ctx={mode:'cloze',answers:[k],reveal:k,tries:0};
-    area.innerHTML=bar+`<div class="card">${starBtn}
-      <span class="cat-chip">${esc(x.kind==='cur'?w.cat:(w.cat||'Words'))}</span>
-      <div class="prompt" style="margin-top:10px">One word completes the line:</div>
-      <div class="quote"><span class="q">“${esc(blankOut(qtext,k))}”</span><span class="src">— ${esc(srcClean(x.kind==='cur'?w.src:w.source))} · <span style="letter-spacing:1px">${esc(hintFor(k))}</span></span></div>
-      <input id="tIn" class="tin" placeholder="One word…" onkeydown="if(event.key==='Enter')tryAnswer()">
-      <div class="row"><button class="btn primary" onclick="tryAnswer()">Check →</button></div>
-      <div id="tOut" class="blk"></div></div>`;
-  }else if(type==='recall'){
-    const k=keyWord(w.term)||norm(w.term).split(' ')[0];
-    const scaffold=blankOut(w.term,k);
-    const gloss=x.kind==='cur'?w.gloss:(w.meaning||'');
-    x._ctx={mode:'recall',answers:[k],reveal:w.term,tries:0};
-    area.innerHTML=bar+`<div class="card">${starBtn}
-      <span class="cat-chip">${esc(x.kind==='cur'?w.cat:(w.cat||'Words'))}</span>
-      <div class="prompt" style="margin-top:10px">Fill the blank:</div>
-      <div class="quote"><span class="q" style="font-style:normal;font-size:18px">${esc(scaffold)}</span><span class="src">${esc(String(gloss).slice(0,80))} · <span style="letter-spacing:1px">${esc(hintFor(k))}</span></span></div>
-      <input id="tIn" class="tin" placeholder="One word…" onkeydown="if(event.key==='Enter')tryAnswer()">
-      <div class="row"><button class="btn primary" onclick="tryAnswer()">Check →</button></div>
-      <div id="tOut" class="blk"></div></div>`;
-  }else{
-    area.innerHTML=bar+`<div class="card">${starBtn}
-      <span class="cat-chip">${esc(x.kind==='cur'?w.cat:(w.cat||'Words'))}</span>
-      <div class="term">${esc(w.term)}</div>
-      ${meter}
-      <div class="prompt">Write a sentence you'd actually say:</div>
-      <textarea id="answer" placeholder="In a meeting, a paper, a conversation…"></textarea>
-      <div class="reveal" id="reveal">
-        ${x.kind==='cur'?`
-          <div class="blk"><span class="lbl">Meaning · 释义</span>${esc(w.gloss)}</div>
-          <div class="blk"><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>
-          <div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${(w.usage||[]).map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`
-        :`${w.meaning?`<div class="blk"><span class="lbl">Meaning · 释义</span>${esc(w.meaning)}</div>`:''}
-          ${w.example?`<div class="blk"><div class="quote"><span class="q">“${esc(w.example)}”</span>${w.source?`<span class="src">— ${esc(srcClean(w.source))}</span>`:''}</div></div>`:''}
-          ${w.why?`<div class="blk"><span class="lbl">Unpack · 解析</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>`:''}
-          ${(w.usage&&w.usage.length)?`<div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}`}
-      </div>
-      <div class="row" id="pRow1"><button class="btn primary" onclick="checkPrac()">Check →</button></div>
-      <div class="row" id="pRow2" style="display:none">
-        <button class="btn soft" onclick="finishWrite(true)">☆ Needs work — focus</button>
-        <button class="btn primary" onclick="finishWrite(false)">Count it ✓</button>
-      </div>
-    </div>`;
-  }
-  updateBadges();
-}
-function genRewriteCheck(){
-  const a=(document.getElementById('genA').value||'').trim(),out=document.getElementById('genOut');
-  if(!a){alert('Write your version first.');return;}
-  const padded=' '+a.toLowerCase().replace(/[^a-z' ]+/g,' ').replace(/\s+/g,' ')+' ';
-  const left=sess.q[sess.i].p.bad.filter(b=>padded.includes(' '+b+' '));
-  if(a.split(/\s+/).length<4){out.innerHTML='<div class=“tip”>再长一点——保住原意,只是换掉病词。</div>';return;}
-  if(left.length){out.innerHTML='<div class=“tip”>⚠️ 还剩病词：'+left.map(esc).map(b=>'<b>'+b+'</b>').join(' · ')+' — 再改一版(或 Skip)。</div>';return;}
-  out.innerHTML='<div class=“tip”>✅ 病词清零 · +8 XP'+(aiReady()?' <button class="btn soft slim" style="padding:3px 9px;font-size:12px" onclick="genCoach(\'rewrite\')">🧑‍🏫 AI</button>':'')+'</div>';
-  window._genLast=a;sess.right++;state.reps++;addXP(8);bumpStreak();save();
-  setTimeout(()=>{sess.i++;renderItem();},1400);
-}
-function genCollideCheck(){
-  const x=sess.q[sess.i],a=(document.getElementById('genA').value||'').trim(),out=document.getElementById('genOut');
-  if(!a){alert('Write your collision first.');return;}
-  const low=a.toLowerCase();
-  if(a.split(/\s+/).length<6||!(low.includes(x.pair[1].split(' ')[0])||low.includes(x.pair[0]))){
-    out.innerHTML='<div class=“tip”>让句子至少 6 个词,并真的用上 <b>'+esc(x.pair[1])+'</b>(或 '+esc(x.pair[0])+')。</div>';return;
-  }
-  out.innerHTML='<div class=“tip”>✅ 成立 · +8 XP · 自检：特质清楚吗？画面意外吗？还能顺着 frame 再说一句吗？'+(aiReady()?' <button class="btn soft slim" style="padding:3px 9px;font-size:12px" onclick="genCoach(\'collide\')">🧑‍🏫 AI</button>':'')+'</div>';
-  window._genLast=a;sess.right++;state.reps++;addXP(8);bumpStreak();save();
-  setTimeout(()=>{sess.i++;renderItem();},1600);
-}
-function genSkip(){sess.miss++;sess.i++;renderItem();}
-function aiReady(){return (SYNC_URL&&!!syncCfg())||!!(localStorage.getItem('bs_key')||'').trim();}
-async function genCoach(kind){
-  const out=document.getElementById('genOut');if(!out)return;
-  out.insertAdjacentHTML('beforeend','<div class="tip" id="genAI">… coaching</div>');
-  const prompt=kind==='rewrite'
-    ?'You are VocabularyGPT (BetterSpeak): clarity over complexity. The student rewrote a workhorse-laden sentence as: "'+(window._genLast||'')+'". In 3 short lines: 1) verdict; 2) one even sharper version; 3) one word-choice note. No preamble.'
-    :'You are a BetterSpeak metaphor coach (two-question method). The student wrote: "'+(window._genLast||'')+'". In 3 short lines: 1) verdict (fresh/works/forced) + why; 2) an improved version; 3) how to extend the frame one sentence. No preamble.';
-  try{const t=await aiText(prompt);const el=document.getElementById('genAI');if(el)el.innerHTML='<span class="lbl">Coach</span><div style="white-space:pre-wrap">'+esc(t)+'</div>';}
-  catch(e){const el=document.getElementById('genAI');if(el)el.textContent='AI failed: '+e.message;}
-}
-function pracStar(){const s=sess.q[sess.i].s;s.star=!s.star;save();document.getElementById('pStar').classList.toggle('on',s.star);renderStats();}
-function scheduleOK(s){const step=Math.min(INTERVALS.length-1,Math.floor(s.uses/2));s.next=today()+INTERVALS[step]*DAY;}
-function tryAnswer(){
-  const x=sess.q[sess.i],s=x.s,c=x._ctx,out=document.getElementById('tOut');
-  const inp=(document.getElementById('tIn').value||'').trim();
-  if(!inp){out.innerHTML='<div class="tip">Type your answer first.</div>';return;}
-  const ok=c.answers.some(a=>fuzzyEq(inp,a));
-  if(ok){
-    out.innerHTML=`<div class="tip">✓ <b>${esc(c.reveal)}</b></div>`;
-    s.uses++;state.reps++;sess.right++;addXP(8);scheduleOK(s);bumpStreak();save();
-    setTimeout(()=>{sess.i++;renderItem();},1000);
-  }else{
-    c.tries++;
-    if(c.tries<2){out.innerHTML='<div class="tip">Not quite — one more try.</div>';document.getElementById('tIn').select&&document.getElementById('tIn').select();return;}
-    out.innerHTML=`<div class="tip">Answer: <b>${esc(c.reveal)}</b></div>`;
-    sess.miss++;s.next=today()+DAY;
-    if(!x._redone){const clone={...x,_redone:true,_ctx:null};sess.q.push(clone);sess.total++;}
-    save();
-    setTimeout(()=>{sess.i++;renderItem();},1700);
-  }
-}
+
+
+
+
+
+
+
+
+
 function checkPrac(){document.getElementById('reveal').classList.add('show');document.getElementById('pRow1').style.display='none';document.getElementById('pRow2').style.display='flex';}
-function finishWrite(keepFocus){
-  const x=sess.q[sess.i],s=x.s;
-  s.uses++;state.reps++;sess.right++;
-  if(keepFocus){s.star=true;s.next=today()+DAY;addXP(6);}
-  else{s.star=false;scheduleOK(s);addXP(10);}
-  bumpStreak();save();sess.i++;renderItem();renderStats();
-}
-function renderSummary(){
-  tl().sessions++;save();
-  const area=document.getElementById('pracArea');
-  const pct=sess.total?Math.round(100*sess.right/(sess.right+sess.miss||1)):0;
-  document.getElementById('pracSub').textContent='';
-  area.innerHTML=`<div class="card done-msg">
-    <div class="big">Session complete 🎉</div>
-    <div style="font-size:15px;margin:6px 0">${sess.right} ✓ · ${sess.miss} ✗ · <span class="xp">⚡ ${xpToday()} / ${XP_GOAL} today</span></div>
-    <div style="font-size:13px;color:var(--muted)">${xpToday()>=XP_GOAL?'Daily goal met — the streak is safe. 🔥':'Keep going — '+(XP_GOAL-xpToday())+' XP to today’s goal.'}</div>
-    <div class="row" style="justify-content:center;margin-top:16px">
-      <button class="btn primary slim" onclick="sess=null;renderPrac()">Next session →</button>
-      <button class="btn ghost slim" onclick="switchTo('learn')">⌂ Lessons</button>
-    </div></div>`;
-  sess.i=1e9; sess.done=true;
-  updateBadges();renderStats();
-}
+
+
 function bumpStreak(){const t=today(); if(state.lastDay!==t){const d=new Date(t),y=new Date(d.getFullYear(),d.getMonth(),d.getDate()-1).getTime();state.streak=(state.lastDay===y)?state.streak+1:1; state.lastDay=t; renderStreak();}}
 
 /* ============ ORIGINAL-CLIP LINKS ============ */
@@ -4363,27 +4151,9 @@ function srcClean(s){
 function toksKeep(t){return t.replace(/[“”]/g,'').split(/\s+/).filter(Boolean);}
 
 /* ============ GEN DATA ============ */
-const MC_ADJ=['smoky','refried','decaffeinated','hollow','understated','zigzagged','frosty','sparkling','toasted','dusty','clouded'];
-const MC_NOUN=['conversation','railroad','rainbow','rainforest','eyebrows','coffee','squirrel','surfboard','wood stove','reef','aroma','deadline','inbox','seminar','dataset','commute'];
-const REWRITE_PROMPTS=[
- {s:"The results are really good and pretty interesting.",bad:['really','good','pretty','interesting']},
- {s:"It was a very big change and honestly kind of important.",bad:['very','big','honestly','kind of','important']},
- {s:"The talk was basically amazing and the slides were nice.",bad:['basically','amazing','nice']},
- {s:"This thing is literally huge for our project.",bad:['thing','literally','huge']},
- {s:"At the end of the day the model is pretty solid.",bad:['at the end of the day','pretty']},
- {s:"We just need to touch base and do a deep dive on the data.",bad:['just','touch base','deep dive']},
- {s:"The new method is super cool and totally works.",bad:['super','cool','totally']},
- {s:"Their approach is bad and the writing is boring, to say the least.",bad:['bad','to say the least']},
- {s:"It is a no-brainer and a win-win for everyone involved.",bad:['no-brainer','win-win']},
- {s:"The findings are unbelievable and could move the needle.",bad:['unbelievable','move the needle']},
-];
-const ER_WORDS=['good','nice','literally','basically','best','amazing','interesting','absolutely','tons','cool','important','bad','bunch','essentially','wild','pretty','funny','leverage','big','thing','vibes','unbelievable','fantastic','honestly','annoying','whatever','huge','awesome','famous','stupid','basic','killer','really','very','just','kind of','sort of','super','totally','pretty much','you know','stuff','actually'];
-async function aiText(prompt){
-  const key=(localStorage.getItem('bs_key')||'').trim(); if(!key)throw new Error('no key');
-  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5',max_tokens:450,messages:[{role:'user',content:prompt}]})});
-  if(!r.ok)throw new Error('API '+r.status);
-  const j=await r.json();return ((j.content||[])[0]||{}).text||'';
-}
+
+
+
 
 /* ============ ADD / SEARCH PANELS ============ */
 function togglePanel(which){
@@ -4399,7 +4169,7 @@ async function autoFill(){
   try{const key=(localStorage.getItem('bs_key')||'').trim();
     if(SYNC_URL&&syncCfg()){await afWorker(term);}else if(key){await afClaude(term,key);}else{await afDict(term);}
   }catch(e){alert('Auto-fill hit a snag: '+e.message+'. You can fill fields by hand.');}
-  btn.textContent='✨ Auto-fill the rest';btn.disabled=false;
+  btn.textContent='✨ Auto-fill';btn.disabled=false;
 }
 async function afDict(term){
   let ipa='',def='',ex='';
@@ -4439,29 +4209,25 @@ async function afWorker(term){
 }
 function saveForm(){
   const term=(document.getElementById('fTerm').value||'').trim(); if(!term)return;
-  state.custom.push({id:'c'+Date.now(),term,meaning:document.getElementById('fMeaning').value.trim(),example:document.getElementById('fExample').value.trim(),source:document.getElementById('fSource').value.trim(),cat:document.getElementById('fCat').value,why:(_af&&_af.why)||'',usage:(_af&&_af.usage)||[],star:false,learned:true,uses:0,next:today()});_af=null;
+  state.custom.push({id:'c'+Date.now(),term,meaning:document.getElementById('fMeaning').value.trim(),example:document.getElementById('fExample').value.trim(),source:document.getElementById('fSource').value.trim(),cat:'Words',why:(_af&&_af.why)||'',usage:(_af&&_af.usage)||[],star:false,learned:true,uses:0,next:today()});_af=null;
   ['fTerm','fMeaning','fExample','fSource'].forEach(i=>document.getElementById(i).value='');
-  togglePanel('add');save();renderStats();updateBadges();
-  alert('Saved ✓ — find it under Toolkit → My Pickups, and in Shuffle.');
+  togglePanel('add');save();
+  alert('Saved to My Pickups ✓');
 }
-function del(id){state.custom=state.custom.filter(c=>c.id!==id);save();renderStats();updateBadges();doSearch(document.getElementById('srchQ').value||'');}
-function bankItems(){
-  const cur=ALLWORDS.map(w=>({kind:'cur',id:w.id,term:w.term,meaning:w.gloss,source:w.src,cat:w.cat,s:ws(w.id)}));
-  const cus=state.custom.map(c=>({kind:'cus',id:c.id,term:c.term,meaning:c.meaning,source:c.source,cat:c.cat||'Words',s:c}));
-  return [...cur,...cus];
-}
+function del(id){state.custom=state.custom.filter(c=>c.id!==id);save();doSearch(document.getElementById('srchQ').value||'');}
+
 function toggleStar(id){
   const cus=state.custom.find(c=>c.id===id);
   if(cus)cus.star=!cus.star; else {const s=ws(id);s.star=!s.star;}
   save();
   const v=currentView();
   if(v==='learn'){inSteals=false;inStudy=null;inUnit=null;idx=-1;renderLearn();}
-  renderStats();
+  
 }
 function doSearch(q){
   const out=document.getElementById('srchOut');
   q=(q||'').trim().toLowerCase();
-  if(q.length<2){out.innerHTML='<div class="empty" style="padding:14px 0">Type at least 2 characters — searches all '+(ALLWORDS.length+state.custom.length)+' cards.</div>';return;}
+  if(q.length<2){out.innerHTML='';return;}
   const pool=[...ALLWORDS.map(w=>({w,cus:false})),...pickupOnly()];
   const hits=pool.filter(x=>{const w=x.w;return (w.term+' '+(w.gloss||'')+' '+(w.quote||'')).toLowerCase().includes(q);}).slice(0,30);
   if(!hits.length){out.innerHTML='<div class="empty" style="padding:14px 0">No matches.</div>';return;}
@@ -4491,9 +4257,9 @@ function showCard(id){
 }
 
 /* ============ STATS / NAV ============ */
-function renderStats(){}
-function renderStreak(){const x=xpToday(),xd=Math.min(x,XP_GOAL);document.getElementById('streak').innerHTML=`<span class=\"xp\">⚡ ${xd}/${XP_GOAL}${x>=XP_GOAL?' ✓':''}</span> · `+(state.streak>0?`🔥 <b>${state.streak}</b>-day`:'start your streak')}
-function updateBadges(){}
+
+function renderStreak(){document.getElementById('streak').innerHTML=`<span class=\"xp\">⚡ ${(state.xp||0).toLocaleString()}</span> · `+(state.streak>0?`🔥 <b>${state.streak}</b>-day`:'start your streak')}
+
 
 /* ---- Friends sync (Cloudflare Worker circle, 2-3 people) ---- */
 const SYNC_URL='';  // filled in after the worker is deployed
@@ -4511,10 +4277,10 @@ async function syncNow(force){
     if(d.inbox&&d.inbox.length){
       state.notices=state.notices||[];
       d.inbox.forEach(it=>{
-        if(it.type==='nudge'){state.notices.push('👋 '+it.from+' waved at you — go keep the streak alive!');}
+        if(it.type==='nudge'){state.notices.push('👋 '+it.from+' waved — keep the streak alive!');}
         else if(it.type==='gift'&&it.card&&it.card.term){
           state.custom.push({id:'g'+Date.now()+Math.floor(Math.random()*1000),term:it.card.term,meaning:it.card.gloss||'',example:it.card.quote||'',source:it.card.src||'',cat:it.card.cat||'Words',why:it.card.why||'',whyzh:it.card.whyzh||'',usage:it.card.usage||[],star:false,learned:true,uses:0,next:today(),gift:it.from});
-          state.notices.push('🎁 '+it.from+' sent you a word: “'+it.card.term+'” — find it in Shuffle → My Pickups.');
+          state.notices.push('🎁 '+it.from+' sent you “'+it.card.term+'” — it\'s in My Pickups.');
         }
       });
       save();
@@ -4527,7 +4293,6 @@ function joinCircle(){
   if(!name||!key)return;
   localStorage.setItem('bs_sync',JSON.stringify({name,key}));
   renderToday(); syncNow(true);
-if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 }
 function dismissNotice(i){(state.notices||[]).splice(i,1);save();renderToday();}
 function noticesHtml(){
@@ -4566,30 +4331,23 @@ function friendsCard(){
   if(!SYNC_URL) return '';
   const cfg=syncCfg();
   if(!cfg) return `<div class="card" style="margin-top:14px"><span class="cat-chip">Friends</span>
-    <div style="font-size:13.5px;color:var(--muted);margin:8px 0">Share progress with your circle — pick a display name and enter the circle key.</div>
+    <div style="font-size:13.5px;color:var(--muted);margin:8px 0">Pick a name, enter the circle key.</div>
     <div class="row" style="flex-wrap:wrap;gap:8px"><input id="fsName" class="tin" placeholder="Your name" style="flex:1;min-width:120px"><input id="fsKey" class="tin" placeholder="Circle key" style="flex:1;min-width:120px"><button class="btn primary slim" onclick="joinCircle()">Join</button></div></div>`;
   const fs=window._friends;
   const rows=(fs&&fs.length)?fs.map(m=>{
     const st=m.stats||{}, fresh=st.day===today()&&(st.xp||0)>0;
     const nudged=window._nudged&&window._nudged[m.name];
     return `<div class="tdrow"><div class="tick">${fresh?'🟢':'⚪️'}</div><div style="flex:1"><div class="tt">${esc(m.name)}</div><div class="td">🔥 ${st.streak||0}-day · ⚡ ${fresh?(st.xp||0):0} today · ${st.words||0} words</div></div>${!fresh?`<button class="btn ghost slim" onclick="sendNudge('${esc(m.name)}')" ${nudged?'disabled':''}>${nudged?'👋 Sent':'👋 Nudge'}</button>`:''}</div>`;
-  }).join('')+`<div class="td" style="margin-top:10px;color:var(--muted);font-size:13px">This week: you ⚡${weekSum(state.hist)}${fs.map(m=>' · '+esc(m.name)+' ⚡'+weekSum(m.stats&&m.stats.week)).join('')}</div>`:`<div style="font-size:13.5px;color:var(--muted)">No one else here yet — send your friends the app link and the circle key.</div>`;
+  }).join('')+`<div class="td" style="margin-top:10px;color:var(--muted);font-size:13px">This week: you ⚡${weekSum(state.hist)}${fs.map(m=>' · '+esc(m.name)+' ⚡'+weekSum(m.stats&&m.stats.week)).join('')}</div>`:`<div style="font-size:13.5px;color:var(--muted)">No one here yet — share the app link and circle key.</div>`;
   return `<div class="card" style="margin-top:14px"><span class="cat-chip">Friends</span>${rows}</div>`;
 }
-function resetToday(){
-  if(!confirm('Reset today — XP and today\'s counters go back to zero. Words already learned stay learned. Continue?'))return;
-  state.xpNow=0;state.xpDay=today();
-  state.tl={day:today(),learned:0,sessions:0,line:false};
-  save();renderStreak();renderStats();
-  if(currentView()==='today')renderToday();
-}
 function resetAll(){
-  if(!confirm('Start over — erases ALL progress: learned marks, stars, XP, streak, flip counts. Your My Pickups cards are kept. This cannot be undone. Continue?'))return;
+  if(!confirm('Erase all progress — streak, stars, learned marks? My Pickups are kept. This cannot be undone.'))return;
   state.words={};ALLWORDS.forEach(w=>state.words[w.id]={learned:false,star:false,uses:0,next:0});
-  state.xp=0;state.xpNow=0;state.streak=0;state.lastDay=0;state.reps=0;
+  state.xp=0;state.hist={};state.streak=0;state.lastDay=0;state.reps=0;
   state.tl={day:today(),learned:0,sessions:0,line:false};
   shufCur=null;shufRecent=[];
-  save();renderStreak();renderStats();
+  save();renderStreak();
   const v=currentView();
   if(v==='today')renderToday(); if(v==='learn'){inUnit=null;idx=-1;renderLearn();} if(v==='practice')renderPrac();
 }
@@ -4602,8 +4360,9 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v
 
 
 /* init */
-renderToday(); renderStreak(); renderStats(); updateBadges();
+renderToday(); renderStreak();  
 syncNow(true);
+if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
 </body>
 </html>
