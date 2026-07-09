@@ -2857,6 +2857,86 @@ function renderToday(){
      </div>${friendsCard()}`;
 }
 
+/* ============ SPEECH STUDIES · 精读 ============ */
+const STUDIES=[
+{id:"st1",title:"Harrison Ford — Life Achievement Award (SAG, 2026)",sub:"5 min · humor → truth → grace · his own arc, at 83",
+ intro:"Five minutes, one complete arc: two jokes that lower the guard, a turn into honest struggle, a thesis wrapped in wit, an anaphora that climbs, an outward charge, and a five-word landing.",
+ introzh:"五分钟,一条完整弧线:两个卸防的笑点 → 转入真实的挣扎 → 裹着机锋的论点 → 步步升温的排比 → 向外的嘱托 → 五个词的着陆。",
+ beats:[
+ {fn:"Opening joke",fnzh:"自嘲破冰",exact:true,url:"https://youtu.be/Wdkkk9ebKY0?t=0",
+  quote:"It's a little weird to be getting a lifetime achievement award at the half point of my career.",
+  craft:"Misdirection in one clause: the setup sounds retrospective, the punchline claims the future. At 83, “half point” is both a laugh and a declaration — I'm not done. And note: zero throat-clearing, the joke IS the first sentence.",
+  craftzh:"一个从句完成预期反转:前半句像在回顾人生,后半句宣布未来。83 岁说“职业生涯中场”,既是笑点也是宣言——我还没完。注意他零寒暄,第一句话就是笑点。",
+  steal:"Template: receiving a [big honor] at the half point of my [career / journey] — claim the future inside the joke."},
+ {fn:"The inversion",fnzh:"反转致敬",exact:true,url:"https://youtu.be/Wdkkk9ebKY0?t=40",
+  quote:"I'm in a room of actors, many of whom are here because they've been nominated to receive a prize for their amazing work — while I'm here to receive a prize for being alive.",
+  craft:"Self-deprecation that flatters the room: he drops himself one notch and lifts everyone else. The contrast frame — their amazing work vs my being alive — makes the audience the hero of his own award.",
+  craftzh:"用自嘲抬举全场:把自己压低一格,同时把别人抬高一格。“你们凭杰作获奖/我凭活着获奖”——笑点冲自己,敬意给别人,是幽默里最安全也最高级的一档。",
+  steal:"At any award or toast: they are here for X; I am merely here for Y. Lower yourself, honor the room."},
+ {fn:"The turn",fnzh:"脆弱转折",exact:true,url:"https://youtu.be/mEPIO1EqYwg?t=31",
+  quote:"I struggled for about 15 years, going from acting job to carpentry and back to acting… I was failing at school. I felt isolated, alone. And then I found the company of people putting on plays. People I once thought were misfits and geeks turned out to be my people.",
+  craft:"The pivot from funny to true. Credibility comes from concrete nouns (carpentry, plays) and short flat sentences — no adjectives begging for sympathy. “My people” quietly plants the seed the ending will harvest.",
+  craftzh:"从好笑转向真实的枢纽。可信度来自具体名词(木工、话剧)和不带形容词的短句——绝不乞求同情。“my people”在此埋下伏笔,结尾要来收割。",
+  steal:"After two laughs you have earned the right to be serious: one concrete low point, plain nouns, no self-pity."},
+ {fn:"The thesis",fnzh:"论点",exact:true,url:"https://youtu.be/2syAO_n2hR8?t=41",
+  quote:"Ours is a tough business to get into. In my case, it's been a tough business to get out of — thank God, because I love what I do.",
+  craft:"The point of the whole speech, delivered as a mirror joke: get into / get out of. One inversion carries gratitude, humor, and a work ethic in a single breath.",
+  craftzh:"全篇论点,用一个镜像笑话说出:难进的行业/难退出的行业。一次倒装,同时装下感激、幽默和热爱。",
+  steal:"Mirror template: X is hard to get into; in my case it has been hard to get out of."},
+ {fn:"The crescendo",fnzh:"排比升温",exact:true,url:"https://youtu.be/mEPIO1EqYwg?t=101",
+  quote:"I'm indeed a lucky guy. Lucky to have found my people. Lucky to have work that challenges me. Lucky to still be doing it. And I don't take that for granted.",
+  craft:"Anaphora does the emotional climb: lucky, lucky, lucky — each repeat more specific — then a hard stop (I don't take that for granted) presses the weight down. Same engine as MLK's dreams; see the Anaphora unit.",
+  craftzh:"首语重复负责把情绪抬上去:三个 lucky 一个比一个具体,然后一记刹车(I don't take that for granted)把分量压实。和 MLK 的 dream 是同一台发动机——参见 Anaphora 单元。",
+  steal:"Gratitude ladder: I am lucky — lucky to A, lucky to B, lucky to still C. Then one flat sentence to seal it."},
+ {fn:"The outward turn",fnzh:"向外升华",exact:false,url:"https://www.youtube.com/results?search_query=Harrison+Ford+SAG+speech+keep+the+door+open+lost+boy",
+  quote:"Success in this business brings a certain freedom that comes with the responsibility to support each other — to lift others up when we can, to keep the door open for the next kid, the next lost boy who's looking for a place to belong.",
+  craft:"The camera turns from me to us. “The next lost boy” is a callback — the lost boy of Beat 3 (isolated, alone) was him. A callback at the climax makes a speech feel designed, not assembled.",
+  craftzh:"镜头从“我”转向“我们”。“the next lost boy”是一记 callback——第三拍里那个 isolated, alone 的人就是他自己。在高潮处回收伏笔,整篇立刻有了设计感。",
+  steal:"Close the loop: whatever you confessed in the middle, hand it forward at the end — keep the door open for the next [who you once were]."},
+ {fn:"The soft landing",fnzh:"克制收尾",exact:true,url:"https://youtu.be/2syAO_n2hR8?t=58",
+  quote:"Thank you, truly, from the bottom of my heart — to my peers, to my extraordinary, beautiful wife Calista, and my family. … This is very encouraging.",
+  craft:"After tears, a five-word understatement: this is very encouraging. Comic deflation as a landing — the room laughs, the emotion stays. Downward inflection, full stop, walk off (Day 6: endings).",
+  craftzh:"泪点之后,五个词的轻描淡写:This is very encouraging。用喜剧性“降压”着陆——全场笑了,情绪却留住了。降调、句号、转身下台(参见 Day 6 结尾课)。",
+  steal:"End big moments small: one dry understatement right after the emotional peak. The contrast does the work."}],
+ arc:"Lower yourself, honor the room, tell the truth, name the point, climb by repetition, hand it forward, land soft. Two jokes buy permission; one confession buys trust; the callback ties the whole thing; the understatement lets everyone breathe.",
+ arczh:"先压低自己、抬举全场;再讲真话、点明论点;用重复抬升情绪;把话题交给后来人;最后轻轻落地。两个笑点买来许可,一次坦白买来信任,一记 callback 收拢全篇,一句轻描淡写让所有人呼吸。"}
+];
+let inStudy=null;
+function enterStudy(id){inStudy=STUDIES.find(s=>s.id===id);inUnit=null;idx=-1;renderLearn();window.scrollTo(0,0)}
+function exitStudy(){inStudy=null;renderLearn();window.scrollTo(0,0)}
+function studiesSection(){
+  if(!STUDIES.length)return '';
+  return `<div style="margin:24px 0 4px;font-family:var(--serif);font-size:17px;color:var(--wood-dk)">Speech Studies · 精读</div>
+  <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">One great speech, read whole — structure, beats, what to steal.</div>`+
+  STUDIES.map(st=>`<div class="unit" onclick="enterStudy('${st.id}')">
+    <div class="badge">§</div>
+    <div><div class="ut">${esc(st.title)}</div><div class="um">${esc(st.sub)}</div></div>
+    <div class="prog">${st.beats.length} beats</div>
+  </div>`).join('');
+}
+function renderStudy(){
+  const st=inStudy, area=document.getElementById('learnArea');
+  area.innerHTML=`<div class="card">
+    <span class="cat-chip">Speech Study · 精读</span>
+    <div class="term" style="font-size:22px">${esc(st.title)}</div>
+    <div style="font-size:13px;color:var(--muted);margin-top:2px">${esc(st.sub)}</div>
+    <div class="blk"><span class="lbl">The whole in one look · 全篇一眼</span>${esc(st.intro)}<div class="whyzh">${esc(st.introzh)}</div></div>
+    <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:10px">${st.beats.map((b,i)=>`<button class="btn ghost slim" onclick="document.getElementById('bt${i}').scrollIntoView({behavior:'smooth'})">${i+1} ${esc(b.fnzh)}</button>`).join('')}</div>
+    <div class="row" style="margin-top:12px"><button class="btn ghost slim" onclick="exitStudy()">← Home</button></div>
+  </div>`+
+  st.beats.map((b,i)=>`<div class="card" id="bt${i}" style="margin-top:14px">
+    <span class="cat-chip">Beat ${i+1} / ${st.beats.length} · ${esc(b.fn)} · ${esc(b.fnzh)}</span>
+    <div class="quote" style="margin-top:10px"><span class="q">“${esc(b.quote)}”</span> <a class="sayb" style="text-decoration:none" href="${b.url}" target="_blank" title="${b.exact?'watch this exact moment':'search the clip'}">${b.exact?'▶︎':'↗'}</a></div>
+    <div class="blk"><span class="lbl">Craft · 手法</span>${esc(b.craft)}<div class="whyzh">${esc(b.craftzh)}</div></div>
+    ${b.steal?`<div class="blk"><span class="lbl">Steal this · 拿走就用</span>${esc(b.steal)}</div>`:''}
+  </div>`).join('')+
+  `<div class="card" style="margin-top:14px">
+    <span class="cat-chip">The arc · 全篇弧线</span>
+    <div class="blk" style="margin-top:6px">${esc(st.arc)}<div class="whyzh">${esc(st.arczh)}</div></div>
+    <div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="exitStudy()">← Home</button><button class="btn primary slim" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button></div>
+  </div>`;
+}
+
 /* ============ LEARN ============ */
 let inUnit=null, idx=-1;
 function pickupCards(){return UNITS.find(x=>x.id==='uP')? PICKUPS.concat(state.custom.map(c=>({id:c.id,term:c.term,cat:c.cat||'Words',gloss:c.meaning||'',hard:[],quote:c.example||'',src:(c.gift?'From '+c.gift+' 🎁'+(c.source?' · '+c.source:''):c.source||''),why:c.why||'',whyzh:c.whyzh||'',usage:c.usage||[],_cus:true}))) : [];}
@@ -2867,6 +2947,7 @@ function unitUnlocked(i){return true}
 
 function renderLearn(){
   const area=document.getElementById('learnArea');
+  if(inStudy){renderStudy();return;}
   if(!inUnit){
     const cont=UNITS.find(u=>!unitDone(u)&&unitLearnedCount(u)>0)||UNITS.find(u=>!unitDone(u));
     const hero=cont?`<div class="card" style="margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="enterUnit('${cont.id}')"><div style="font-size:26px">▶</div><div><div style="font-weight:700">Continue: ${esc(cont.title)}</div><div style="font-size:12.5px;color:var(--muted)">${unitLearnedCount(cont)}/${unitWords(cont).length} · pick up where you left off</div></div></div>`:'';
@@ -2879,7 +2960,7 @@ function renderLearn(){
         <div><div class="ut">${esc(u.title)}${u.zh?` <span class="uz">· ${esc(u.zh)}</span>`:''}</div><div class="um">${esc(u.from)} · ${unitWords(u).length} entries</div></div>
         <div class="prog">${n}/${unitWords(u).length}</div>
       </div>`;
-    }).join('');
+    }).join('')+studiesSection();
     updateBadges();return;
   }
   const u=inUnit;
