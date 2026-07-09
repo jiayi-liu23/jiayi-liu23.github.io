@@ -2807,6 +2807,8 @@ const ALLWORDS=UNITS.flatMap(u=>u.words.map(w=>({...w,unit:u.id})));
 
 /* ============ STATE ============ */
 let state=load();
+// one-time rescore (2026-07-08): quiz-era XP inflated today's bar; recompute from real activity
+if(state.xpMigr!=='v2'){const _T=(state.tl&&state.tl.day===today())?state.tl:{learned:0,sessions:0};state.xpNow=((_T.learned||0)+(_T.sessions||0))*5;state.xpDay=today();state.xpMigr='v2';}
 function load(){
   try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.words){ALLWORDS.forEach(w=>{if(!s.words[w.id])s.words[w.id]={learned:false,star:false,uses:0,next:0}});return s;}}catch(e){}
   const fresh={words:{},custom:[],streak:0,lastDay:0,reps:0};
@@ -2914,7 +2916,7 @@ function exitUnit(){inUnit=null;idx=-1;renderLearn()}
 function go(i){ if(i<-1)i=-1; idx=i; renderLearn(); window.scrollTo(0,0)}
 function learnNext(){
   const u=inUnit,uw=(u._sess||unitWords(u)),w=uw[idx];
-  if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.next=today();addXP(3);tl().learned++;}}
+  if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.next=today();addXP(5);tl().learned++;}}
   save();
   if(idx+1<uw.length){go(idx+1);}
   else{
@@ -2999,7 +3001,7 @@ function shufDraw(){
   shufRecent.push(w.id); if(shufRecent.length>12)shufRecent.shift();
   shufCur=w;
   if(!w._cus){const s=ws(w.id); if(!s.learned){s.learned=true;s.next=today();}}
-  tl().sessions++; state.reps=(state.reps||0)+1; addXP(3); bumpStreak(); save();
+  tl().sessions++; state.reps=(state.reps||0)+1; addXP(5); bumpStreak(); save();
   renderShufCard(); renderStats();
 }
 function shufToggleStar(){ if(!shufCur)return; const st=cardState(shufCur); st.star=!st.star; save(); renderShufCard(); renderStats(); }
