@@ -214,7 +214,7 @@ const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth()
 
 /* ============ CURRICULUM ============ */
 const UNITS=[
-{id:'u0',ordered:true,title:'The Articulate Ascent',zh:'九阶地图',from:'Day 1 · The Articulate Ascent · 口才的九个阶段',
+{id:'u0',ordered:true,tool:true,title:'The Skill Map',zh:'九阶地图',from:'Day 1 · The Articulate Ascent · 口才的九个阶段',
  essence:'Every speaker climbs the same nine stages — and the map keeps you from getting stuck. <b>Aim for Stage 6, Natural Expression</b>, not stage-nine perfection; and beware Stage 5, where polish becomes a trap. This unit walks the stages in order, 1 → 9.<br><span style="color:var(--muted)">九阶一张地图:目标是第6阶「自然表达」,别掉进第5阶的完美主义陷阱。本关按 1→9 顺序展开。</span>',
  words:[
   {id:'u0w1',whyzh:'记住这张地图,就不会再把某个阶段错当成终点。',term:'the Articulate Ascent',cat:'Phrases',
@@ -3578,6 +3578,37 @@ const STUDIES=[
  arc:"A list gag earns the room, roasts unite it, a trapdoor turn cashes twelve minutes of jokes into credibility, one positional swap carries the thesis, quotes get deflated and upgraded, the only sober paragraph diagnoses the era, and the callback returns pre-revised. Comedy as load-bearing structure.",
  arczh:"清单笑话赢得全场,涮众人团结全场;一记活板门转折把十二分钟的笑声兑换成信用;一个词的位置对调扛起论点;引文被放气又升级;唯一严肃的段落给时代下诊断;callback 带着修订归来。喜剧在这里是承重结构。"}
 ];
+const STEAL_OCC={st1:[['opening','humor'],['toast','humor'],['story'],['qa'],['toast','endings'],['endings'],['endings','humor']],
+ st2:[['opening','humor'],['opening','review'],['story','review'],['story','qa'],['review'],['endings','story'],['endings'],['endings','toast']],
+ st3:[['opening','humor'],['review','humor'],['qa'],['humor','story'],['qa','review'],['story'],['endings']],
+ st4:[['opening','story'],['story'],['review','story'],['review'],['review','story'],['review'],['endings','story']],
+ st5:[['opening'],['opening','review'],['opening','story'],['review'],['story','humor'],['story','endings'],['qa','story'],['endings']],
+ st6:[['opening','humor'],['humor','opening'],['humor','qa'],['story','qa'],['humor','review'],['qa'],['review'],['endings']]};
+const OCCS=[['all','All'],['opening','Openings'],['humor','Humor'],['story','Storytelling'],['review','Talks & reviews'],['qa','Q&A'],['toast','Toasts & thanks'],['endings','Endings']];
+let inSteals=false, stealOcc='all';
+function stealsList(){const out=[];STUDIES.forEach(st=>{(st.beats||[]).forEach((b,i)=>{if(b.steal)out.push({t:b.steal,sid:st.id,bi:i,title:st.title,fn:b.fn,occ:(STEAL_OCC[st.id]||[])[i]||[]});});});return out;}
+function enterSteals(){inSteals=true;inStudy=null;inUnit=null;renderLearn();window.scrollTo(0,0)}
+function exitSteals(){inSteals=false;renderLearn();window.scrollTo(0,0)}
+function setOcc(o){stealOcc=o;renderLearn()}
+function goBeat(sid,i){inSteals=false;enterStudy(sid);const el=document.getElementById('bt'+i);if(el)el.scrollIntoView();}
+function renderSteals(){
+  const area=document.getElementById('learnArea');
+  const items=stealsList().filter(x=>stealOcc==='all'||x.occ.includes(stealOcc));
+  area.innerHTML=`<div class="card">
+    <span class="cat-chip">The Steal List · 场合速查</span>
+    <div class="term" style="font-size:22px">Steal this</div>
+    <div style="font-size:13.5px;color:var(--muted);margin-top:4px">Every reusable template from the Speech Studies, browsable by occasion. 精读里所有「拿走就用」的模板,按场合速查。</div>
+    <div class="row" style="flex-wrap:wrap;gap:8px;margin-top:12px">${OCCS.map(o=>`<button class="pill ${o[0]===stealOcc?'on':''}" onclick="setOcc('${o[0]}')">${o[1]}</button>`).join('')}</div>
+    <div class="row" style="margin-top:12px"><button class="btn ghost slim" onclick="exitSteals()">⌂ Lessons</button></div>
+  </div>`+items.map(x=>`<div class="card" style="margin-top:14px">
+    <span class="cat-chip">${esc(x.fn)}</span>
+    <div style="font-size:15px;margin-top:8px">${esc(x.t)}</div>
+    <div class="row" style="margin-top:10px;justify-content:space-between;align-items:center">
+      <div style="font-size:12px;color:var(--muted)">${esc(x.title)}</div>
+      <button class="btn ghost slim" onclick="goBeat('${x.sid}',${x.bi})">See it used →</button>
+    </div>
+  </div>`).join('');
+}
 let inStudy=null;
 function beatVid(i,url){
   const d=document.getElementById('bv'+i); if(!d)return;
@@ -3596,7 +3627,11 @@ function studiesSection(){
     <div class="badge">§</div>
     <div><div class="ut">${esc(st.title)}</div><div class="um">${esc(st.sub)}</div></div>
     <div class="prog">${st.beats.length} beats</div>
-  </div>`).join('');
+  </div>`).join('')+`<div class="unit" onclick="enterSteals()">
+    <div class="badge">✂</div>
+    <div><div class="ut">The Steal List <span class="uz">· 场合速查</span></div><div class="um">every “Steal this” template · by occasion</div></div>
+    <div class="prog">${stealsList().length}</div>
+  </div>`;
 }
 function renderStudy(){
   const st=inStudy, area=document.getElementById('learnArea');
@@ -3631,6 +3666,7 @@ function unitUnlocked(i){return true}
 
 function renderLearn(){
   const area=document.getElementById('learnArea');
+  if(inSteals){renderSteals();return;}
   if(inStudy){renderStudy();return;}
   if(!inUnit){
     const MAIN=UNITS.filter(u=>!u.tool), TOOLS=UNITS.filter(u=>u.tool);
@@ -3757,7 +3793,8 @@ function buildSession(forceExtra){
   return q.length>0;
 }
 /* ---- Shuffle: random card browsing (no quizzes) ---- */
-const SHUF_SCOPES=[['all','All cards'],['fam','Famous lines'],['star','Focus'],['new','New to me'],['mine','My Pickups']];
+const SHUF_SCOPES=[['all','All cards'],['fam','Famous lines'],['star','Focus'],['new','Unseen'],['mine','My Pickups']];
+const SCOPE_DESC={all:'Every card in the bank.',fam:'Lines with a real, person-attributed source.',star:'Cards you starred ★.',new:'Cards you haven\u2019t opened in Lessons yet.',mine:'Words you added with ＋ (and gifts from friends).'};
 let shufCur=null, shufRecent=[];
 function cardState(w){ if(w._cus){return state.custom.find(c=>c.id===w.id)||{}; } return ws(w.id); }
 function shufAll(){
@@ -3809,7 +3846,7 @@ function renderShufCard(){
 }
 function renderPrac(){
   const sc=shufScope();
-  document.getElementById('pracSub').innerHTML='<div class="row" style="flex-wrap:wrap;gap:8px;margin-top:0">'+SHUF_SCOPES.map(p=>`<button class="pill ${p[0]===sc?'on':''}" onclick="setShufScope('${p[0]}')">${p[1]}</button>`).join('')+'</div>';
+  document.getElementById('pracSub').innerHTML='<div class="row" style="flex-wrap:wrap;gap:8px;margin-top:0">'+SHUF_SCOPES.map(p=>`<button class="pill ${p[0]===sc?'on':''}" onclick="setShufScope('${p[0]}')">${p[1]}</button>`).join('')+'</div><div style="font-size:12px;color:var(--muted);margin:7px 2px 0">'+(SCOPE_DESC[sc]||'')+'</div>';
   if(!shufCur){shufDraw();}else{renderShufCard();}
 }
 function makeGen(){
@@ -4148,7 +4185,7 @@ function toggleStar(id){
   if(cus)cus.star=!cus.star; else {const s=ws(id);s.star=!s.star;}
   save();
   const v=currentView();
-  if(v==='learn'){inStudy=null;inUnit=null;idx=-1;renderLearn();}
+  if(v==='learn'){inSteals=false;inStudy=null;inUnit=null;idx=-1;renderLearn();}
   renderStats();
 }
 function doSearch(q){
