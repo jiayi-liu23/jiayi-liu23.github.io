@@ -10,10 +10,6 @@
 <title>Commonplace · Word Bank</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Commonplace">
-<meta name="theme-color" content="#F5F0E8">
 <style>
   :root{
     --bg:#F7F4EF; --card:#FFFFFF; --ink:#2E2A26; --muted:#8A8178; --hair:#E7E0D6;
@@ -39,8 +35,6 @@
   nav button.on{color:var(--ink);border-bottom-color:var(--wood)}
   nav button .ico{font-size:14px;opacity:.55;filter:grayscale(35%)}
   nav button.on .ico{opacity:1;filter:none}
-  nav button .bdg{font-size:10.5px;background:#EFE9DE;color:var(--muted);border-radius:9px;padding:1px 7px;margin-left:2px;font-weight:700}
-  nav button.on .bdg{background:var(--sage);color:var(--green)}
 
   h2.sec{font-family:var(--serif);font-size:21px;font-weight:600;color:var(--wood-dk);margin:26px 0 4px}
   .sub{font-size:13.5px;color:var(--muted);margin-bottom:16px}
@@ -61,7 +55,7 @@
 
   .term{font-family:var(--serif);font-size:28px;font-weight:600;color:var(--ink);margin:8px 0 2px}
   .cat-chip{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--wood-dk);background:#F3ECE2;border-radius:20px;padding:3px 10px}
-  .starbtn{position:absolute;top:14px;right:14px;background:none;border:none;font-size:24px;cursor:pointer;color:#D9CFC0;line-height:1;transition:transform .15s}
+  .starbtn{position:absolute;top:4px;right:4px;padding:10px;background:none;border:none;font-size:24px;cursor:pointer;color:#D9CFC0;line-height:1;transition:transform .15s}
   .starbtn:hover{transform:scale(1.15)}
   .starbtn.on{color:var(--gold)}
 
@@ -83,7 +77,7 @@
   .reveal.show{display:block}
 
   .row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
-  .btn{border:none;border-radius:12px;padding:11px 18px;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;flex:1;min-width:96px}
+  .btn{border:none;border-radius:12px;padding:11px 18px;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;flex:1;min-width:96px;line-height:1.2}
   .btn.primary{background:var(--wood-dk);color:#fff}
   .btn.ghost{background:#fff;border:1px solid var(--hair);color:var(--ink)}
   .btn.soft{background:var(--sage);color:var(--green)}
@@ -146,15 +140,9 @@
   .grad{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.5px}
   .newtag{font-size:10px;font-weight:700;color:var(--terra);letter-spacing:.5px}
 
-  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .stat{background:var(--card);border:1px solid var(--hair);border-radius:16px;box-shadow:var(--shadow);padding:18px;text-align:center}
-  .stat .n{font-family:var(--serif);font-size:32px;color:var(--wood-dk);font-weight:600}
-  .stat .l{font-size:12px;color:var(--muted);margin-top:2px}
-  .ascent{margin-top:16px}
-  .ascent .bar{height:10px;background:var(--sage);border-radius:20px;overflow:hidden}
-  .ascent .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--wood),var(--cognac))}
   .empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:14px}
 .whyzh{margin-top:5px;color:var(--wood-dk);font-size:13.5px}
+.btn:focus-visible,.pill:focus-visible,.hicon:focus-visible,nav button:focus-visible,.starbtn:focus-visible{outline:2px solid var(--wood);outline-offset:2px}
 header{padding-top:calc(env(safe-area-inset-top, 0px))}
 body{padding-bottom:env(safe-area-inset-bottom, 0px)}
 </style>
@@ -4049,7 +4037,7 @@ function friendsCard(){
   return `<div class="card" style="margin-top:14px"><span class="cat-chip">Friends</span>${rows}</div>`;
 }
 function resetToday(){
-  if(!confirm('Reset today — XP, flips, and daily checklist go back to zero. Words already learned stay learned. Continue?'))return;
+  if(!confirm('Reset today — XP and today\'s counters go back to zero. Words already learned stay learned. Continue?'))return;
   state.xpNow=0;state.xpDay=today();
   state.tl={day:today(),learned:0,sessions:0,line:false};
   save();renderStreak();renderStats();

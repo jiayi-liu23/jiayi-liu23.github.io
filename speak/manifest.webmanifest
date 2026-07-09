@@ -5,8 +5,8 @@
   "start_url": "/speak/",
   "scope": "/speak/",
   "display": "standalone",
-  "background_color": "#F5F0E8",
-  "theme_color": "#B07D56",
+  "background_color": "#F7F4EF",
+  "theme_color": "#F7F4EF",
   "icons": [
     { "src": "icon-180.png", "sizes": "180x180", "type": "image/png" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
