@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#F7F4EF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -153,6 +153,8 @@
   .ascent .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--wood),var(--cognac))}
   .empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:14px}
 .whyzh{margin-top:5px;color:var(--wood-dk);font-size:13.5px}
+header{padding-top:calc(env(safe-area-inset-top, 0px))}
+body{padding-bottom:env(safe-area-inset-bottom, 0px)}
 </style>
 </head>
 <body>
@@ -3569,7 +3571,7 @@ function shufToggleStar(){ if(!shufCur)return; const st=cardState(shufCur); st.s
 function renderShufCard(){
   const w=shufCur, st=cardState(w);
   document.getElementById('pracArea').innerHTML=`<div class="card">
-    <span class="cat-chip">${esc(w.cat||'Card')}</span>
+    <span class="cat-chip">${esc(w.cat||'Card')}</span><span style="font-size:11.5px;color:var(--muted);margin-left:8px">${esc((UNITS.find(u=>u.id===w.unit)||{title:'My Pickups'}).title)}</span>
     <div class="term">${esc(w.term)}</div>
     <div class="blk"><span class="lbl">Meaning · 释义</span>${esc(w.gloss)}</div>
     ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">Word notes · 拆词</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
