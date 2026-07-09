@@ -2828,7 +2828,7 @@ function ws(id){if(!state.words[id])state.words[id]={learned:false,star:false,us
 
 /* ============ AUDIO + XP ============ */
 function sayWord(t){try{if(!t)return;const u=new SpeechSynthesisUtterance(String(t).replace(/\s*\(.*?\)\s*/g,'').split('/')[0]);u.lang='en-US';u.rate=0.85;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
-const XP_GOAL=50;
+const XP_GOAL=100;
 function xpToday(){const t=today();if(state.xpDay!==t){state.xpDay=t;state.xpNow=0;}return state.xpNow||0;}
 function addXP(n){const t=today();if(state.xpDay!==t){state.xpDay=t;state.xpNow=0;}state.xpNow=(state.xpNow||0)+n;state.xp=(state.xp||0)+n;save();renderStreak();}
 
@@ -2841,13 +2841,12 @@ function todayLine(){
 }
 function renderToday(){
   const T=tl(),x=xpToday(),w=todayLine();
-  const row=(done,title,detail,action)=>`<div class="tdrow"><div class="tick">${done?'✅':'○'}</div><div style="flex:1"><div class="tt">${title}</div><div class="td">${detail}</div></div>${action||''}</div>`;
   document.getElementById('todayArea').innerHTML=`
    <div class="card">
      <div class="meter"><i style="width:${Math.min(100,x/XP_GOAL*100)}%"></i></div>
-     <div class="meter-lbl"><span class="xp">⚡ ${Math.min(x,XP_GOAL)} / ${XP_GOAL} XP</span>${x>=XP_GOAL?' ✓ · goal met — streak safe 🔥':''}</div>
-     ${row(T.learned>=5,'Learn 5 new cards',T.learned+' / 5 today · one unit, five entries','<button class="btn ghost slim" onclick="switchTo(\'learn\')">Go →</button>')}
-     ${row(T.sessions>=5,'Flip 5 shuffle cards',T.sessions+' / 5 today · random pulls from the whole bank','<button class="btn primary slim" onclick="switchTo(\'practice\')">Shuffle →</button>')}
+     <div class="meter-lbl"><span class="xp">⚡ ${Math.min(x,XP_GOAL)} / ${XP_GOAL} today</span>${x>=XP_GOAL?' ✓':''}</div>
+     <div class="tdrow"><div class="tick">📖</div><div style="flex:1"><div class="tt">Learn</div><div class="td">${T.learned} ${T.learned===1?'card':'cards'} learned today</div></div><button class="btn ghost slim" onclick="switchTo('learn')">Go →</button></div>
+     <div class="tdrow"><div class="tick">🎴</div><div style="flex:1"><div class="tt">Shuffle</div><div class="td">${T.sessions} ${T.sessions===1?'card':'cards'} flipped today</div></div><button class="btn primary slim" onclick="switchTo('practice')">Shuffle →</button></div>
    </div>
    <div class="card" style="margin-top:14px">
      <span class="cat-chip">Line of the day</span>
