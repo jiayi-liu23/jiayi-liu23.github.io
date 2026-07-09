@@ -163,7 +163,6 @@
     <button data-v="today" class="on"><span class="ico">☀️</span>Today</button>
     <button data-v="learn"><span class="ico">📖</span>Lessons</button>
     <button data-v="practice"><span class="ico">🎴</span>Shuffle</button>
-    <button data-v="stats"><span class="ico">📈</span>Progress</button>
   </nav>
 </header>
 
@@ -172,7 +171,7 @@
     <label>Word / phrase</label><input id="fTerm">
     <div class="row" style="margin-top:10px">
       <button class="btn soft slim" id="afBtn" onclick="autoFill()">✨ Auto-fill the rest</button>
-      <button class="btn ghost slim" onclick="document.getElementById('aiKeyRow').style.display=document.getElementById('aiKeyRow').style.display==='block'?'none':'block'">AI key…</button>
+      <button class="btn ghost slim" id="aiKeyBtn" onclick="document.getElementById('aiKeyRow').style.display=document.getElementById('aiKeyRow').style.display==='block'?'none':'block'">AI key…</button>
     </div>
     <div id="aiKeyRow" style="display:none;border:1px dashed var(--hair);border-radius:12px;padding:10px;margin-top:8px">
       <label>Anthropic API key (optional — richer auto-fill + coach feedback; stored only in this browser)</label>
@@ -210,31 +209,7 @@
     <div id="pracArea"></div>
   </section>
 
-  <section id="v-stats" style="display:none">
-    <div style="margin-top:18px"></div>
-    <div class="stat-grid">
-      <div class="stat"><div class="n" id="sUnits">0</div><div class="l">units completed</div></div>
-      <div class="stat"><div class="n" id="sLearned">0</div><div class="l">words learned</div></div>
-      <div class="stat"><div class="n" id="sStar">0</div><div class="l">⭐ in focus</div></div>
-      <div class="stat"><div class="n" id="sReps">0</div><div class="l">cards flipped</div></div>
-      <div class="stat"><div class="n" id="sGrad">0</div><div class="l">my pickups</div></div>
-      <div class="stat"><div class="n" id="sDue">0</div><div class="l">flipped today</div></div>
-    </div>
-    <div class="card ascent">
-      <div style="font-family:var(--serif);font-size:16px;color:var(--wood-dk);margin-bottom:8px">The Articulate Ascent</div>
-      <div class="bar"><i id="ascentBar" style="width:5%"></i></div>
-      <div class="meter-lbl" id="ascentLbl" style="margin-top:6px"></div>
-    </div>
-    <div class="card" style="margin-top:14px">
-      <div style="font-family:var(--serif);font-size:16px;color:var(--wood-dk);margin-bottom:8px">⭐ Focus words</div>
-      <div id="focusList" style="font-size:14px"></div>
-    </div>
-    <div style="margin-top:20px;text-align:center;font-size:13px;color:var(--muted)">
-      <a href="javascript:void(0)" onclick="resetToday()" style="color:var(--muted)">Reset today</a>
-      &nbsp;·&nbsp;
-      <a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted)">Start over</a>
-    </div>
-  </section>
+
 </div>
 
 <script>
@@ -3051,7 +3026,8 @@ function renderToday(){
      <div class="term" style="font-size:20px">${esc(w.term)}</div>
      <div class="quote" style="margin-top:10px"><span class="q">“${esc(w.quote)}”</span><span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" onclick="event.stopPropagation()" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div>
      <div style="text-align:right;font-size:12px;color:var(--muted);margin-top:8px">full card →</div>
-     </div>${speechOfDay()}${friendsCard()}`;
+     </div>${speechOfDay()}${friendsCard()}
+   <div style="margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted)"><a href="javascript:void(0)" onclick="resetToday()" style="color:var(--muted)">Reset today</a>&nbsp;·&nbsp;<a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted)">Start over</a></div>`;
 }
 function speechOfDay(){
   if(typeof STUDIES==='undefined'||!STUDIES.length)return '';
@@ -3438,7 +3414,7 @@ function genCollideCheck(){
   setTimeout(()=>{sess.i++;renderItem();},1600);
 }
 function genSkip(){sess.miss++;sess.i++;renderItem();}
-function aiReady(){return !!(localStorage.getItem('bs_key')||'').trim();}
+function aiReady(){return (SYNC_URL&&!!syncCfg())||!!(localStorage.getItem('bs_key')||'').trim();}
 async function genCoach(kind){
   const out=document.getElementById('genOut');if(!out)return;
   out.insertAdjacentHTML('beforeend','<div class="tip" id="genAI">… coaching</div>');
@@ -3585,7 +3561,7 @@ async function aiText(prompt){
 /* ============ ADD / SEARCH PANELS ============ */
 function togglePanel(which){
   const add=document.getElementById('addPanel'),srch=document.getElementById('searchPanel');
-  if(which==='add'){srch.classList.remove('show');add.classList.toggle('show');if(add.classList.contains('show')){document.getElementById('fKey').value=localStorage.getItem('bs_key')||'';document.getElementById('fTerm').focus();}}
+  if(which==='add'){srch.classList.remove('show');add.classList.toggle('show');if(add.classList.contains('show')){document.getElementById('fKey').value=localStorage.getItem('bs_key')||'';if(SYNC_URL&&syncCfg()){document.getElementById('aiKeyBtn').style.display='none';document.getElementById('aiKeyRow').style.display='none';}document.getElementById('fTerm').focus();}}
   else{add.classList.remove('show');srch.classList.toggle('show');if(srch.classList.contains('show')){document.getElementById('srchQ').focus();doSearch(document.getElementById('srchQ').value);}}
 }
 let _af=null;
@@ -3594,7 +3570,7 @@ async function autoFill(){
   if(!term){alert('Type a word or phrase first.');return;}
   const btn=document.getElementById('afBtn');btn.textContent='… filling';btn.disabled=true;_af=null;
   try{const key=(localStorage.getItem('bs_key')||'').trim();
-    if(key){await afClaude(term,key);}else{await afDict(term);}
+    if(SYNC_URL&&syncCfg()){await afWorker(term);}else if(key){await afClaude(term,key);}else{await afDict(term);}
   }catch(e){alert('Auto-fill hit a snag: '+e.message+'. You can fill fields by hand.');}
   btn.textContent='✨ Auto-fill the rest';btn.disabled=false;
 }
@@ -3618,13 +3594,21 @@ async function afClaude(term,key){
   const body={model:'claude-haiku-4-5',max_tokens:600,messages:[{role:'user',content:'You are VocabularyGPT (per the BetterSpeak course prompts): rich vocabulary, clarity and precision, never needlessly complex. Create a vocabulary card for "'+term+'" for a Chinese-native academic training articulate English speech. Reply ONLY with JSON: {"ipa":"/…/","gloss_en":"one plain line","gloss_zh":"简洁中文释义","example":"one natural sentence (academic/professional life if apt)","source":"register note or who says this","why":"one line on why this word is worth owning","usage":["short line 1","short line 2"]}'}]};
   const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
   if(!r.ok)throw new Error('API '+r.status);
-  const j=await r.json();const t=((j.content||[])[0]||{}).text||'';
+  const j=await r.json();afApply(((j.content||[])[0]||{}).text||'');
+}
+function afApply(t){
   const m=t.match(/\{[\s\S]*\}/);if(!m)throw new Error('unparseable reply');
   const c=JSON.parse(m[0]);
   document.getElementById('fMeaning').value=[c.ipa,c.gloss_en,c.gloss_zh?('— '+c.gloss_zh):''].filter(Boolean).join(' ');
   document.getElementById('fExample').value=c.example||'';
   document.getElementById('fSource').value=c.source||'AI-annotated';
   _af={why:c.why||'',usage:Array.isArray(c.usage)?c.usage.slice(0,2):[]};
+}
+async function afWorker(term){
+  const cfg=syncCfg();
+  const r=await fetch(SYNC_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key:cfg.key,name:cfg.name,action:'ai',term:term})});
+  if(!r.ok)throw new Error('AI '+r.status);
+  const d=await r.json();afApply(d.text||'');
 }
 function saveForm(){
   const term=(document.getElementById('fTerm').value||'').trim(); if(!term)return;
@@ -3680,23 +3664,7 @@ function showCard(id){
 }
 
 /* ============ STATS / NAV ============ */
-function renderStats(){
-  const t=today(),pool=bankItems();
-  document.getElementById('sUnits').textContent=UNITS.filter(unitDone).length+' / '+UNITS.length;
-  document.getElementById('sLearned').textContent=pool.filter(x=>x.s.learned).length;
-  document.getElementById('sStar').textContent=pool.filter(x=>x.s.star).length;
-  document.getElementById('sReps').textContent=state.reps;
-  document.getElementById('sGrad').textContent=pickupCards().length;
-  document.getElementById('sDue').textContent=tl().sessions;
-  const learned=pool.filter(x=>x.s.learned);
-  const frac=pool.length?learned.length/pool.length:0;
-  const stage=Math.max(1,Math.min(9,Math.round(1+frac*8)));
-  document.getElementById('ascentBar').style.width=(stage/9*100)+'%';
-  const names=['','Innocent Ignorance','The Awakening','Verbal Rebranding','Confidence Catalyst','Perfection Deception','Natural Expression','Structural Mastery','Simple Eloquence','Golden Tongue'];
-  document.getElementById('ascentLbl').textContent=`Stage ${stage} — ${names[stage]}`;
-  const focus=bankItems().filter(x=>x.s&&x.s.star);
-  document.getElementById('focusList').innerHTML=focus.length?focus.map(x=>`<div class="srchit" onclick="switchTo('learn');togglePanel('search');document.getElementById('srchQ').value='';showCard('${x.id}')"><b>${esc(x.term)}</b></div>`).join(''):'<span style="color:var(--muted);font-size:13px">Star words anywhere (★) and they gather here for quick review.</span>';
-}
+function renderStats(){}
 function renderStreak(){const x=xpToday(),xd=Math.min(x,XP_GOAL);document.getElementById('streak').innerHTML=`<span class=\"xp\">⚡ ${xd}/${XP_GOAL}${x>=XP_GOAL?' ✓':''}</span> · `+(state.streak>0?`🔥 <b>${state.streak}</b>-day`:'start your streak')}
 function updateBadges(){}
 
@@ -3799,8 +3767,8 @@ function resetAll(){
 }
 function currentView(){const b=document.querySelector('nav button.on');return b?b.dataset.v:'learn'}
 function switchTo(v){document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));
-  ['today','learn','practice','stats'].forEach(k=>document.getElementById('v-'+k).style.display=(k===v)?'block':'none');
-  if(v==='today')renderToday(); if(v==='learn')renderLearn(); if(v==='practice')renderPrac(); if(v==='stats')renderStats();
+  ['today','learn','practice'].forEach(k=>document.getElementById('v-'+k).style.display=(k===v)?'block':'none');
+  if(v==='today')renderToday(); if(v==='learn')renderLearn(); if(v==='practice')renderPrac();
 }
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='learn'){inUnit=null;idx=-1;}switchTo(b.dataset.v);});
 
