@@ -3057,7 +3057,8 @@ function speechOfDay(){
   const sd=STUDIES[Math.floor(today()/DAY)%STUDIES.length];
   return `<div class="card" style="margin-top:14px">
    <span class="cat-chip">Speech of the day</span>
-   <div class="quote" style="margin-top:10px"><span class="q" style="font-size:18px">“${esc(sd.hook)}”${sd.hookurl?` <a class="sayb" style="text-decoration:none" href="${sd.hookurl}" target="_blank" title="watch this moment">▶︎</a>`:''}</span><span class="src">— ${esc(sd.hooksrc||sd.title)}</span></div>
+   <div class="term" style="font-size:20px">${esc(sd.hookterm||sd.title)}</div>
+   <div class="quote" style="margin-top:10px"><span class="q">“${esc(sd.hook)}”</span><span class="src">— ${esc(sd.hooksrc||sd.title)}${sd.hookurl?' · <a href="'+sd.hookurl+'" target="_blank" style="color:var(--green);text-decoration:none">▶</a>':''}</span></div>
    <div class="row" style="margin-top:12px;align-items:center">
      <div style="flex:1;font-size:12.5px;color:var(--muted)">${esc(sd.sub)}</div>
      <button class="btn primary slim" onclick="switchTo('learn');enterStudy('${sd.id}')">Read the study →</button>
@@ -3067,7 +3068,7 @@ function speechOfDay(){
 
 /* ============ SPEECH STUDIES · 精读 ============ */
 const STUDIES=[
-{id:"st1",title:"Harrison Ford — Life Achievement Award (SAG, 2026)",sub:"5 min · humor → truth → grace · his own arc, at 83",hook:"While I'm here to receive a prize for being alive.",hooksrc:"Harrison Ford, SAG Life Achievement Award (2026)",hookurl:"https://youtu.be/Wdkkk9ebKY0?t=40",
+{id:"st1",title:"Harrison Ford — Life Achievement Award (SAG, 2026)",sub:"5 min · humor → truth → grace · his own arc, at 83",hookterm:"a prize for being alive",hook:"While I'm here to receive a prize for being alive.",hooksrc:"Harrison Ford, SAG Life Achievement Award (2026)",hookurl:"https://youtu.be/Wdkkk9ebKY0?t=40",
  intro:"Five minutes, one complete arc: two jokes that lower the guard, a turn into honest struggle, a thesis wrapped in wit, an anaphora that climbs, an outward charge, and a five-word landing.",
  introzh:"五分钟,一条完整弧线:两个卸防的笑点 → 转入真实的挣扎 → 裹着机锋的论点 → 步步升温的排比 → 向外的嘱托 → 五个词的着陆。",
  beats:[
