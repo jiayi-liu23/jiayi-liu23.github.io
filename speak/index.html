@@ -161,7 +161,7 @@
   </div>
   <nav>
     <button data-v="today" class="on"><span class="ico">☀️</span>Today</button>
-    <button data-v="learn"><span class="ico">📖</span>Study</button>
+    <button data-v="learn"><span class="ico">📖</span>Lessons</button>
     <button data-v="practice"><span class="ico">🎴</span>Shuffle</button>
     <button data-v="stats"><span class="ico">📈</span>Progress</button>
   </nav>
@@ -3043,8 +3043,8 @@ function renderToday(){
    <div class="card">
      <div class="meter"><i style="width:${Math.min(100,x/XP_GOAL*100)}%"></i></div>
      <div class="meter-lbl"><span class="xp">⚡ ${Math.min(x,XP_GOAL)} / ${XP_GOAL} today</span>${x>=XP_GOAL?' ✓':''}</div>
-     <div class="tdrow"><div class="tick">📖</div><div style="flex:1"><div class="tt">Study</div><div class="td">${T.learned} ${T.learned===1?'card':'cards'} learned today</div></div><button class="btn ghost slim" onclick="switchTo('learn')">Go →</button></div>
-     <div class="tdrow"><div class="tick">🎴</div><div style="flex:1"><div class="tt">Shuffle</div><div class="td">${T.sessions} ${T.sessions===1?'card':'cards'} flipped today</div></div><button class="btn primary slim" onclick="switchTo('practice')">Shuffle →</button></div>
+     <div class="tdrow"><div class="tick">📖</div><div style="flex:1"><div class="tt">Lessons</div><div class="td">${T.learned} ${T.learned===1?'card':'cards'} learned today</div></div><button class="btn ghost slim" onclick="switchTo('learn')">Lessons →</button></div>
+     <div class="tdrow"><div class="tick">🎴</div><div style="flex:1"><div class="tt">Shuffle</div><div class="td">${T.sessions} ${T.sessions===1?'card':'cards'} flipped today</div></div><button class="btn ghost slim" onclick="switchTo('practice')">Shuffle →</button></div>
    </div>
    <div class="card" style="margin-top:14px">
      <span class="cat-chip">Line of the day</span>
@@ -3060,14 +3060,14 @@ function speechOfDay(){
    <div class="term" style="font-size:20px">${esc(sd.hookterm||sd.title)}</div>
    <div class="quote" style="margin-top:10px"><span class="q">“${esc(sd.hook)}”</span><span class="src">— ${esc(sd.hooksrc||sd.title)}${sd.hookurl?' · <a href="'+sd.hookurl+'" target="_blank" style="color:var(--green);text-decoration:none">▶</a>':''}</span></div>
    <div class="row" style="margin-top:12px;justify-content:flex-end">
-     <button class="btn primary slim" onclick="switchTo('learn');enterStudy('${sd.id}')">Read the study →</button>
+     <button class="btn ghost slim" onclick="switchTo('learn');enterStudy('${sd.id}')">Read the study →</button>
    </div>
   </div>`;
 }
 
 /* ============ SPEECH STUDIES · 精读 ============ */
 const STUDIES=[
-{id:"st1",title:"Harrison Ford — Life Achievement Award (SAG, 2026)",sub:"5-minute acceptance speech · 7 beats",hookterm:"a prize for being alive",hook:"While I'm here to receive a prize for being alive.",hooksrc:"Harrison Ford, SAG Life Achievement Award (2026)",hookurl:"https://youtu.be/Wdkkk9ebKY0?t=40",
+{id:"st1",speaker:"Harrison Ford",title:"Harrison Ford — Life Achievement Award (SAG, 2026)",sub:"5-minute acceptance speech · 7 beats",hookterm:"a prize for being alive",hook:"While I'm here to receive a prize for being alive.",hooksrc:"Harrison Ford, SAG Life Achievement Award (2026)",hookurl:"https://youtu.be/Wdkkk9ebKY0?t=40",
  intro:"Five minutes, one complete arc: two jokes that lower the guard, a turn into honest struggle, a thesis wrapped in wit, an anaphora that climbs, an outward charge, and a five-word landing.",
  introzh:"五分钟,一条完整弧线:两个卸防的笑点 → 转入真实的挣扎 → 裹着机锋的论点 → 步步升温的排比 → 向外的嘱托 → 五个词的着陆。",
  beats:[
@@ -3130,18 +3130,17 @@ function renderStudy(){
     <div style="font-size:13px;color:var(--muted);margin-top:2px">${esc(st.sub)}</div>
     <div class="blk"><span class="lbl">The whole in one look · 全篇一眼</span>${esc(st.intro)}<div class="whyzh">${esc(st.introzh)}</div></div>
     <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:10px">${st.beats.map((b,i)=>`<button class="btn ghost slim" onclick="document.getElementById('bt${i}').scrollIntoView({behavior:'smooth'})">${i+1} ${esc(b.fnzh)}</button>`).join('')}</div>
-    <div class="row" style="margin-top:12px"><button class="btn ghost slim" onclick="exitStudy()">← Home</button></div>
   </div>`+
   st.beats.map((b,i)=>`<div class="card" id="bt${i}" style="margin-top:14px">
     <span class="cat-chip">Beat ${i+1} / ${st.beats.length} · ${esc(b.fn)} · ${esc(b.fnzh)}</span>
-    <div class="quote" style="margin-top:10px"><span class="q">“${esc(b.quote)}”</span> <a class="sayb" style="text-decoration:none" href="${b.url}" target="_blank" title="${b.exact?'watch this exact moment':'search the clip'}">${b.exact?'▶︎':'↗'}</a></div>
+    <div class="quote" style="margin-top:10px"><span class="q">“${esc(b.quote)}”</span><span class="src">— ${esc(st.speaker||'')} · <a href="${b.url}" target="_blank" style="color:var(--green);text-decoration:none">${b.exact?'▶':'↗'}</a></span></div>
     <div class="blk"><span class="lbl">Craft · 手法</span>${esc(b.craft)}<div class="whyzh">${esc(b.craftzh)}</div></div>
     ${b.steal?`<div class="blk"><span class="lbl">Steal this · 拿走就用</span>${esc(b.steal)}</div>`:''}
   </div>`).join('')+
   `<div class="card" style="margin-top:14px">
     <span class="cat-chip">The arc · 全篇弧线</span>
     <div class="blk" style="margin-top:6px">${esc(st.arc)}<div class="whyzh">${esc(st.arczh)}</div></div>
-    <div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="exitStudy()">← Home</button><button class="btn primary slim" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button></div>
+    <div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="exitStudy()">⌂ All studies</button><button class="btn primary slim" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button></div>
   </div>`;
 }
 
@@ -3178,7 +3177,7 @@ function renderLearn(){
       <div class="term" style="font-size:24px">${esc(u.title)}${u.zh?`<br><span style="font-size:17px;color:var(--wood-dk)">${esc(u.zh)}</span>`:''}</div>
       <div class="blk"><span class="lbl">Why this matters</span>${u.essence}</div>
       <div class="row">
-        <button class="btn ghost slim" onclick="exitUnit()">← Home</button>
+        <button class="btn ghost slim" onclick="exitUnit()">⌂ All units</button>
         <button class="btn primary" onclick="go(0)">Start →</button>
       </div></div>`;
     return;
@@ -3195,7 +3194,7 @@ function renderLearn(){
      <div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
      <div class="stepdots">${idx+1} / ${(u._sess||unitWords(u)).length}</div>
      <div class="row">
-       <button class="btn ghost slim" onclick="exitUnit()">⌂ Home</button>
+       <button class="btn ghost slim" onclick="exitUnit()">⌂ All units</button>
        <button class="btn ghost slim" onclick="go(${idx-1})">← Back</button>
        <button class="btn primary" onclick="learnNext()">Next →</button>
      </div></div>`;
@@ -3217,7 +3216,7 @@ function learnNext(){
     area.innerHTML=`<div class="card done-msg"><div class="big">Unit ${i+1} complete</div>
       ${(u._sess||u.words).length} entries added to the shuffle deck.<br><br>
       <div class="row" style="justify-content:center">
-        <button class="btn ghost slim" onclick="exitUnit()">Home</button>
+        <button class="btn ghost slim" onclick="exitUnit()">⌂ All units</button>
         ${nxt?`<button class="btn primary slim" onclick="enterUnit('${nxt.id}')">Next unit →</button>`:`<button class="btn primary slim" onclick="switchTo('practice')">Shuffle →</button>`}
       </div></div>`;
     updateBadges();
@@ -3490,7 +3489,7 @@ function renderSummary(){
     <div style="font-size:13px;color:var(--muted)">${xpToday()>=XP_GOAL?'Daily goal met — the streak is safe. 🔥':'Keep going — '+(XP_GOAL-xpToday())+' XP to today’s goal.'}</div>
     <div class="row" style="justify-content:center;margin-top:16px">
       <button class="btn primary slim" onclick="sess=null;renderPrac()">Next session →</button>
-      <button class="btn ghost slim" onclick="switchTo('learn')">Home</button>
+      <button class="btn ghost slim" onclick="switchTo('learn')">⌂ Lessons</button>
     </div></div>`;
   sess.i=1e9; sess.done=true;
   updateBadges();renderStats();
@@ -3646,7 +3645,7 @@ function toggleStar(id){
   if(cus)cus.star=!cus.star; else {const s=ws(id);s.star=!s.star;}
   save();
   const v=currentView();
-  if(v==='learn')renderLearn();
+  if(v==='learn'){inStudy=null;inUnit=null;idx=-1;renderLearn();}
   renderStats();
 }
 function doSearch(q){
