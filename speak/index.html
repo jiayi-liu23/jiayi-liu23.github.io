@@ -2832,7 +2832,7 @@ function ws(id){if(!state.words[id])state.words[id]={learned:false,star:false,us
 function sayWord(t){try{if(!t)return;const u=new SpeechSynthesisUtterance(String(t).replace(/\s*\(.*?\)\s*/g,'').split('/')[0]);u.lang='en-US';u.rate=0.85;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
 const XP_GOAL=100;
 function xpToday(){const t=today();if(state.xpDay!==t){state.xpDay=t;state.xpNow=0;}return state.xpNow||0;}
-function addXP(n){const t=today();if(state.xpDay!==t){state.xpDay=t;state.xpNow=0;}state.xpNow=(state.xpNow||0)+n;state.xp=(state.xp||0)+n;save();renderStreak();}
+function addXP(n){const t=today();if(state.xpDay!==t){state.xpDay=t;state.xpNow=0;}state.xpNow=(state.xpNow||0)+n;state.xp=(state.xp||0)+n;state.hist=state.hist||{};state.hist[t]=state.xpNow;Object.keys(state.hist).forEach(k=>{if(+k<t-7*DAY)delete state.hist[k]});save();renderStreak();}
 
 /* ============ TODAY ============ */
 function tl(){const t=today();if(!state.tl||state.tl.day!==t)state.tl={day:t,learned:0,sessions:0,line:false};return state.tl;}
@@ -2843,7 +2843,7 @@ function todayLine(){
 }
 function renderToday(){
   const T=tl(),x=xpToday(),w=todayLine();
-  document.getElementById('todayArea').innerHTML=`
+  document.getElementById('todayArea').innerHTML=`${noticesHtml()}
    <div class="card">
      <div class="meter"><i style="width:${Math.min(100,x/XP_GOAL*100)}%"></i></div>
      <div class="meter-lbl"><span class="xp">⚡ ${Math.min(x,XP_GOAL)} / ${XP_GOAL} today</span>${x>=XP_GOAL?' ✓':''}</div>
@@ -2859,7 +2859,7 @@ function renderToday(){
 
 /* ============ LEARN ============ */
 let inUnit=null, idx=-1;
-function pickupCards(){return UNITS.find(x=>x.id==='uP')? PICKUPS.concat(state.custom.map(c=>({id:c.id,term:c.term,cat:c.cat||'Words',gloss:c.meaning||'',hard:[],quote:c.example||'',src:c.source||'',why:c.why||'',usage:c.usage||[],_cus:true}))) : [];}
+function pickupCards(){return UNITS.find(x=>x.id==='uP')? PICKUPS.concat(state.custom.map(c=>({id:c.id,term:c.term,cat:c.cat||'Words',gloss:c.meaning||'',hard:[],quote:c.example||'',src:(c.gift?'From '+c.gift+' 🎁'+(c.source?' · '+c.source:''):c.source||''),why:c.why||'',whyzh:c.whyzh||'',usage:c.usage||[],_cus:true}))) : [];}
 function unitWords(u){return u.id==='uP'? pickupCards() : u.words;}
 function unitLearnedCount(u){return unitWords(u).filter(w=>w._cus?true:ws(w.id).learned).length}
 function unitDone(u){return unitLearnedCount(u)===unitWords(u).length}
@@ -2976,7 +2976,7 @@ let shufCur=null, shufRecent=[];
 function cardState(w){ if(w._cus){return state.custom.find(c=>c.id===w.id)||{}; } return ws(w.id); }
 function shufAll(){
   const base=ALLWORDS.filter(w=>!REF_UNITS.has(w.unit));
-  const cus=state.custom.map(c=>({id:c.id,term:c.term,cat:c.cat||'Words',gloss:c.meaning||'',hard:[],quote:c.example||'',src:c.source||'',why:c.why||'',usage:c.usage||[],_cus:true,unit:'uP'}));
+  const cus=state.custom.map(c=>({id:c.id,term:c.term,cat:c.cat||'Words',gloss:c.meaning||'',hard:[],quote:c.example||'',src:(c.gift?'From '+c.gift+' 🎁'+(c.source?' · '+c.source:''):c.source||''),why:c.why||'',whyzh:c.whyzh||'',usage:c.usage||[],_cus:true,unit:'uP'}));
   return base.concat(cus);
 }
 function shufScope(){return state.shufScope||'all'}
@@ -3017,6 +3017,7 @@ function renderShufCard(){
     ${w.usage&&w.usage.length?`<div class="blk"><span class="lbl">Usage · 用法</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
     <div class="row" style="margin-top:14px">
       <button class="btn ghost slim" onclick="shufToggleStar()">${st.star?'⭐ Focused':'☆ Focus'}</button>
+      ${giftBtn(w)}
       <button class="btn primary" onclick="shufDraw()">Next card 🔀</button>
     </div></div>`;
 }
@@ -3417,11 +3418,22 @@ async function syncNow(force){
   const cfg=syncCfg(); if(!SYNC_URL||!cfg||!cfg.name||!cfg.key) return;
   const now=Date.now(); if(!force&&now-_syncLast<30000) return; _syncLast=now;
   try{
-    const stats={day:today(),xp:xpToday(),streak:state.streak||0,learnedToday:tl().learned,flips:tl().sessions,words:ALLWORDS.filter(w=>ws(w.id).learned).length};
+    const stats={day:today(),xp:xpToday(),streak:state.streak||0,learnedToday:tl().learned,flips:tl().sessions,words:ALLWORDS.filter(w=>ws(w.id).learned).length,week:state.hist||{}};
     const r=await fetch(SYNC_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key:cfg.key,name:cfg.name,stats})});
     if(!r.ok) return;
     const d=await r.json();
     window._friends=(d.members||[]).filter(m=>m&&m.name&&m.name.toLowerCase()!==cfg.name.toLowerCase());
+    if(d.inbox&&d.inbox.length){
+      state.notices=state.notices||[];
+      d.inbox.forEach(it=>{
+        if(it.type==='nudge'){state.notices.push('👋 '+it.from+' waved at you — go keep the streak alive!');}
+        else if(it.type==='gift'&&it.card&&it.card.term){
+          state.custom.push({id:'g'+Date.now()+Math.floor(Math.random()*1000),term:it.card.term,meaning:it.card.gloss||'',example:it.card.quote||'',source:it.card.src||'',cat:it.card.cat||'Words',why:it.card.why||'',whyzh:it.card.whyzh||'',usage:it.card.usage||[],star:false,learned:true,uses:0,next:today(),gift:it.from});
+          state.notices.push('🎁 '+it.from+' sent you a word: “'+it.card.term+'” — find it in Shuffle → My Pickups.');
+        }
+      });
+      save();
+    }
     if(currentView()==='today')renderToday();
   }catch(e){}
 }
@@ -3431,6 +3443,39 @@ function joinCircle(){
   localStorage.setItem('bs_sync',JSON.stringify({name,key}));
   renderToday(); syncNow(true);
 }
+function dismissNotice(i){(state.notices||[]).splice(i,1);save();renderToday();}
+function noticesHtml(){
+  const ns=state.notices||[]; if(!ns.length) return '';
+  return `<div class="card" style="margin-bottom:14px">${ns.map((n,i)=>`<div class="tdrow"><div style="flex:1;font-size:14px">${esc(n)}</div><button class="btn ghost slim" onclick="dismissNotice(${i})">✕</button></div>`).join('')}</div>`;
+}
+async function sendNudge(name){
+  const cfg=syncCfg(); if(!SYNC_URL||!cfg) return;
+  window._nudged=window._nudged||{}; if(window._nudged[name])return; window._nudged[name]=1;
+  try{await fetch(SYNC_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key:cfg.key,name:cfg.name,action:'nudge',to:name})})}catch(e){}
+  renderToday();
+}
+function giftBtn(w){
+  const cfg=syncCfg();
+  if(!SYNC_URL||!cfg||!(window._friends&&window._friends.length)) return '';
+  return `<button class="btn ghost slim" onclick="sendGift('${w.id}')">🎁 Send</button>`;
+}
+async function sendGift(id){
+  const cfg=syncCfg(); if(!SYNC_URL||!cfg) return;
+  const fs=window._friends||[]; if(!fs.length) return;
+  const w=shufAll().find(x=>x.id===id); if(!w) return;
+  let to=fs[0].name;
+  if(fs.length>1){
+    const pick=prompt('Send “'+w.term+'” to: '+fs.map(m=>m.name).join(' / '));
+    if(!pick) return;
+    const hit=fs.find(m=>m.name.toLowerCase()===pick.trim().toLowerCase()); if(!hit) return; to=hit.name;
+  } else {
+    if(!confirm('Send “'+w.term+'” to '+to+'?')) return;
+  }
+  const card={term:w.term,gloss:w.gloss||'',quote:w.quote||'',src:w.src||'',why:w.why||'',whyzh:w.whyzh||'',cat:w.cat||'Words',usage:w.usage||[]};
+  try{await fetch(SYNC_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key:cfg.key,name:cfg.name,action:'gift',to:to,card:card})})}catch(e){return;}
+  state.notices=state.notices||[]; state.notices.push('🎁 Sent “'+w.term+'” to '+to+'.'); save();
+}
+function weekSum(map){if(!map)return 0;const t=today();let s=0;Object.keys(map).forEach(k=>{if(+k>t-7*DAY)s+=(+map[k]||0)});return s;}
 function friendsCard(){
   if(!SYNC_URL) return '';
   const cfg=syncCfg();
@@ -3439,9 +3484,10 @@ function friendsCard(){
     <div class="row" style="flex-wrap:wrap;gap:8px"><input id="fsName" class="tin" placeholder="Your name" style="flex:1;min-width:120px"><input id="fsKey" class="tin" placeholder="Circle key" style="flex:1;min-width:120px"><button class="btn primary slim" onclick="joinCircle()">Join</button></div></div>`;
   const fs=window._friends;
   const rows=(fs&&fs.length)?fs.map(m=>{
-    const st=m.stats||{}, fresh=st.day===today();
-    return `<div class="tdrow"><div class="tick">👤</div><div style="flex:1"><div class="tt">${esc(m.name)}</div><div class="td">🔥 ${st.streak||0}-day · ⚡ ${fresh?(st.xp||0):0} today · ${st.words||0} words</div></div></div>`;
-  }).join(''):`<div style="font-size:13.5px;color:var(--muted)">No one else here yet — send your friends the app link and the circle key.</div>`;
+    const st=m.stats||{}, fresh=st.day===today()&&(st.xp||0)>0;
+    const nudged=window._nudged&&window._nudged[m.name];
+    return `<div class="tdrow"><div class="tick">${fresh?'🟢':'⚪️'}</div><div style="flex:1"><div class="tt">${esc(m.name)}</div><div class="td">🔥 ${st.streak||0}-day · ⚡ ${fresh?(st.xp||0):0} today · ${st.words||0} words</div></div>${!fresh?`<button class="btn ghost slim" onclick="sendNudge('${esc(m.name)}')" ${nudged?'disabled':''}>${nudged?'👋 Sent':'👋 Nudge'}</button>`:''}</div>`;
+  }).join('')+`<div class="td" style="margin-top:10px;color:var(--muted);font-size:13px">This week: you ⚡${weekSum(state.hist)}${fs.map(m=>' · '+esc(m.name)+' ⚡'+weekSum(m.stats&&m.stats.week)).join('')}</div>`:`<div style="font-size:13.5px;color:var(--muted)">No one else here yet — send your friends the app link and the circle key.</div>`;
   return `<div class="card" style="margin-top:14px"><span class="cat-chip">Friends</span>${rows}</div>`;
 }
 function resetToday(){
