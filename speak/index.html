@@ -3853,7 +3853,8 @@ const STEAL_OCC={st1:[['opening','humor'],['toast','humor'],['story'],['qa'],['t
  st3:[['opening','humor'],['review','humor'],['qa'],['humor','story'],['qa','review'],['story'],['endings']],
  st4:[['opening','story'],['story'],['review','story'],['review'],['review','story'],['review'],['endings','story']],
  st5:[['opening'],['opening','review'],['opening','story'],['review'],['story','humor'],['story','endings'],['qa','story'],['endings']],
- st6:[['opening','humor'],['humor','opening'],['humor','qa'],['story','qa'],['humor','review'],['qa'],['review'],['endings']]};
+ st6:[['opening','humor'],['humor','opening'],['humor','qa'],['story','qa'],['humor','review'],['qa'],['review'],['endings']],
+ st7:[['opening','humor'],['opening','humor'],['opening','review'],['story','qa'],['story'],['story','qa'],['endings'],['endings','toast']]};
 const OCCS=[['all','All'],['opening','Openings'],['humor','Humor'],['story','Storytelling'],['review','Talks & reviews'],['qa','Q&A'],['toast','Toasts & thanks'],['endings','Endings']];
 let inSteals=false, stealOcc='all';
 function stealsList(){const out=[];STUDIES.forEach(st=>{(st.beats||[]).forEach((b,i)=>{if(b.steal)out.push({t:b.steal,sid:st.id,bi:i,title:st.title,fn:b.fn,occ:(STEAL_OCC[st.id]||[])[i]||[]});});});return out;}
