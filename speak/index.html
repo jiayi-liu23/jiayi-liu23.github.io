@@ -3508,13 +3508,19 @@ function repCard(){
   const t=today();
   const starred=ALLWORDS.filter(x=>ws(x.id).star);
   const learned=ALLWORDS.filter(x=>ws(x.id).learned);
-  const pool=starred.length?starred:(learned.length?learned:[todayLine()]);
-  return pool[Math.floor(t/DAY)%pool.length];
+  let pool=starred.length?starred:(learned.length?learned:ALLWORDS.filter(w=>!REF_UNITS.has(w.unit)));
+  const ld=todayLine();
+  if(pool.length>1)pool=pool.filter(w=>w.id!==ld.id);
+  const off=(state.tl&&state.tl.day===t&&state.tl.repSwap)?1:0;
+  return pool[(Math.floor(t/DAY)+off)%pool.length];
 }
+function repSwap(){tl().repSwap=1;save();renderToday();}
 function doRep(){
   const txt=(document.getElementById('repIn').value||'').trim();
   if(!txt)return;
   const w=repCard();
+  const kw=(String(w.term).toLowerCase().match(/[a-z']{4,}/g)||[String(w.term).toLowerCase()]);
+  if(!kw.some(k=>txt.toLowerCase().includes(k))){const h=document.getElementById('repHint');if(h)h.textContent='Use the phrase itself in your sentence.';return;}
   state.sents=state.sents||[]; state.sents.push({d:today(),term:w.term,t:txt});
   if(state.sents.length>100)state.sents.shift();
   tl().rep=true; addXP(10); bumpStreak(); save(); renderToday(); syncNow();
@@ -3524,7 +3530,7 @@ function renderToday(){
   document.getElementById('todayArea').innerHTML=`${noticesHtml()}
 ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
      <span class="cat-chip">Welcome</span>
-     <div style="font-size:14px;margin-top:8px">A private word bank for articulate speech. <b>Lessons</b> to study the course, <b>Shuffle</b> to browse the bank — and here, one rep, one line, one speech a day.</div>
+     <div style="font-size:14px;margin-top:8px">A private word bank for articulate speech, distilled from a speaking course — you don't need the course; every card stands alone. <b>Lessons</b> to study, <b>Shuffle</b> to browse; here — one rep, one line, one speech a day. Progress saves on this device.</div>
      <div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn ghost slim" onclick="state.welcomed=1;save();renderToday()">Got it</button></div>
    </div>`}<div class="card">
      <div style="font-size:13px;color:var(--muted)">${T.learned} learned · ${T.sessions} flipped today · any card keeps the 🔥</div>
@@ -3535,7 +3541,8 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
      :`<div class="term" style="font-size:19px">${esc(rw.term)}</div>
      <div style="font-size:13.5px;color:var(--muted)">${esc(rw.gloss)}</div>
      <textarea id="repIn" placeholder="Use it in one sentence from your week — say it aloud, then type it."></textarea>
-     <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button></div>`}
+     <div id="repHint" style="font-size:12.5px;color:var(--terra);margin-top:4px"></div>
+     <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button>${T.repSwap?``:`<button class="btn ghost slim" onclick="repSwap()">Swap ↻</button>`}</div>`}
    </div>
    <div class="card" style="margin-top:14px;cursor:pointer" onclick="todayOpen=!todayOpen;renderToday()">
      <span class="cat-chip">Line of the day</span>
@@ -3870,28 +3877,43 @@ const STUDIES=[
  arc:"Confess the nerves, lower the bar, announce two heresies, swap the expected fear for the real one, inventory the ruin flatly, flip the basement into a foundation, spend the brand once at the summit, and let Seneca land the plane. The failure narrative, definitively told.",
  arczh:"先认怯场,再降期待；预告两记悖论；把人人以为的恐惧换成真实的恐惧；平铺直叙地清点废墟,再把地下室翻成地基；在顶点把自己的品牌兑现一次；最后让塞内加降落。失败叙事的定版讲法。"}
 ];
-const STEAL_OCC={st1:[['opening','humor'],['toast','humor'],['story'],['toast','review'],['toast','endings'],['endings'],['endings','humor']],
- st2:[['opening','humor'],['opening','review'],['story','review'],['story','qa'],['review'],['endings','story'],['endings'],['endings','toast']],
- st3:[['opening','humor'],['review','humor'],['qa'],['humor','story'],['qa','review'],['story'],['endings']],
- st4:[['opening','story'],['story'],['review','story'],['review'],['review','story'],['review'],['endings','story']],
- st5:[['opening'],['opening','review'],['opening','story'],['review'],['story','humor'],['story','endings'],['story'],['endings']],
- st6:[['opening','humor'],['humor','opening'],['humor'],['story','qa'],['humor','review'],['qa'],['review'],['endings']],
- st7:[['opening','humor'],['opening','humor'],['opening','review'],['story','qa'],['story'],['story'],['endings'],['endings','toast']]};
-const OCCS=[['all','All'],['opening','Openings'],['humor','Humor'],['story','Storytelling'],['review','Talks & presentations'],['qa','Q&A'],['toast','Toasts & thanks'],['endings','Endings']];
-let inSteals=false, stealOcc='all';
+const STEAL_OCC={st1:[['opening','humor'],['toast','humor'],['story'],['toast','review','meetings'],['toast','endings'],['endings'],['endings','humor']],
+ st2:[['opening','humor'],['opening','review','meetings'],['story','review'],['story','qa'],['review'],['endings','story'],['endings'],['endings','toast']],
+ st3:[['opening','humor'],['review','humor'],['qa','meetings'],['humor','story'],['qa','review','meetings'],['story'],['endings']],
+ st4:[['opening','story'],['story'],['review','story','meetings'],['review','meetings'],['review','story'],['review'],['endings','story']],
+ st5:[['opening'],['opening','review','meetings'],['opening','story'],['review'],['story','humor'],['story','endings'],['story'],['endings']],
+ st6:[['opening','humor'],['humor','opening'],['humor'],['story','qa'],['humor','review','meetings'],['qa','meetings'],['review','meetings'],['endings']],
+ st7:[['opening','humor'],['opening','humor'],['opening','review'],['story','qa','meetings'],['story'],['story','qa'],['endings'],['endings','toast']]};
+const OCCS=[['all','All'],['star','Starred'],['meetings','Meetings'],['opening','Openings'],['humor','Humor'],['story','Storytelling'],['review','Talks & presentations'],['qa','Q&A'],['toast','Toasts & thanks'],['endings','Endings']];
+let inSteals=false, stealOcc='all', inLines=false;
 function stealsList(){const out=[];STUDIES.forEach(st=>{(st.beats||[]).forEach((b,i)=>{if(b.steal)out.push({t:b.steal,sid:st.id,bi:i,title:st.title,fn:b.fn,occ:(STEAL_OCC[st.id]||[])[i]||[]});});});return out;}
-function enterSteals(){inSteals=true;inStudy=null;inUnit=null;renderLearn();window.scrollTo(0,0)}
+function enterSteals(){inSteals=true;inLines=false;inStudy=null;inUnit=null;renderLearn();window.scrollTo(0,0)}
+function enterLines(){inLines=true;inSteals=false;inStudy=null;inUnit=null;renderLearn();window.scrollTo(0,0)}
+function exitLines(){inLines=false;renderLearn();window.scrollTo(0,0)}
+function renderLines(){
+  const area=document.getElementById('learnArea');
+  const s=(state.sents||[]).slice().reverse();
+  area.innerHTML=`<div class="card"><span class="cat-chip">My Lines · 我的句子</span>
+   <div style="font-size:13.5px;color:var(--muted);margin-top:6px">Every Daily-rep sentence you have written — your half of the commonplace book.</div>
+   <div class="row" style="margin-top:12px"><button class="btn ghost slim" onclick="exitLines()">⌂ Lessons</button></div></div>`+
+  (s.length?s.map(x=>`<div class="card" style="margin-top:14px"><span class="cat-chip">${esc(x.term)}</span>
+   <div style="font-size:15px;margin-top:8px">“${esc(x.t)}”</div>
+   <div style="font-size:12px;color:var(--muted);margin-top:6px">${new Date(+x.d).toLocaleDateString()}</div></div>`).join('')
+   :`<div class="card done-msg" style="margin-top:14px">No lines yet — write today's rep on the Today tab.</div>`);
+}
 function exitSteals(){inSteals=false;renderLearn();window.scrollTo(0,0)}
 function setOcc(o){stealOcc=o;renderLearn()}
+function toggleStealStar(sid,bi){state.stealStars=state.stealStars||{};const k=sid+'#'+bi;if(state.stealStars[k])delete state.stealStars[k];else state.stealStars[k]=1;save();renderLearn();}
 function goBeat(sid,i){inSteals=false;enterStudy(sid);const el=document.getElementById('bt'+i);if(el)el.scrollIntoView();}
 function renderSteals(){
   const area=document.getElementById('learnArea');
-  const items=stealsList().filter(x=>stealOcc==='all'||x.occ.includes(stealOcc));
+  const items=stealsList().filter(x=>stealOcc==='all'?true:(stealOcc==='star'?!!(state.stealStars&&state.stealStars[x.sid+'#'+x.bi]):x.occ.includes(stealOcc)));
   area.innerHTML=`<div class="card">
     <span class="cat-chip">The Steal List · 场合速查</span>
     <div class="row" style="flex-wrap:wrap;gap:8px;margin-top:12px">${OCCS.map(o=>`<button class="pill ${o[0]===stealOcc?'on':''}" onclick="setOcc('${o[0]}')">${o[1]}</button>`).join('')}</div>
     <div class="row" style="margin-top:12px"><button class="btn ghost slim" onclick="exitSteals()">⌂ Lessons</button></div>
-  </div>`+items.map(x=>`<div class="card" style="margin-top:14px">
+  </div>`+(items.length?items:[]).map(x=>`<div class="card" style="margin-top:14px">
+    <button class="starbtn ${(state.stealStars&&state.stealStars[x.sid+'#'+x.bi])?'on':''}" onclick="toggleStealStar('${x.sid}',${x.bi})" title="shortlist">★</button>
     <span class="cat-chip">${esc(x.fn)}</span>
     <div style="font-size:15px;margin-top:8px">${esc(x.t)}</div>
     <div class="row" style="margin-top:10px;justify-content:space-between;align-items:center">
@@ -3913,16 +3935,15 @@ function exitStudy(){inStudy=null;renderLearn();window.scrollTo(0,0)}
 function studiesSection(){
   if(!STUDIES.length)return '';
   return `<div style="margin:24px 0 4px;font-family:var(--serif);font-size:17px;color:var(--wood-dk)">Speech Studies · 精读</div>
-  <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">One speech, read whole — what to steal.</div>`+
-  STUDIES.map(st=>`<div class="unit" onclick="enterStudy('${st.id}')">
-    <div class="badge">§</div>
-    <div><div class="ut">${esc(st.title)}</div><div class="um">${esc(st.sub)}</div></div>
-    <div class="prog">${st.beats.length} beats</div>
-  </div>`).join('')+`<div class="unit" onclick="enterSteals()">
+  <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">One speech, read whole — what to steal.</div>`+`<div class="unit" onclick="enterSteals()">
     <div class="badge">✂</div>
     <div><div class="ut">The Steal List <span class="uz">· 场合速查</span></div><div class="um">every template, by occasion</div></div>
     <div class="prog">${stealsList().length}</div>
-  </div>`;
+  </div>`+STUDIES.map(st=>`<div class="unit" onclick="enterStudy('${st.id}')">
+    <div class="badge">§</div>
+    <div><div class="ut">${esc(st.title)}</div><div class="um">${esc(st.sub)}</div></div>
+    <div class="prog">${st.beats.length} beats</div>
+  </div>`).join('');
 }
 function renderStudy(){
   const st=inStudy, area=document.getElementById('learnArea');
@@ -3957,6 +3978,7 @@ function unitUnlocked(i){return true}
 
 function renderLearn(){
   const area=document.getElementById('learnArea');
+  if(inLines){renderLines();return;}
   if(inSteals){renderSteals();return;}
   if(inStudy){renderStudy();return;}
   if(!inUnit){
@@ -3979,7 +4001,11 @@ function renderLearn(){
         <div><div class="ut">${esc(u.title)}${u.zh?` <span class="uz">· ${esc(u.zh)}</span>`:''}</div><div class="um">${esc(u.from)}</div></div>
         <div class="prog">${unitWords(u).length}</div>
       </div>`;
-    }).join('')+`<div style="margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted)"><a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted)">Start over</a></div>`;
+    }).join('')+`<div class="unit" onclick="enterLines()">
+        <div class="badge">✎</div>
+        <div><div class="ut">My Lines <span class="uz">· 我的句子</span></div><div class="um">your Daily-rep sentences</div></div>
+        <div class="prog">${(state.sents||[]).length}</div>
+      </div>`+`<div style="margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted)"><a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted)">Start over</a></div>`;
     return;
   }
   const u=inUnit;
@@ -4387,7 +4413,7 @@ function switchTo(v){document.querySelectorAll('nav button').forEach(x=>x.classL
   const sec=document.getElementById('v-'+v);sec.classList.remove('viewin');void sec.offsetWidth;sec.classList.add('viewin');
   if(v==='today')renderToday(); if(v==='learn')renderLearn(); if(v==='practice')renderPrac();
 }
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='learn'){inSteals=false;inStudy=null;inUnit=null;idx=-1;}switchTo(b.dataset.v);});
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='learn'){inLines=false;inSteals=false;inStudy=null;inUnit=null;idx=-1;}switchTo(b.dataset.v);});
 
 
 /* init */
@@ -4395,7 +4421,7 @@ renderToday(); renderStreak();
 syncNow(true);
 (function(){const el=document.getElementById('v-practice');if(!el||!el.addEventListener)return;let x0=null;
 el.addEventListener('touchstart',e=>{x0=e.touches[0].clientX},{passive:true});
-el.addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>60)shufDraw(true);},{passive:true});})();
+el.addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(dx<-60)shufDraw(true);},{passive:true});})();
 if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
 </body>
