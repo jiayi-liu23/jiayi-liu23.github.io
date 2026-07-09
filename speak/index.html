@@ -2916,7 +2916,7 @@ function exitUnit(){inUnit=null;idx=-1;renderLearn()}
 function go(i){ if(i<-1)i=-1; idx=i; renderLearn(); window.scrollTo(0,0)}
 function learnNext(){
   const u=inUnit,uw=(u._sess||unitWords(u)),w=uw[idx];
-  if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.next=today();addXP(5);tl().learned++;}}
+  if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.next=today();addXP(5);bumpStreak();tl().learned++;}}
   save();
   if(idx+1<uw.length){go(idx+1);}
   else{
@@ -3202,7 +3202,7 @@ function renderSummary(){
   sess.i=1e9; sess.done=true;
   updateBadges();renderStats();
 }
-function bumpStreak(){const t=today(); if(state.lastDay!==t){state.streak=(state.lastDay===t-DAY)?state.streak+1:1; state.lastDay=t; renderStreak();}}
+function bumpStreak(){const t=today(); if(state.lastDay!==t){const d=new Date(t),y=new Date(d.getFullYear(),d.getMonth(),d.getDate()-1).getTime();state.streak=(state.lastDay===y)?state.streak+1:1; state.lastDay=t; renderStreak();}}
 
 /* ============ ORIGINAL-CLIP LINKS ============ */
 const CLIPS={
