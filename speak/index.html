@@ -143,6 +143,7 @@ body{padding-bottom:env(safe-area-inset-bottom, 0px)}
     <div class="row" style="margin-top:10px">
       <button class="btn soft slim" id="afBtn" onclick="autoFill()">✨ Auto-fill</button>
     </div>
+    <div id="afStatus" style="font-size:12px;color:var(--muted);margin-top:6px"></div>
     <label>Meaning</label><input id="fMeaning">
     <label>Example (optional)</label><textarea id="fExample"></textarea>
     <label>Source (optional)</label><input id="fSource" placeholder="e.g. heard in seminar / NYT article">
@@ -349,42 +350,42 @@ const UNITS=[
    src:"BetterSpeak · Day 2",
    why:"The discipline of this unit in one image: hold the reins on your own vocabulary.",
    usage:["I bridled my tongue and gave the two-sentence version.","Useful in meetings when the jargon urge hits."]},
-  {id:'u1w11',whyzh:'本单元论点的三词版：now 是英语里最平的词,在这里扛起了一场运动。',term:'the fierce urgency of now',cat:'Phrases',
+  {id:'u1w11',ctxzh:"马丁·路德·金,1963年8月28日“向华盛顿进军”大集会,林肯纪念堂前对约25万人演讲。这个短语出自中段:有人劝黑人“再等等”,他答以“此刻的灼热紧迫”——全篇驳斥渐进主义的核心词。",whyzh:'本单元论点的三词版：now 是英语里最平的词,在这里扛起了一场运动。',term:'the fierce urgency of now',cat:'Phrases',
    gloss:"『此刻灼人的紧迫』—— now,最普通的词,被 fierce + urgency 加冕",
    hard:[["fierce","凶猛的、灼烈的"],["urgency","紧迫(urgent 的名词)"]],
    quote:"We have also come to this hallowed spot to remind America of the fierce urgency of now.",
    src:"Martin Luther King, “I Have a Dream” (1963) — on the course Speech Bank",
    why:"The unit’s thesis in three words: “now” is the plainest word in English, and here it carries a movement.",
    usage:["The fierce urgency of the revision deadline.","Pattern: the fierce urgency of + any plain noun."]},
-  {id:'u1w12',whyzh:'用银行日常词汇跑完一整套道德论证——人人见过支票,没人忘得掉这一张。',term:'a check marked “insufficient funds”',cat:'Phrases',
+  {id:'u1w12',ctxzh:"“我有一个梦想”的开篇主比喻:独立宣言是开给每个美国人的支票,而美国给黑人的是一张“余额不足”的空头支票——把一百年的不义讲成一笔人人都懂的坏账,今天来兑现。",whyzh:'用银行日常词汇跑完一整套道德论证——人人见过支票,没人忘得掉这一张。',term:'a check marked “insufficient funds”',cat:'Phrases',
    gloss:"『一张被退回的空头支票』—— 用银行日常词汇讲正义",
    hard:[["insufficient funds","余额不足(银行退票用语)"]],
    quote:"America has given the Negro people a bad check, a check which has come back marked ‘insufficient funds.’",
    src:"Martin Luther King, “I Have a Dream” (1963) — on the course Speech Bank",
    why:"An entire moral argument run through everyday banking words — everyone has seen a check; no one forgets this one.",
    usage:["The strategic plan is a check the budget can’t cash.","Borrow a mundane vocabulary (banking, cooking, weather) for a big idea."]},
-  {id:'u1w13',whyzh:'三个两词短句,全是单音节——格局来自取景方式,不是词汇量。',term:"that’s here. that’s home. that’s us.",cat:'Quotes',
+  {id:'u1w13',ctxzh:"《暗淡蓝点》(1994)对那张照片的解说开头:那就是这里。那就是家。那就是我们。——三个最小的词,扛住整张宇宙照片的重量。",whyzh:'三个两词短句,全是单音节——格局来自取景方式,不是词汇量。',term:"that’s here. that’s home. that’s us.",cat:'Quotes',
    gloss:"『那就是这里。那就是家。那就是我们。』—— 六个最小的词,举起整个地球",
    hard:[],
    quote:"Look again at that dot. That’s here. That’s home. That’s us. On it everyone you love, everyone you know, everyone you ever heard of…",
    src:"Carl Sagan, Pale Blue Dot (1994), reflecting on Voyager 1’s photograph of Earth from four billion miles away",
    why:"Three two-word sentences, all monosyllables — proof that scale comes from framing, not vocabulary.",
    usage:["End a data talk: that’s the sample. that’s the effect. that’s the story.","Triplets of tiny sentences land like hammer taps."]},
-  {id:'u1w14',whyzh:'四个普通名词摆成两组对仗——功夫全在排列,不在用词。',term:'more than machinery, we need humanity',cat:'Quotes',
+  {id:'u1w14',ctxzh:"《大独裁者》(1940)结尾演说的核心对句:比起机器,我们更需要人性;比起聪明,我们更需要善良与温柔——卓别林借小人物之口给整个机器时代开的药方。",whyzh:'四个普通名词摆成两组对仗——功夫全在排列,不在用词。',term:'more than machinery, we need humanity',cat:'Quotes',
    gloss:"『比起机器,我们更需要人性』—— 普通名词的对仗：machinery↔humanity, cleverness↔kindness",
    hard:[["machinery","机器(总称)"],["cleverness","聪明、机巧"]],
    quote:"We think too much and feel too little. More than machinery, we need humanity. More than cleverness, we need kindness and gentleness.",
    src:"Charlie Chaplin, The Great Dictator (1940) — on the course Speech Bank",
    why:"Plain nouns arranged in two balanced antitheses — arrangement does all the work.",
    usage:["More than dashboards, we need judgment.","Pattern: more than X, we need Y — twice."]},
-  {id:'u1w15',whyzh:'has its place 本是耸耸肩的日常英语——在这里说出口,成了史上最令人脊背发凉的句子之一。',term:'longevity has its place',cat:'Quotes',
+  {id:'u1w15',ctxzh:"马丁·路德·金《我已到过山顶》,1968年4月3日孟菲斯,支援环卫工人罢工——他生前最后一场演讲。结尾处他说“长寿自有其位,但我现在不担心这个”:预感式的放下。次日傍晚他在旅馆阳台遇刺身亡。",whyzh:'has its place 本是耸耸肩的日常英语——在这里说出口,成了史上最令人脊背发凉的句子之一。',term:'longevity has its place',cat:'Quotes',
    gloss:"『长寿自有其位』—— place,再平常不过的词,在语境里重如千钧",
    hard:[["longevity","长寿(拉丁 longus 长 + aevum 年岁)"]],
    quote:"Like anybody, I would like to live a long life. Longevity has its place. But I’m not concerned about that now.",
    src:"Martin Luther King, “I’ve Been to the Mountaintop” (1968) — the night before his assassination; on the Speech Bank",
    why:"“Has its place” is shrugging, everyday English — spoken here, it becomes one of the most chilling sentences ever delivered.",
    usage:["Perfection has its place. This draft isn’t it.","Understatement gains power from context, not word choice."]},
-  {id:'u1w16',whyzh:'二十世纪被引用最多的理由,用的是小学生形容词——发力的是 not because…but because 这个对仗框架。',term:'not because they are easy, but because they are hard',cat:'Quotes',
+  {id:'u1w16',ctxzh:"肯尼迪1962年莱斯大学“登月”演说:我们选择登月,不是因为容易,而是因为艰难——把国家豪赌讲成品格测试,为阿波罗计划定调的一句。",whyzh:'二十世纪被引用最多的理由,用的是小学生形容词——发力的是 not because…but because 这个对仗框架。',term:'not because they are easy, but because they are hard',cat:'Quotes',
    gloss:"『不是因为容易,而是因为艰难』—— easy 和 hard,两个最普通的形容词,扛起登月计划",
    hard:[],
    quote:"We choose to go to the moon in this decade and do the other things, not because they are easy, but because they are hard.",
@@ -398,7 +399,7 @@ const UNITS=[
    src:"Martin Luther King (1963) — on the course Speech Bank",
    why:"The ultimate exhibit: the most famous sentence of the century is four one-syllable words. Articulacy was never about vocabulary size.",
    usage:["Your thesis sentence should survive this test: could a child repeat it?","Say the big thing in small words; spend complexity elsewhere."]},
-  {id:'u1w18',whyzh:'史上最著名的结尾=三个小词说三遍——放大器是重复,不是词汇。',term:'free at last, free at last',cat:'Quotes',
+  {id:'u1w18',ctxzh:"“我有一个梦想”的最后一句,引自古老的黑人灵歌。梦的排比层层升到顶点后,他用歌词收束全篇——终于自由,终于自由,感谢全能的上帝,我们终于自由。",whyzh:'史上最著名的结尾=三个小词说三遍——放大器是重复,不是词汇。',term:'free at last, free at last',cat:'Quotes',
    gloss:"『终于自由了』—— free 与 last 都是最基础的词；力量完全来自重复",
    hard:[],
    quote:"Free at last! Free at last! Thank God Almighty, we are free at last!",
@@ -412,7 +413,7 @@ const UNITS=[
    src:"Aeschylus — recited from memory by Robert F. Kennedy the night MLK died (1968); on the Speech Bank",
    why:"Grief measured in drops — a kitchen word carrying the heaviest freight. Also the ultimate commonplace-book proof: he had it memorized.",
    usage:["Understanding came drop by drop, over a decade of failed models.","Pattern: X falls drop by drop upon Y."]},
-  {id:'u1w20',whyzh:'句子先用平实的 waved goodbye 打好了地基,诗意的 surly bonds 才飞得起来——平常词是锚,不凡词是帆。',term:'waved goodbye',cat:'Quotes',
+  {id:'u1w20',ctxzh:"里根1986年1月28日“挑战者号”航天飞机爆炸当晚的全国电视讲话(原定的国情咨文临时改为哀悼,佩吉·努南执笔):七名宇航员登机时“挥手道别”——用一个画面代替讣告。",whyzh:'句子先用平实的 waved goodbye 打好了地基,诗意的 surly bonds 才飞得起来——平常词是锚,不凡词是帆。',term:'waved goodbye',cat:'Quotes',
    gloss:"『挥手道别』—— 最平常的动作,放进国殇讲话重逾千斤",
    hard:[],
    quote:"We will never forget them, nor the last time we saw them, this morning, as they prepared for their journey and waved goodbye and ‘slipped the surly bonds of earth.’",
@@ -433,14 +434,14 @@ const UNITS=[
    src:"Edward R. Murrow, the “Wires and Lights in a Box” address (1958) — on the Speech Bank",
    why:"An indictment built by adjective pile-up — each word harmless alone, damning in sequence. Bonus metaphor: a built-in allergy.",
    usage:["Busy, tired, distracted and behind — my October in four words.","Stack four plain adjectives; let the order do the judging."]},
-  {id:'u1w23',whyzh:'美国电影里最赤裸的宣言就是主谓宾+小学词——怒火不需要同义词词典。',term:'my life has value',cat:'Quotes',
+  {id:'u1w23',ctxzh:"《电视台风云》(1976)同一段爆发的铺垫:你们得先站起来说——我是一个人,我的生命有价值!先立住人的尊严,再谈愤怒;台词的顺序就是论证的顺序。",whyzh:'美国电影里最赤裸的宣言就是主谓宾+小学词——怒火不需要同义词词典。',term:'my life has value',cat:'Quotes',
    gloss:"『我的人生有价值』—— 四个词的呐喊,没有一个大词",
    hard:[],
    quote:"I’m a human being… My life has value!",
    src:"Network (1976), the “Mad as Hell” speech — on the Speech Bank",
    why:"The rawest declaration in American cinema is subject-verb-object in kindergarten words — fury needs no thesaurus.",
    usage:["When it matters most, drop to the plainest sentence you own.","Test: can you scream it? Then it’s plain enough."]},
-  {id:'u1w24',whyzh:'英语史上词汇量最大的人,给士兵选的却是 comes safe home、stand a-tip-toe——“小”才是亲近。',term:'comes safe home',cat:'Quotes',
+  {id:'u1w24',ctxzh:"《亨利五世》圣克里斯宾日演说开头:今日之后凡能生还回家的人,每逢这个节日提起,都会挺直身子——先讲活着回家的体面,再讲战死的光荣,动员的顺序本身就是安抚。",whyzh:'英语史上词汇量最大的人,给士兵选的却是 comes safe home、stand a-tip-toe——“小”才是亲近。',term:'comes safe home',cat:'Quotes',
    gloss:"『平安回家』—— 莎士比亚对士兵反而用最小的词",
    hard:[["stand a tip-toe","踮起脚尖(自豪状)"]],
    quote:"He that outlives this day, and comes safe home, will stand a tip-toe when this day is named.",
@@ -528,21 +529,21 @@ const UNITS=[
    src:"Theodore Roosevelt, “Citizenship in a Republic” (1910) — on the Speech Bank",
    why:"The most-collected passage about doing versus judging — a commonplace-book classic.",
    usage:["Referee reports sting less when you remember who’s in the arena.","Salute effort: she’s in the arena."]},
-  {id:'u2w9',whyzh:'宇宙尺度压进八个词——共鸣意象的黄金标准。',term:"a mote of dust suspended in a sunbeam",cat:'Quotes',
+  {id:'u2w9',ctxzh:"卡尔·萨根《暗淡蓝点》(1994):1990年旅行者1号在60亿公里外回望地球,拍下那张著名照片——地球只是“悬浮在一束阳光里的一粒微尘”。天文学家给全人类的谦卑课。",whyzh:'宇宙尺度压进八个词——共鸣意象的黄金标准。',term:"a mote of dust suspended in a sunbeam",cat:'Quotes',
    gloss:"悬浮在一束阳光里的微尘 —— 地球",
    hard:[["mote","微粒、尘埃(a mote of dust 一粒微尘)"]],
    quote:"Look again at that dot. That’s here. That’s home. That’s us… a mote of dust suspended in a sunbeam.",
    src:"Carl Sagan, Pale Blue Dot (1994), reflecting on Voyager 1’s photograph of Earth from four billion miles away",
    why:"Cosmic scale compressed into eight words — the gold standard of resonant imagery.",
    usage:["For perspective-setting openings and closings.","Pattern: a mote of X in a Y."]},
-  {id:'u2w10',whyzh:'一篇悼词借了一首诗——证明词库在最高规格的场合也扛得住。',term:"slipped the surly bonds of Earth",cat:'Quotes',
+  {id:'u2w10',ctxzh:"“挑战者号”讲话(1986)的结尾:他们挣脱大地阴沉的束缚,触到了上帝的脸——引自二战飞行员诗人马吉的十四行诗《高飞》。借一首诗给七位逝者收尾,全美记住了这句。",whyzh:'一篇悼词借了一首诗——证明词库在最高规格的场合也扛得住。',term:"slipped the surly bonds of Earth",cat:'Quotes',
    gloss:"挣脱大地阴沉的束缚 —— 飞行、超越、告别的意象",
    hard:[["surly","阴沉乖戾的"],["bonds","束缚、镣铐"]],
    quote:'…as they prepared for their journey and waved goodbye and ‘slipped the surly bonds of Earth’ to ‘touch the face of God.’',
    src:"Ronald Reagan, Challenger address (1986), quoting “High Flight” (John Gillespie Magee Jr.) — both on the course lists",
    why:"A eulogy that borrowed a poem — proof the commonplace book works under the highest stakes.",
    usage:["For farewells and tributes.","Note the chain: poem → notebook → the most-watched speech of 1986."]},
-  {id:'u2w11',whyzh:'圣经意象给愿景压上分量——说完这句的第二天,他遇刺身亡。',term:"I’ve seen the promised land",cat:'Quotes',
+  {id:'u2w11',ctxzh:"《我已到过山顶》(1968)结尾:“我可能无法和你们一起到达那里,但我们这个民族终将抵达应许之地”——摩西望见迦南而不得入的自况。十几个小时后他遇刺,这句话成了预言。",whyzh:'圣经意象给愿景压上分量——说完这句的第二天,他遇刺身亡。',term:"I’ve seen the promised land",cat:'Quotes',
    gloss:"我见过应许之地 —— 愿景在望、虽不能至",
    hard:[["the promised land","应许之地(圣经典故：迦南)"]],
    quote:"I’ve been to the mountaintop… And I’ve seen the promised land. I may not get there with you.",
@@ -665,7 +666,7 @@ const UNITS=[
    src:"BetterSpeak · Diagnosing Inputs worksheet (the articulation key)",
    why:"A shared ruler for the whole program: rate what you consume, then deliberately add sources above 7.",
    usage:["Rate your podcast list tonight — most of it will be a 4–5.","Swap one input below 5 for one above 7."]},
-  {id:'uD4w8',whyzh:'9 分长什么样：鲜活意象+对仗(征服之旗 vs 自由与和平之旗)、零废话。',term:'a banner of freedom and peace',cat:'Quotes',
+  {id:'uD4w8',ctxzh:"肯尼迪莱斯大学“登月”演说(1962)的同篇:太空上要插的是自由与和平的旗帜——课程把它选作第9级语言样本:政治修辞的标准件,旗帜+永恒元素。",whyzh:'9 分长什么样：鲜活意象+对仗(征服之旗 vs 自由与和平之旗)、零废话。',term:'a banner of freedom and peace',cat:'Quotes',
    gloss:'『我们已发誓：不让太空被征服的敌旗统治,而由自由与和平的旗帜作主』—— 评级表第 9 级样句',
    hard:[["banner","旗帜、大旗"],["conquest","征服"]],
    quote:"The eyes of the world now look into space… and we have vowed that we shall not see it governed by a hostile flag of conquest, but by a banner of freedom and peace.",
@@ -760,7 +761,7 @@ const UNITS=[
 {id:'u3',title:'Alliteration Couplings',zh:'头韵词对',from:'Day 5 · Elements of Eloquence · 修辞元素',
  essence:'Alliteration = neighboring words sharing a first sound. MLK didn’t invent his live — he <b>stored word-pairs in his notebook</b>: say the first word and the rest follows. When speaking, lean slightly on the repeated sound.<br><span style="color:var(--muted)">头韵=相邻词共享开头音；像MLK一样提前存好「词对」,第一个词一出口,后面自动跟上。</span>',
  words:[
-  {id:'u3w1',whyzh:'一句里四个硬 c 音(color/skin 对 content/character)——头韵让思想变得可引用、可携带。',term:'content of character',cat:'Alliterations',
+  {id:'u3w1',ctxzh:"“我有一个梦想”排比段的第四个梦:我梦想我的四个孩子有一天不以肤色、而以品格的内涵被评判——全篇被引用最多的一句,金的核心信条。",whyzh:'一句里四个硬 c 音(color/skin 对 content/character)——头韵让思想变得可引用、可携带。',term:'content of character',cat:'Alliterations',
    gloss:'品格的内涵 —— 看人看内在,不看外表',
    hard:[['content','内涵、内容(名词,重音在前：CON-tent)'],['character','品格、人格']],
    quote:'…not be judged by the color of their skin but by the content of their character.',
@@ -781,7 +782,7 @@ const UNITS=[
    src:'BetterSpeak · Day 5 (MLK’s stored word-pairs)',
    why:'A j-sound pair plus a double metaphor: injustice both cages you (jails) and devours you (jaws). Far stronger than "unfair system."',
    usage:['Lighter use: freed at last from the jails and jaws of bureaucracy.','记忆：jail 关住你,jaw 咬住你。']},
-  {id:'u3w4',whyzh:'他储备清单里的 m 音词对——注意同一组词对在他不同演讲里反复登场。',term:'mighty mountains',cat:'Alliterations',
+  {id:'u3w4',ctxzh:"“我有一个梦想”收尾的“让自由之声响起”段:让自由之声从纽约的崇山峻岭响起——他点名全国的山脉一座座扫过,把整个国家的地理都编进排比。",whyzh:'他储备清单里的 m 音词对——注意同一组词对在他不同演讲里反复登场。',term:'mighty mountains',cat:'Alliterations',
    gloss:'巍巍高山(m 音词对)',
    hard:[['mighty','浩大的、雄伟的']],
    quote:'Let freedom ring from the mighty mountains of New York.',
@@ -795,7 +796,7 @@ const UNITS=[
    src:'Carl Sagan on nuclear deterrence — occasion unverified; quoted in BetterSpeak Day 5',
    why:'Lean on the s-sounds when you say it — that slight punch is what makes alliteration land.',
    usage:['I trust the sanity and sobriety of this committee.','Best in serious, formal registers.']},
-  {id:'u3w6',whyzh:'头韵+意象一次到位：黑暗荒凉的谷底对阳光洒落的大道——对比是内置的。',term:'dark and desolate',cat:'Alliterations',
+  {id:'u3w6',ctxzh:"“我有一个梦想”中段:他把种族隔离的现状称作“黑暗荒凉的峡谷”,与“阳光普照的种族正义之路”对举——先画出两个地形,再号召人们从谷底走上大道。",whyzh:'头韵+意象一次到位：黑暗荒凉的谷底对阳光洒落的大道——对比是内置的。',term:'dark and desolate',cat:'Alliterations',
    gloss:'黑暗而荒凉(d 音词对)',
    hard:[['desolate','荒凉的、被遗弃的']],
    quote:'Now is the time to rise from the dark and desolate valley of segregation to the sunlit path of racial justice.',
@@ -886,7 +887,7 @@ const UNITS=[
    src:"BetterSpeak · Rhetorical Devices worksheet",
    why:"Proof alliteration fits small talk — five f-sounds and a tiny philosophy.",
    usage:["Left the laptop, felt lighter.","Everyday sentences are the practice ground."]},
-  {id:'u3w19',whyzh:'d 音词对做道德功课：两种美德被声音焊在一起,听起来像一条诫命。',term:'dignity and discipline',cat:'Alliterations',
+  {id:'u3w19',ctxzh:"“我有一个梦想”中段对自己人的告诫:斗争必须永远保持“尊严与纪律”,不可堕入暴力——运动的自我约束条款,写在对对手的控诉之间。",whyzh:'d 音词对做道德功课：两种美德被声音焊在一起,听起来像一条诫命。',term:'dignity and discipline',cat:'Alliterations',
    gloss:"尊严与克制(d 音词对)—— 给抗争定下的行为准则",
    hard:[["dignity","尊严"],["discipline","纪律、克制"]],
    quote:"We must forever conduct our struggle on the high plane of dignity and discipline.",
@@ -904,7 +905,7 @@ const UNITS=[
 {id:'u8',title:'Anaphora',zh:'首语反复',from:'Day 5 · Elements of Eloquence · 修辞元素',
  essence:'Anaphora = starting consecutive sentences or clauses with <b>the same words</b>. Don’t plan it — generate it live by <b>extending your thought with the words you just said</b>. The pulse gets stronger with each repeat.<br><span style="color:var(--muted)">首语反复=连续句子用同样的开头；不预谋,借刚说出口的词现场延伸。</span>',
  words:[
-  {id:'u8w1',whyzh:'修辞格之王：重复开头几个词,句子就有了催眠般的脉搏。',term:'Now is the time…',cat:'Quotes',
+  {id:'u8w1',ctxzh:"“我有一个梦想”中段的行动号召:Now is the time 四连排比——把“现在”锤进听众耳朵,紧接在“空头支票”的比喻之后:今天就来兑现。",whyzh:'修辞格之王：重复开头几个词,句子就有了催眠般的脉搏。',term:'Now is the time…',cat:'Quotes',
    gloss:'“现在正是……的时候” —— 连续句首重复,制造鼓点',
    hard:[],
    quote:'Now is the time to make real the promises of democracy. Now is the time to rise from the dark and desolate valley of segregation… Now is the time to make justice a reality.',
@@ -918,7 +919,7 @@ const UNITS=[
    src:'Maya Angelou, “Still I Rise”',
    why:'Three "You may…" lines build the pressure; the short final line releases it. Anaphora plus a simile ending.',
    usage:['Structure to steal: repeat the attack three times, answer once.','It’s on the course poem list — read the whole poem aloud.']},
-  {id:'u8w3',whyzh:'微型首语反复：两个分句,同头,反尾——对称正是它可引用的原因。',term:'get busy living, or get busy dying',cat:'Quotes',
+  {id:'u8w3',ctxzh:"电影《肖申克的救赎》(1994):银行家安迪含冤入狱十九年,这是他在放风场对挚友瑞德说的抉择——要么忙着活,要么忙着死。片尾瑞德假释后复述这句话,选择了“活”:登上去墨西哥的车。全片主题的转轴。",whyzh:'微型首语反复：两个分句,同头,反尾——对称正是它可引用的原因。',term:'get busy living, or get busy dying',cat:'Quotes',
    gloss:'“要么忙着活,要么忙着死” —— 两个对称短句里的重复',
    hard:[],
    quote:'Get busy living, or get busy dying.',
@@ -1002,14 +1003,14 @@ const UNITS=[
    src:"Martin Luther King (1963) — the delivered speech repeats the refrain eight times",
    why:"The most famous anaphora ever spoken — and it was improvised: he left the script when Mahalia Jackson called “Tell them about the dream!” Collection met the moment.",
    usage:["A refrain can hold an entire speech’s architecture.","Depth over variety: one opener, eight escalations."]},
-  {id:'u8w15',whyzh:'首语反复+地理：每次重复在新的地方插一面旗,最后一句倒装收门。',term:'let freedom ring',cat:'Quotes',
+  {id:'u8w15',ctxzh:"“我有一个梦想”收尾瀑布段的引擎:let freedom ring 十余次重复,从新罕布什尔到密西西比,一句短语扫过全国——首语反复推到极限的现场示范。",whyzh:'首语反复+地理：每次重复在新的地方插一面旗,最后一句倒装收门。',term:'let freedom ring',cat:'Quotes',
    gloss:"『让自由之声响彻……』(全篇共十次,此处节选) —— 用地名把首语反复铺成一张地图",
    hard:[],
    quote:"Let freedom ring from the prodigious hilltops of New Hampshire. Let freedom ring from the mighty mountains of New York… from every hill and molehill of Mississippi. From every mountainside, let freedom ring.",
    src:"Martin Luther King (1963) — the closing cascade",
    why:"Anaphora plus geography: each repeat plants a flag somewhere new, and the last line inverts the order to close the gate.",
    usage:["Tour your points like places: in the data… in the theory… in the field…","Invert the final repetition to signal the end."]},
-  {id:'u8w16',whyzh:'重复即控诉：同一个世纪反复重述,直到它的重量令人无法承受。',term:'one hundred years later',cat:'Quotes',
+  {id:'u8w16',ctxzh:"“我有一个梦想”开篇:林肯签署《解放奴隶宣言》一百年后——“一百年后的今天”连续四次落锤,黑人仍不自由。时间本身成了控诉。",whyzh:'重复即控诉：同一个世纪反复重述,直到它的重量令人无法承受。',term:'one hundred years later',cat:'Quotes',
    gloss:"『一百年后……』(全篇共四次,此处节选) —— 用同一个时间戳反复敲击",
    hard:[["manacles","镣铐"]],
    quote:"One hundred years later, the Negro still is not free. One hundred years later, the life of the Negro is still sadly crippled by the manacles of segregation…",
@@ -1167,7 +1168,7 @@ const UNITS=[
    src:"BetterSpeak · Day 6",
    why:"Naming it is curing it: once you hear your own rise, you can aim it down.",
    usage:["Record one voicemail; count the question-marks you didn’t intend.","Nervousness rises; confidence lands."]},
-  {id:'u4w18',whyzh:'他人生最后一场演讲,结在一句借来的圣歌上——词库、永恒元素、降调落地,三者同时在场。',term:'mine eyes have seen the glory',cat:'Quotes',
+  {id:'u4w18',ctxzh:"金公开生涯的最后一句话:《我已到过山顶》(1968)的收束,引《共和国战歌》——我的眼睛已看见主降临的荣光。说完他转身坐下,次日遇刺。",whyzh:'他人生最后一场演讲,结在一句借来的圣歌上——词库、永恒元素、降调落地,三者同时在场。',term:'mine eyes have seen the glory',cat:'Quotes',
    gloss:"『我的眼已见那荣光』—— 山顶演讲的最后一句,借圣歌收束一生",
    hard:[["mine eyes","我的双眼(旧式英语：my 在元音前作 mine(莎翁与钦定本时代))"]],
    quote:"And so I’m happy tonight… Mine eyes have seen the glory of the coming of the Lord.",
@@ -1209,14 +1210,14 @@ const UNITS=[
 {id:'u5',title:'Simile & Metaphor',zh:'明喻与隐喻',from:'Day 7 · Evocative Language · 画面感语言',
  essence:'The language of the mind is images: sentences with pictures get remembered. A <b>simile</b> compares with like/as; a <b>metaphor</b> says A <i>is</i> B. To build one, ask: <b>what trait does my idea have? what else has that trait?</b><br><span style="color:var(--muted)">心智的语言是图像；明喻用 like/as,隐喻问两个问题就能现场造。</span>',
  words:[
-  {id:'u5w1',whyzh:'正义是抽象的,奔涌的河不是。抽象概念配自然意象,是明喻的经典打法。',term:'like a mighty stream',cat:'Similes',
+  {id:'u5w1',ctxzh:"“我有一个梦想”中段引《圣经·阿摩司书》:让公义如江河滔滔,让正义如大河奔流——用经文的语域给运动背书,也是他最常引用的一句先知书。",whyzh:'正义是抽象的,奔涌的河不是。抽象概念配自然意象,是明喻的经典打法。',term:'like a mighty stream',cat:'Similes',
    gloss:'如浩荡江河 —— 给抽象概念一个奔涌的画面',
    hard:[['mighty','浩大的、强大的(比 strong 更有史诗感)'],['stream','水流；mighty stream = 大江大河']],
    quote:'…until justice rolls down like waters and righteousness like a mighty stream.',
    src:'Martin Luther King, “I Have a Dream” (1963), echoing the Book of Amos',
    why:'Justice is abstract; a rushing river is not. Pairing an abstract idea with a natural image is the classic simile move.',
    usage:['Once the team warmed up, ideas flowed like a mighty stream.','Pattern: X rolls down like waters — unstoppable arrival.']},
-  {id:'u5w2',whyzh:'一个词(machine)横穿三个名词(men / minds / hearts)——重复和隐喻一笔完成。',term:'machine men with machine minds',cat:'Quotes',
+  {id:'u5w2',ctxzh:"卓别林《大独裁者》(1940)结尾:小理发师被误认成独裁者,他放弃扮演,直接向镜头、向全世界演说。这句骂的是纳粹式的“机器人”——机器的头脑,机器的心。二战前夜好莱坞最勇敢的四分钟。",whyzh:'一个词(machine)横穿三个名词(men / minds / hearts)——重复和隐喻一笔完成。',term:'machine men with machine minds',cat:'Quotes',
    gloss:'机器一样的人、机器的头脑 —— 谴责失去人性的顺从',
    hard:[['machine men','像机器一样、没有心的人']],
    quote:"Don't give yourselves to these unnatural men — machine men with machine minds and machine hearts! You are not machines! You are men!",
@@ -1335,7 +1336,7 @@ const UNITS=[
    src:'BetterSpeak · Day 7 (metaphor worksheet)',
    why:'The generator behind fresh metaphors: wrong-on-purpose adjectives forced onto ordinary nouns. Three collisions a day is a workout; one spark pays for all.',
    usage:["Keep five odd adjectives on your lock screen; collide them with every noun you meet.","A frosty email, a refried excuse — say the collision aloud, keep what sparks."]},
-  {id:'u5w19',whyzh:'绝望获得质量(山),希望获得可握的尺寸(石),一个动词(hew 凿)把信念变成采石的活计。',term:'a stone of hope from a mountain of despair',cat:'Quotes',
+  {id:'u5w19',ctxzh:"“我有一个梦想”的“回南方去”段:带着这个信念,我们能从绝望之山凿出希望之石——全篇最浓缩的意象,后来刻在华盛顿金纪念雕像的基座上。",whyzh:'绝望获得质量(山),希望获得可握的尺寸(石),一个动词(hew 凿)把信念变成采石的活计。',term:'a stone of hope from a mountain of despair',cat:'Quotes',
    gloss:"『从绝望之山凿出一块希望之石』—— 双隐喻：抽象名词全部矿物化",
    hard:[["hew","凿、砍(hew out of 从…凿出)"]],
    quote:"With this faith, we will be able to hew out of the mountain of despair a stone of hope.",
@@ -1916,7 +1917,7 @@ const UNITS=[
    src:'BetterSpeak · Day 12, attributed to “King” (likely Larry King; unverified)',
    why:'A pre-decided opener for a recurring situation: pushback without heat.',
    usage:['I’d push back on the premise: adoption isn’t the bottleneck here.','Store openers for YOUR recurring moments — seminars, referee replies.']},
-  {id:'u10w3',whyzh:'“跑道—起飞”式接龙让逻辑显得不可抗拒——每句话把接力棒递给下一句。',term:'fear leads to anger; anger leads to hate',cat:'Quotes',
+  {id:'u10w3',ctxzh:"《星球大战前传I》(1999):尤达初见九岁的安纳金,当众断言——恐惧生愤怒,愤怒生仇恨,仇恨生苦难。尾词接力的链式预言,预告了他日后堕落成达斯·维达的全过程。",whyzh:'“跑道—起飞”式接龙让逻辑显得不可抗拒——每句话把接力棒递给下一句。',term:'fear leads to anger; anger leads to hate',cat:'Quotes',
    gloss:'『恐惧生愤怒,愤怒生仇恨,仇恨生痛苦』—— 尾词接力：上句的结尾成为下句的开头',
    hard:[['anadiplosis','(术语)顶真(又称联珠、尾词接力):重复上句末词来开启下句']],
    quote:'Fear leads to anger. Anger leads to hate. Hate leads to suffering.',
@@ -2135,14 +2136,14 @@ const UNITS=[
    src:"BetterSpeak · Day 14",
    why:"Naming the anti-pattern helps you catch it: if you’re patching, the first sentence needed the pause.",
    usage:["Catch yourself mid-patch? Stop. Restate once, cleanly.","Prevention beats repair: pause BEFORE the first sentence."]},
-  {id:'u14w12',whyzh:'说出声的句号：一个词,直接禁掉句尾找补的软化语。silent period(默数句号)的有声版。',term:'“Period.”(说出来的句号)',cat:'Quotes',
+  {id:'u14w12',ctxzh:"《当幸福来敲门》(2006)球场同一段的收束:想要什么,就去争取。句号。——他把标点说出了口,一个词的硬刹车,替整段话钉上钉子。",whyzh:'说出声的句号：一个词,直接禁掉句尾找补的软化语。silent period(默数句号)的有声版。',term:'“Period.”(说出来的句号)',cat:'Quotes',
    gloss:'『想要什么,就去争取。就这样。』—— 把句号说出口,不许再软化',
    hard:[],
    quote:"You got a dream, you gotta protect it… If you want somethin’, go get it. Period.",
    src:"The Pursuit of Happyness (2006) — on the course Cinema Lines",
    why:"The spoken full stop: one word that forbids the erosion tag. The silent-period technique, said aloud.",
    usage:["Deliver the claim. Period.","Reserve it for the sentence you refuse to soften."]},
-  {id:'u14w13',whyzh:'六个短句,句句刹停——停顿本身就是勇气。站在历史悬崖边的清晰。',term:'the mountaintop staccato',cat:'Quotes',
+  {id:'u14w13',ctxzh:"《我已到过山顶》(1968,孟菲斯)的结尾段:短句连击——上帝允许我登上山顶。我看过去了。我看见了应许之地。一句比一句短,这是他遇刺前夜的最后一段话。",whyzh:'六个短句,句句刹停——停顿本身就是勇气。站在历史悬崖边的清晰。',term:'the mountaintop staccato',cat:'Quotes',
    gloss:'『我见过应许之地。我可能无法与你们同去。但我们这个民族,终将抵达。』—— 山顶演讲的短句连击',
    hard:[["staccato","(音乐)断奏；短促分明的节奏"]],
    quote:"And I’ve seen the promised land. I may not get there with you. But I want you to know tonight, that we, as a people, will get to the promised land. And so I’m happy tonight. I’m not worried about anything. I’m not fearing any man.",
@@ -2156,7 +2157,7 @@ const UNITS=[
    src:"Edward R. Murrow’s signature sign-off — the Speech Bank’s Day 2 figure",
    why:"A sign-off so clean it became his name. The comma is a pause you can hear.",
    usage:["Build your own two-beat sign-off for talks and emails.","Ritual endings free you from improvising exits."]},
-  {id:'u14w15',whyzh:'压缩即哲学：删掉 try,就删掉了逃生口。标点在授课。',term:'do. or do not.',cat:'Quotes',
+  {id:'u14w15',ctxzh:"《帝国反击战》(1980)达格巴沼泽:卢克说“我试试”,尤达纠正——要么做,要么不做,没有“试试”。五个词的祖师爷级台词,砍掉一切余地。",whyzh:'压缩即哲学：删掉 try,就删掉了逃生口。标点在授课。',term:'do. or do not.',cat:'Quotes',
    gloss:'『做。或者不做。没有“试试看”。』—— 三个短句删掉整个灰色地带',
    hard:[],
    quote:"Do. Or do not. There is no try.",
@@ -2191,7 +2192,7 @@ const UNITS=[
    src:"Henry David Thoreau, Walden — canon supplement",
    why:"A command that obeys itself — the repetition is the emphasis, no adverbs needed.",
    usage:["Pin it above the desk during revisions.","One-word imperatives, doubled, land hard: focus, focus."]},
-  {id:'u14w20',whyzh:'一个干净的镜像(everyone→artist / artist→anywhere)扛起一个清晰观点——清晰与结构,一口气完成。',term:'a great artist can come from anywhere',cat:'Quotes',
+  {id:'u14w20',ctxzh:"《料理鼠王》(2007)同一篇影评的落点:不是人人都能成为伟大的艺术家,但伟大的艺术家可能来自任何地方——为“天才无出身”正名,也把片头厨神古斯多的口号“人人能烹饪”升华成结论。",whyzh:'一个干净的镜像(everyone→artist / artist→anywhere)扛起一个清晰观点——清晰与结构,一口气完成。',term:'a great artist can come from anywhere',cat:'Quotes',
    gloss:"『不是人人能成大艺术家,但大艺术家可能来自任何地方』—— 一次翻转,一个论点",
    hard:[],
    quote:"Not everyone can become a great artist, but a great artist can come from anywhere.",
@@ -2216,14 +2217,14 @@ const UNITS=[
    src:'Gandalf, The Fellowship of the Ring (film, 2001)',
    why:'The course’s recurring example: near-iambic stretches make it land — imagine it in uptalk and it collapses.',
    usage:['A complete way to end a hard conversation.','Note the downward inflection on "given to us."']},
-  {id:'u11w3',whyzh:'几乎全由最普通的常用词(workhorse words)砌成——节奏和重复救赎了它们。教会规则的那个例外。',term:'hope is a good thing, maybe the best of things',cat:'Quotes',
+  {id:'u11w3',ctxzh:"《肖申克的救赎》(1994)结尾,安迪越狱后留给瑞德的信:希望是好东西,也许是最好的东西,而好东西从不会死——回应瑞德早先“希望是危险的东西”的狱中哲学,一封信完成全片的辩论。",whyzh:'几乎全由最普通的常用词(workhorse words)砌成——节奏和重复救赎了它们。教会规则的那个例外。',term:'hope is a good thing, maybe the best of things',cat:'Quotes',
    gloss:'『希望是好东西,也许是世上最好的东西,而好东西永远不会消逝』',
    hard:[],
    quote:'Hope is a good thing, maybe the best of things, and no good thing ever dies.',
    src:'The Shawshank Redemption (1994)',
    why:'Built almost entirely of workhorse words — rhythm and repetition redeem them. The exception that teaches the rule.',
    usage:['Sometimes plain words + rhythm beat precise words.','Read aloud: notice the three-part build.']},
-  {id:'u11w4',whyzh:'完美的平行两半——同样的词,只换一处(knowing / walking)。平衡让它长在记忆里。',term:'knowing the path vs walking the path',cat:'Quotes',
+  {id:'u11w4',ctxzh:"电影《黑客帝国》(1999):导师墨菲斯对尼奥说——知道路,和走上那条路,是两回事。知与行的分界,一句台词讲完;放在尼奥将信将疑的节点,是师父的交棒。",whyzh:'完美的平行两半——同样的词,只换一处(knowing / walking)。平衡让它长在记忆里。',term:'knowing the path vs walking the path',cat:'Quotes',
    gloss:'『知道路,和走上这条路,是两回事』',
    hard:[],
    quote:"There's a difference between knowing the path and walking the path.",
@@ -2244,21 +2245,21 @@ const UNITS=[
    src:'The Curious Case of Benjamin Button (film, 2008) — from the Cinema Lines resource',
    why:"A rhythm built on soft repetition (too late / too early; the best / the worst).",
    usage:["For pep talks and career changes.","Note the paired opposites carrying the beat."]},
-  {id:'u11w7',whyzh:'把两半对调,句子自己完成论证——镜像替你做了逻辑。',term:"governments should be afraid of their people",cat:'Quotes',
+  {id:'u11w7',ctxzh:"电影《V字仇杀队》(2005):V劫持电视台向全城广播的演说——人民不应害怕政府,政府应当害怕人民。一次干净的回环(AB→BA),整部电影的政治宣言。",whyzh:'把两半对调,句子自己完成论证——镜像替你做了逻辑。',term:"governments should be afraid of their people",cat:'Quotes',
    gloss:'『人民不该害怕政府；政府应该害怕人民』—— 倒装对称(AB→BA)',
    hard:[["chiasmus","(术语)回环/交错反复：后半句是前半句的镜像"]],
    quote:"People should not be afraid of their governments. Governments should be afraid of their people.",
    src:'V for Vendetta (film, 2005) — from the Cinema Lines resource',
    why:"Swap the halves and the sentence argues itself — the mirror does the logic.",
    usage:["Pattern: X shouldn’t fear Y; Y should fear X.","Ask not what your country… — same machine."]},
-  {id:'u11w8',whyzh:'长长的蓄势,落在一个让人谦卑的结论上——periodic 节奏为宽厚服务。',term:"the average piece of junk is probably more meaningful than our criticism",cat:'Quotes',
+  {id:'u11w8',ctxzh:"电影《料理鼠王》(2007)结尾:毒舌美食评论家安东·伊戈被一盘家常杂菜煲击中后写下的影评——评论家的差评写起来痛快,但就连一件平庸的作品,也比宣判它平庸的评论更有意义。一个以刻薄为业的人当众缴械。",whyzh:'长长的蓄势,落在一个让人谦卑的结论上——periodic 节奏为宽厚服务。',term:"the average piece of junk is probably more meaningful than our criticism",cat:'Quotes',
    gloss:'『从大局看,一件平庸之作,恐怕也比宣判它平庸的那篇评论更有意义』',
    hard:[["in the grand scheme of things","从大局看"]],
    quote:"The bitter truth we critics must face is that, in the grand scheme of things, the average piece of junk is probably more meaningful than our criticism designating it so.",
    src:'Ratatouille (film, 2007), Anton Ego’s review — from the Cinema Lines resource',
    why:"A long build to a humbling landing — periodic rhythm in service of grace.",
    usage:["For talks about reviewing and criticism.","The new needs friends — the speech’s other keeper."]},
-  {id:'u11w9',whyzh:'街头级的平实词,鼓点般的节奏——证明语域挡不住口才。',term:"you got a dream, you gotta protect it",cat:'Quotes',
+  {id:'u11w9',ctxzh:"电影《当幸福来敲门》(2006):落魄的克里斯·加德纳(威尔·史密斯饰)在篮球场对儿子说——有梦想就要守住它。别人做不成的事,他们就会说你也做不成。刚泼完冷水的正是他自己,于是当场自我纠正:这句话连父亲也不例外。",whyzh:'街头级的平实词,鼓点般的节奏——证明语域挡不住口才。',term:"you got a dream, you gotta protect it",cat:'Quotes',
    gloss:'『有梦想,就得守住它』—— 口语的鼓点',
    hard:[],
    quote:"Don’t ever let somebody tell you you can’t do something. Not even me… You got a dream, you gotta protect it. If you want somethin’, go get it. Period.",
@@ -2482,13 +2483,13 @@ const UNITS=[
 {id:'uSp',deck:true,title:'Speech Bank Lines',zh:'演讲名句',from:'Day 2 · the Speech Bank · 重看素材',
  essence:'From the course Speech Bank — the Rewatch third of the 3×5 workout. Each line was built to be heard: <b>listen to the original once, then read the transcript aloud.</b><br><span style="color:var(--muted)">演讲名句为「被听见」而造；先听原声一遍,再照文稿朗读。</span>',
  words:[
-  {id:'uSpw1',whyzh:'首语反复(we…)把“人少”炼成骄傲——所有战前动员讲话共同的祖师爷。',term:'we few, we happy few, we band of brothers',cat:'Quotes',
+  {id:'uSpw1',ctxzh:"莎士比亚《亨利五世》“圣克里斯宾日”演说:1415年阿金库尔战役前,英军疲惫、以寡敌众,亨利王把兵力劣势翻转成荣誉的稀缺——我们人少,故我们有福;今日与我流血者,便是我的兄弟。战前动员的千古范本。",whyzh:'首语反复(we…)把“人少”炼成骄傲——所有战前动员讲话共同的祖师爷。',term:'we few, we happy few, we band of brothers',cat:'Quotes',
    gloss:'『我们寥寥数人,幸运的寥寥数人,我们是一支兄弟连』—— 人少炼成骄傲',hard:[],
    quote:"From this day to the ending of the world… we in it shall be remembered — we few, we happy few, we band of brothers.",
    src:"Shakespeare, Henry V — “St Crispin’s Day,” on the Speech Bank",
    why:"Anaphora (we…) turning scarcity into pride — the pre-battle speech every other one copies.",
    usage:["For small teams before big pushes.","“Band of brothers” 已成短语 —— 出处在这里。"]},
-  {id:'uSpw2',whyzh:'明喻(as mad as hell)+决心从句——愤怒有了温度,也有了方向。',term:'I’m as mad as hell, and I’m not going to take this anymore',cat:'Quotes',
+  {id:'uSpw2',ctxzh:"电影《电视台风云》(1976):老主播霍华德·比尔得知被裁,在直播中脱稿爆发,号召观众打开窗户喊出来——我怒不可遏,我不要再忍了!剧中全美观众照做;这句台词从此成了美国流行文化里“愤怒觉醒”的代名词。",whyzh:'明喻(as mad as hell)+决心从句——愤怒有了温度,也有了方向。',term:'I’m as mad as hell, and I’m not going to take this anymore',cat:'Quotes',
    gloss:'『我已怒不可遏,我再也不忍了』—— 愤怒的标准句式',hard:[],
    quote:"I want you to get up right now… stick your head out and yell: I’m as mad as hell, and I’m not going to take this anymore!",
    src:"Network (1976) — “Mad Prophet of the Airwaves,” on the Speech Bank",
@@ -2506,7 +2507,7 @@ const UNITS=[
    src:"Ronald Reagan, “A Time for Choosing” (1964) — on the Speech Bank",
    why:"Borrowed French elegance + an eternal element (destiny) — a four-word phrase carried forward, unattributed, from FDR's 1936 line, into a career-launching speech. Collectors collect.",
    usage:["“This cohort has a rendezvous with the data.”","He borrowed it from FDR — collectors collect from collectors."]},
-  {id:'uSpw5',whyzh:'单轴对仗(怯懦者 vs 勇敢者):先否定,再肯定——标准的一二连击。',term:'the future doesn’t belong to the fainthearted; it belongs to the brave',cat:'Quotes',
+  {id:'uSpw5',ctxzh:"“挑战者号”哀悼讲话(1986)的中段:未来不属于怯懦者,它属于勇敢者——在全国直播的悲痛里为继续探索太空辩护,安慰与立场一句完成。",whyzh:'单轴对仗(怯懦者 vs 勇敢者):先否定,再肯定——标准的一二连击。',term:'the future doesn’t belong to the fainthearted; it belongs to the brave',cat:'Quotes',
    gloss:'『未来不属于怯懦者,它属于勇敢的人』—— 先否定、再肯定的一二连击',hard:[["fainthearted","怯懦的(faint 微弱 + heart)"]],
    quote:"The future doesn’t belong to the fainthearted; it belongs to the brave.",
    src:"Ronald Reagan, the Challenger address (1986) — on the Speech Bank",
@@ -2545,7 +2546,7 @@ const UNITS=[
    src:"Ronald Reagan, “A Time for Choosing” (1964) — on the Speech Bank",
    why:"Reframing by axis-swap: two kindergarten prepositions replace the whole political spectrum. Plus a bonus metaphor (ant heap).",
    usage:["In debates: reject the axis, offer your own.","Pattern: there is no X or Y; there is only A or B."]},
-  {id:'uSpw11',whyzh:'宇宙尺度拉远之后,Sagan 落在英语里最温暖的家常词上——收尾要往小处落。',term:'the only home we’ve ever known',cat:'Quotes',
+  {id:'uSpw11',ctxzh:"《暗淡蓝点》(1994)整段沉思的落点:地球是我们唯一的家园——宇宙尺度拉到最远之后,萨根落回英语里最家常的一个词:home。收尾要往小处落的范本。",whyzh:'宇宙尺度拉远之后,Sagan 落在英语里最温暖的家常词上——收尾要往小处落。',term:'the only home we’ve ever known',cat:'Quotes',
    gloss:'『我们所知的唯一家园』—— home,一个词安放全人类',
    hard:[],
    quote:"Like it or not, for the moment the Earth is where we make our stand… the pale blue dot, the only home we’ve ever known.",
@@ -2580,14 +2581,14 @@ const UNITS=[
    src:"Ted Kennedy’s eulogy for RFK (1968) — on the Speech Bank",
    why:"Three verb-pairs (saw/tried) in perfect parallel — a whole life audited in twenty-one words.",
    usage:["For tributes and retirement toasts: saw X and tried to Y, three times.","Note the humility frame: “need not be idealized.”"]},
-  {id:'uSpw16',whyzh:'with advantages——给“添油加醋”起的最温柔的名字。精确与宽恕装进一个短语。',term:'remember with advantages',cat:'Quotes',
+  {id:'uSpw16',ctxzh:"《亨利五世》圣克里斯宾日演说的同一段:老兵将来讲起今天,会“添油加醋地记得”自己的战功——莎翁在胜利想象里写进的一笔宽厚幽默:连吹牛的权利都提前发给了士兵。",whyzh:'with advantages——给“添油加醋”起的最温柔的名字。精确与宽恕装进一个短语。',term:'remember with advantages',cat:'Quotes',
    gloss:"『添油加醋地记得』—— 三个词写尽人对往事的美化",
    hard:[["feats","功绩、壮举"]],
    quote:"Old men forget; yet all shall be forgot, but he’ll remember, with advantages, what feats he did that day.",
    src:"Shakespeare, Henry V — “St Crispin’s Day,” on the Speech Bank",
    why:"“With advantages” — the gentlest possible name for embellishment. Precision and forgiveness in one phrase.",
    usage:["Conference stories are remembered with advantages.","A kind way to flag exaggeration without calling it a lie."]},
-  {id:'uSpw17',whyzh:'在同一个动词上做对仗：动作不变,换掉宾语——最便宜也最有力的重构。',term:'don’t fight for slavery — fight for liberty',cat:'Quotes',
+  {id:'uSpw17',ctxzh:"《大独裁者》(1940)结尾演说对士兵的直接呼吁段:士兵们!别为奴役而战,要为自由而战!——同一个动词,换掉宾语,整场演说的行动号召。",whyzh:'在同一个动词上做对仗：动作不变,换掉宾语——最便宜也最有力的重构。',term:'don’t fight for slavery — fight for liberty',cat:'Quotes',
    gloss:"『别为奴役而战,为自由而战』—— 同一个动词,调转枪口",
    hard:[],
    quote:"Soldiers! Don’t fight for slavery! Fight for liberty!",
@@ -2615,7 +2616,7 @@ const UNITS=[
    src:"Scent of a Woman (1992) — on the Speech Bank",
    why:"A character verdict in four words — after the fire, the shortest sentence lands the judgment.",
    usage:["For recommendation letters’ final line energy.","Verdicts want short sentences; arguments can be long."]},
-  {id:'uSpw21',whyzh:'一个诚实的演说者承认自己没有方案——只有第一步。规则七(承认局限)的最大音量版。',term:'first, you’ve got to get mad',cat:'Quotes',
+  {id:'uSpw21',ctxzh:"《电视台风云》(1976)同段逻辑的第一步:事情要变好,你们得先愤怒起来——愤怒在这里不是失态,是觉醒的入场券;先怒,再谈怎么办。",whyzh:'一个诚实的演说者承认自己没有方案——只有第一步。规则七(承认局限)的最大音量版。',term:'first, you’ve got to get mad',cat:'Quotes',
    gloss:"『第一步,你得先愤怒起来』—— 行动清单的第 0 条",
    hard:[],
    quote:"I don’t want you to protest… I don’t know what to do about the depression and the inflation… All I know is that first you’ve got to get mad!",
@@ -3519,13 +3520,20 @@ function doRep(){
   if(!txt)return;
   const r=currentRep(); if(!r)return;
   if(r.kind==='word'){
-    const side=String(r.w.term).includes('→')?String(r.w.term).split('→').slice(1).join(' '):String(r.w.term);
-    let kw=(side.toLowerCase().match(/[a-z']{3,}/g)||[side.toLowerCase()]);
-    const kwf=kw.filter(k=>k!=='the'&&k!=='and');
-    if(kwf.length)kw=kwf;
-    if(!side.trim().startsWith('(')&&!kw.some(k=>txt.toLowerCase().includes(k))){const h=document.getElementById('repHint');if(h)h.textContent='Use the phrase itself in your sentence.';return;}
+    const isLine=!isMethod(r.w)&&!String(r.w.term).includes('→')&&(String(r.w.term).trim().split(/\s+/).length>=4||/[,!?]/.test(String(r.w.term)));
+    if(isLine){
+      const norm=s=>String(s).toLowerCase().replace(/[^a-z\s']/g,' ').replace(/\s+/g,' ').trim();
+      const tt=norm(txt);
+      if(txt.trim().split(/\s+/).length<4||norm(r.w.quote||'').includes(tt)||norm(r.w.term).includes(tt)){const h=document.getElementById('repHint');if(h)h.textContent='Make it yours — your own version of the shape, not the original words.';return;}
+    }else{
+      const side=String(r.w.term).includes('→')?String(r.w.term).split('→').slice(1).join(' '):String(r.w.term);
+      let kw=(side.toLowerCase().match(/[a-z']{3,}/g)||[side.toLowerCase()]);
+      const kwf=kw.filter(k=>k!=='the'&&k!=='and');
+      if(kwf.length)kw=kwf;
+      if(!side.trim().startsWith('(')&&!kw.some(k=>txt.toLowerCase().includes(k))){const h=document.getElementById('repHint');if(h)h.textContent='Use the phrase itself in your sentence.';return;}
+    }
     const s=r.w._cus?(state.custom.find(c=>c.id===r.w.id)||{}):ws(r.w.id); s.iv=(s.iv||0)+1; s.next=today()+[4,7,15,30][Math.min(s.iv-1,3)]*DAY;
-    const T=tl(); T.repIds=(T.repIds||[]); T.repIds.push(r.w.id);
+    const T=tl(); T.repIds=(T.repIds||[]); T.repIds.push(r.w.id); T.lastRep=r.w.id;
     state.sents=state.sents||[]; state.sents.push({d:today(),term:r.w.term,t:txt});
   }else{
     tl().molded=true;
@@ -3547,13 +3555,14 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
      ${(function(){
        const r=currentRep();
        const showForm=(T.repN||0)===0||window._repOpen;
+       const isLine=r&&r.kind==='word'&&!isMethod(r.w)&&!String(r.w.term).includes('→')&&(String(r.w.term).trim().split(/\s+/).length>=4||/[,!?]/.test(String(r.w.term)));
        if(!r)return `<div style="font-size:14px;margin-top:8px">✓ All clear — reps done and the review queue is empty.</div>`;
-       if(!showForm)return `<div style="font-size:14px;margin-top:8px">✓ used, not just seen.</div><div style="font-size:13px;color:var(--muted);margin-top:6px">“${esc((state.sents&&state.sents.length)?state.sents[state.sents.length-1].t:'')}”</div><div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="window._repOpen=true;renderToday()">${(T.repN||0)<3?`Another rep (${(T.repN||0)+1}/3) →`:`Keep reviewing · ${dueCards().length} due →`}</button></div>`;
+       if(!showForm){const lw=T.lastRep&&ALLWORDS.find(x=>x.id===T.lastRep);const cmp=(lw&&lw.usage&&lw.usage.length)?`<div style="font-size:12.5px;color:var(--muted);margin-top:8px"><span style="font-weight:600;color:var(--wood-dk)">Compare · 参照</span> — ${esc(lw.usage[0])}</div>`:'';return `<div style="font-size:14px;margin-top:8px">✓ used, not just seen.</div><div style="font-size:13px;color:var(--muted);margin-top:6px">“${esc((state.sents&&state.sents.length)?state.sents[state.sents.length-1].t:'')}”</div>${cmp}<div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="window._repOpen=true;renderToday()">${(T.repN||0)<3?`Another rep (${(T.repN||0)+1}/3) →`:`Keep reviewing · ${dueCards().length} due →`}</button></div>`;}
        if(r.kind==='word')return `<div style="font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">${esc(r.tag||'')}</div>
      <div class="term" style="font-size:19px">${esc(r.w.term)}</div>
      <div style="font-size:13.5px;color:var(--muted)">${esc(r.w.gloss)}</div>
-     <div style="font-size:12.5px;color:var(--wood-dk);margin-top:10px">${isMethod(r.w)?'Apply the rule in one sentence from your week — say it aloud first.':'Use it in one sentence from your week — say it aloud first.'}</div>
-     <textarea id="repIn" style="min-height:56px;margin-top:8px" oninput="window._repDraft=this.value" placeholder="One sentence…">${esc(window._repDraft||'')}</textarea>
+     <div style="font-size:12.5px;color:var(--wood-dk);margin-top:10px">${isMethod(r.w)?'Apply the rule in one sentence from your week — say it aloud first.':isLine?'This one is already a whole line — steal its shape for a moment from your week.':'Use it in one sentence from your week — say it aloud first.'}</div>
+     <textarea id="repIn" style="min-height:56px;margin-top:8px" oninput="window._repDraft=this.value" placeholder="${isLine?'Your version…':'One sentence…'}">${esc(window._repDraft||'')}</textarea>
      <div id="repHint" style="font-size:12.5px;color:var(--terra);margin-top:4px"></div>
      <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button>${((T.repN||0)===0&&!T.repSwap)?`<button class="btn ghost slim" onclick="repSwap()">Swap ↻</button>`:``}</div>`;
        return `<div style="font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">humor mold</div>
@@ -3571,7 +3580,7 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
      <span class="cat-chip">Line of the day</span>
      <div class="term" style="font-size:19px">${esc(w.term)}</div>
      <div class="quote" style="margin-top:10px">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" onclick="event.stopPropagation()" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div>
-     ${todayOpen?`<div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>
+     ${todayOpen?`${w.ctxzh?`<div class="blk"><span class="lbl">Context · 背景</span><div class="whyzh" style="margin-top:2px">${esc(w.ctxzh)}</div></div>`:``}<div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>
      ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
      ${w.why?`<div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>`:''}
      ${w.usage&&w.usage.length?`<div class="blk"><span class="lbl">${isMethod(w)?'Try it · 怎么练':'Usage · 用法'}</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}`:``}
@@ -3592,7 +3601,7 @@ function speechOfDay(){
 
 /* ============ SPEECH STUDIES · 精读 ============ */
 const STUDIES=[
-{id:"st1",speaker:"Harrison Ford",title:"Harrison Ford — Life Achievement Award (SAG, 2026)",sub:"5-minute acceptance speech · 7 beats",hookterm:"a prize for being alive",hook:"I'm here to receive a prize for being alive.",hooksrc:"Harrison Ford, SAG Life Achievement Award (2026)",hookurl:"https://youtu.be/Wdkkk9ebKY0?t=40",
+{id:"st1",bio:"哈里森·福特,83岁,《星球大战》的汉·索罗、《夺宝奇兵》的印第安纳·琼斯——一代人的银幕英雄,却以“不会说话”自嘲了一辈子。2026年3月1日,SAG-AFTRA(美国演员工会)终身成就奖颁奖礼,由老友伍迪·哈里森颁奖;他上台领的,是他所谓“一个因为还活着而发的奖”。",speaker:"Harrison Ford",title:"Harrison Ford — Life Achievement Award (SAG, 2026)",sub:"5-minute acceptance speech · 7 beats",hookterm:"a prize for being alive",hook:"I'm here to receive a prize for being alive.",hooksrc:"Harrison Ford, SAG Life Achievement Award (2026)",hookurl:"https://youtu.be/Wdkkk9ebKY0?t=40",
  intro:"Five minutes, one complete arc: two jokes that lower the guard, a turn into honest struggle, a thesis wrapped in wit, an anaphora that climbs, an outward charge, and a four-word landing.",
  introzh:"五分钟,一条完整弧线：两个卸防的笑点 → 转入真实的挣扎 → 裹着机锋的论点 → 步步升温的重复 → 向外的嘱托 → 四个词的着陆。",
  beats:[
@@ -3633,7 +3642,7 @@ const STUDIES=[
   steal:"End big moments small: one dry understatement right after the emotional peak. The contrast does the work."}],
  arc:"Lower yourself, honor the room, tell the truth, name the point, climb by repetition, hand it forward, land soft. Two jokes buy permission; one confession buys trust; the callback ties the whole thing; the understatement lets everyone breathe.",
  arczh:"先压低自己、抬举全场；再讲真话、点明论点；用重复抬升情绪；把门留给后来人；最后轻轻落地。两个笑点买来许可,一次坦白买来信任,一记 callback 收拢全篇,一句轻描淡写让所有人呼吸。"},
-{id:"st2",speaker:"Steve Jobs",title:"Steve Jobs — Stanford Commencement (2005)",sub:"15-minute commencement · 8 beats",hookterm:"Stay hungry. Stay foolish.",hook:"Stay hungry. Stay foolish. And I have always wished that for myself. And now, as you graduate to begin anew, I wish that for you.",hooksrc:"Steve Jobs, Stanford Commencement (2005)",hookurl:"https://youtu.be/UF8uR6Z6KLc?t=845",
+{id:"st2",bio:"史蒂夫·乔布斯,苹果与皮克斯创始人。2005年6月斯坦福毕业典礼,时年50岁,胰腺癌确诊一年后——他一生唯一一次毕业演讲:没有幻灯片,三个故事,讲完就走。后来成了被观看最多的毕业演讲。",speaker:"Steve Jobs",title:"Steve Jobs — Stanford Commencement (2005)",sub:"15-minute commencement · 8 beats",hookterm:"Stay hungry. Stay foolish.",hook:"Stay hungry. Stay foolish. And I have always wished that for myself. And now, as you graduate to begin anew, I wish that for you.",hooksrc:"Steve Jobs, Stanford Commencement (2005)",hookurl:"https://youtu.be/UF8uR6Z6KLc?t=845",
  intro:"One joke, one map, three stories — each ending in a distilled principle — then a charge, and an ending borrowed from a 1974 magazine. The most imitated speech architecture of the century.",
  introzh:"一个笑点、一张地图、三个故事——每个故事收在一条提炼出的原则上——然后是嘱托,和一个借自 1974 年杂志的结尾。本世纪被模仿最多的演讲结构。",
  beats:[
@@ -3679,7 +3688,7 @@ const STUDIES=[
   steal:"End on a collected line, with its provenance — the credit does not weaken the ending, it doubles it."}],
  arc:"A joke buys the room, a map relaxes it, three stories each pay off in one imaged principle, three don'ts clear the ground for one do, and a collected quote — credited — carries the landing. Structure so clean it became the template for every commencement since.",
  arczh:"一个笑点买下全场,一张地图让人松弛；三个故事各自兑付一条带画面的原则；三个 don't 清场,托出一个 do;最后由一句注明出处的收藏名言完成着陆。结构干净到成了此后所有毕业演讲的模板。"},
-{id:"st3",speaker:"Ken Robinson",title:"Ken Robinson — Do Schools Kill Creativity? (TED, 2006)",sub:"18-minute TED talk · 7 beats · the most-watched TED ever",hookterm:"prepared to be wrong",hook:"If you're not prepared to be wrong, you'll never come up with anything original.",hooksrc:"Ken Robinson, TED (2006)",hookurl:"https://youtu.be/iG9CE55wbtY?t=340",
+{id:"st3",bio:"肯·罗宾逊爵士(1950–2020),英国教育学者,创造力教育的头号布道者。TED 2006年首届大会演讲《学校扼杀创造力吗?》——TED史上观看量第一(6500万+),每分钟两个笑点,用脱口秀的皮讲教育改革的骨。",speaker:"Ken Robinson",title:"Ken Robinson — Do Schools Kill Creativity? (TED, 2006)",sub:"18-minute TED talk · 7 beats · the most-watched TED ever",hookterm:"prepared to be wrong",hook:"If you're not prepared to be wrong, you'll never come up with anything original.",hooksrc:"Ken Robinson, TED (2006)",hookurl:"https://youtu.be/iG9CE55wbtY?t=340",
  intro:"The most-watched TED talk in history, and it has no slides — only stories and roughly two laughs a minute, every one of them carrying the argument. This is the master file for humor in service of a thesis.",
  introzh:"史上观看量最高的 TED,没有一页 PPT——只有故事和平均每分钟两个笑点,而且每个笑点都在运送论点。这是“幽默为论点服务”的范本。",
  beats:[
@@ -3720,7 +3729,7 @@ const STUDIES=[
   steal:"If the whole talk was funny, end on one quiet paragraph — the register drop is your crescendo."}],
  arc:"A cold open earns the laugh, the laugh smuggles the thesis, reversals and absurd zooms keep the argument airborne, one story carries all the evidence, and the ending goes quiet to unload the cargo. Two laughs a minute, zero wasted jokes.",
  arczh:"冷开场赢得笑声,笑声偷运论点；反转句和荒诞特写让论证一直悬在空中；一个故事扛起全部证据；结尾安静下来卸货。每分钟两个笑点,没有一个是白笑的。"},
-{id:"st4",speaker:"Malcolm Gladwell",title:"Malcolm Gladwell — Choice, Happiness and Spaghetti Sauce (TED, 2004)",sub:"18-minute TED talk · 7 beats · the entry-point masterclass",hookterm:"the perfect Pepsis",hook:"They were looking for the perfect Pepsi, and they should have been looking for the perfect Pepsis.",hooksrc:"Malcolm Gladwell, TED (2004)",hookurl:"https://youtu.be/iIiAAhUeR6Y?t=258",
+{id:"st4",bio:"马尔科姆·格拉德威尔,《纽约客》staff writer,《引爆点》《异类》作者,把社科研究讲成侦探小说的当代第一人。TED 2004:他不讲大理论,讲一个叫霍华德·莫斯科维茨的意面酱顾问——从小事切入讲大道理的教科书。",speaker:"Malcolm Gladwell",title:"Malcolm Gladwell — Choice, Happiness and Spaghetti Sauce (TED, 2004)",sub:"18-minute TED talk · 7 beats · the entry-point masterclass",hookterm:"the perfect Pepsis",hook:"They were looking for the perfect Pepsi, and they should have been looking for the perfect Pepsis.",hooksrc:"Malcolm Gladwell, TED (2004)",hookurl:"https://youtu.be/iIiAAhUeR6Y?t=258",
  intro:"Asked to talk about happiness, he talks about a short round man who studied spaghetti sauce — and lands on happiness anyway. The definitive demonstration of the Gladwell entry: open on an oddly specific small thing, make the ordinary fascinating, then cash the big idea.",
  introzh:"命题是“幸福”,他却讲了一个研究意面酱的矮个子——最后仍然落回幸福。这就是“Gladwell 式进场”的定版示范：从一个具体到奇怪的小切口进场,把平常之物讲出味道,最后兑现大观点。",
  beats:[
@@ -3761,7 +3770,7 @@ const STUDIES=[
   steal:"Whatever you swerved away from in the opening, return to it in the final sentence — the loop is what makes the swerve feel designed."}],
  arc:"Promise the big topic, swap in a tiny hero, give him a body, hand him a puzzle, resolve it with a plural, twist it with a hidden third, zoom out to a century of science, and let the discarded word close the ring. The Gladwell entry, start to finish.",
  arczh:"许诺大题目,换上小主角；先给他身体,再给他谜题；用一个复数解谜,用藏起来的三分之一再反转；拉远到整个世纪的科学,最后让开场丢掉的那个词回来收环。The Gladwell entry,从头到尾的完整示范。"},
-{id:"st5",speaker:"William H. McRaven",title:"Adm. McRaven — Make Your Bed (UT Austin, 2014)",sub:"19-minute commencement · 8 beats · the parallel-structure showcase",hookterm:"start off by making your bed",hook:"If you want to change the world, start off by making your bed.",hooksrc:"William H. McRaven, University of Texas commencement (2014)",hookurl:"https://youtu.be/pxBQLFLei70?t=322",
+{id:"st5",bio:"威廉·麦克雷文,四星海军上将,前美军特种作战司令部司令——2011年击毙本·拉登的“海神之矛”行动正是他指挥。2014年5月回到母校得州大学奥斯汀分校做毕业演讲:十条海豹突击队训练教给他的人生课,从“叠好你的床”讲起,全球疯传。",speaker:"William H. McRaven",title:"Adm. McRaven — Make Your Bed (UT Austin, 2014)",sub:"19-minute commencement · 8 beats · the parallel-structure showcase",hookterm:"start off by making your bed",hook:"If you want to change the world, start off by making your bed.",hooksrc:"William H. McRaven, University of Texas commencement (2014)",hookurl:"https://youtu.be/pxBQLFLei70?t=322",
  intro:"Ten lessons, one refrain — “If you want to change the world…” — repeated until it becomes scaffolding. This is what numerical ordering plus anaphora look like when they carry an entire speech.",
  introzh:"十条教训,一句副歌——If you want to change the world…——重复到成为脚手架。数字排序+首语反复扛起整场演讲,就是这个样子。",
  beats:[
@@ -3807,7 +3816,7 @@ const STUDIES=[
   steal:"Close a numbered talk with the whole list at one clause per item — the speed is the payoff of the structure."}],
  arc:"Announce the count, anchor on the humblest act, let one refrain close every lesson, hide the hardest truths inside jargon and scenes, invert the refrain into temptation once, then replay all ten in staccato and hand the room back its own slogan.",
  arczh:"先报数,再用最卑微的动作定锚；让同一句副歌合上每一课；把最硬的道理藏进黑话和场景；把副歌反用成诱惑一次；最后十课急板重现,把校训还给全场。"},
-{id:"st6",speaker:"Conan O'Brien",title:"Conan O'Brien — Harvard Commencement (2026)",sub:"25-minute commencement · 8 beats · fresh from May 2026",hookterm:"the mess around you",hook:"Your greatness comes from the mess around you, not despite it.",hooksrc:"Conan O'Brien, Harvard Commencement (2026)",hookurl:"https://youtu.be/F3fCktnkBbc?t=1437",
+{id:"st6",bio:"柯南·奥布莱恩,脱口秀主持人,《辛普森一家》前编剧,哈佛1985级(校刊《讽刺文社》两任社长)。2010年他在全美直播中被NBC《今夜秀》公开解雇。2026年5月,他回到母校做毕业典礼主讲——一个被最公开地炒过鱿鱼的校友,回来讲失败。",speaker:"Conan O'Brien",title:"Conan O'Brien — Harvard Commencement (2026)",sub:"25-minute commencement · 8 beats · fresh from May 2026",hookterm:"the mess around you",hook:"Your greatness comes from the mess around you, not despite it.",hooksrc:"Conan O'Brien, Harvard Commencement (2026)",hookurl:"https://youtu.be/F3fCktnkBbc?t=1437",
  intro:"Twelve minutes of jokes about the room, then a trapdoor: the comedy was load-bearing. The thesis — let your biggest credential become the least important thing about you — arrives with its own upgrade in the final minute.",
  introzh:"前十二分钟全在拿全场开涮,然后活板门一开：那些笑话原来都是承重墙。论点——让你最大的头衔变成关于你最不重要的事——在最后一分钟还自带一次升级。",
  beats:[
@@ -3853,7 +3862,7 @@ const STUDIES=[
   steal:"Bring your thesis back at the end, but improved by one word — show the audience the thinking continued."}],
  arc:"A list gag earns the room, roasts unite it, a trapdoor turn cashes twelve minutes of jokes into credibility, one positional swap carries the thesis, quotes get deflated and upgraded, the only sober paragraph diagnoses the era, and the callback returns pre-revised. Comedy as load-bearing structure.",
  arczh:"清单笑话赢得全场,涮众人团结全场；一记活板门转折把十二分钟的笑声兑换成信用；一个词的位置对调扛起论点；引文被放气又升级；唯一严肃的段落给时代下诊断；callback 带着修订归来。喜剧在这里是承重结构。"},
-{id:"st7",speaker:"J.K. Rowling",title:"J.K. Rowling — The Fringe Benefits of Failure (Harvard, 2008)",sub:"24-minute commencement · 8 beats · the failure narrative, definitively told",hookterm:"rock bottom became the solid foundation",hook:"Rock bottom became the solid foundation on which I rebuilt my life.",hooksrc:"J.K. Rowling, Harvard Commencement (2008)",hookurl:"https://youtu.be/UibfDUPJAEU?t=738",
+{id:"st7",bio:"J.K.罗琳,《哈利·波特》作者——动笔时是靠救济金生活的单亲母亲,写完时是史上最畅销的作家。2008年6月哈佛毕业典礼:毕业21年后,她没讲成功,讲了自己一贫如洗的谷底,和想象力的道德责任。",speaker:"J.K. Rowling",title:"J.K. Rowling — The Fringe Benefits of Failure (Harvard, 2008)",sub:"24-minute commencement · 8 beats · the failure narrative, definitively told",hookterm:"rock bottom became the solid foundation",hook:"Rock bottom became the solid foundation on which I rebuilt my life.",hooksrc:"J.K. Rowling, Harvard Commencement (2008)",hookurl:"https://youtu.be/UibfDUPJAEU?t=738",
  intro:"The world's most successful living author spends her Harvard address on the seven years she failed at everything — and builds the whole case in two announced movements: failure, then imagination. Warm self-deprecation up front, a borrowed Roman ending at the close.",
  introzh:"在世作家里最成功的一位,把哈佛演讲全部花在她一败涂地的那七年上——并把论证摆进两个预告好的乐章：失败,然后是想象力。开场用温暖的自嘲破冰,结尾借罗马人落地。",
  beats:[
@@ -3899,7 +3908,7 @@ const STUDIES=[
   steal:"Close on a borrowed classic plus one plain sentence of your own blessing."}],
  arc:"Confess the nerves, lower the bar, announce two heresies, swap the expected fear for the real one, inventory the ruin flatly, flip the basement into a foundation, spend the brand once at the summit, and let Seneca land the plane. The failure narrative, definitively told.",
  arczh:"先认怯场,再降期待；预告两记悖论；把人人以为的恐惧换成真实的恐惧；平铺直叙地清点废墟,再把地下室翻成地基；在顶点把自己的品牌兑现一次；最后让塞内加来完成着陆。失败叙事的定版讲法。"},
-{id:"st8",speaker:"Chimamanda Ngozi Adichie",title:"Chimamanda Adichie — The Danger of a Single Story (TED, 2009)",sub:"19-minute TED talk · 8 beats",hookterm:"not untrue — incomplete",hook:"The problem with stereotypes is not that they are untrue, but that they are incomplete.",hooksrc:"Chimamanda Ngozi Adichie, TED (2009)",hookurl:"https://youtu.be/D9Ihs241zeg?t=786",
+{id:"st8",bio:"奇玛曼达·恩戈兹·阿迪契,尼日利亚小说家,《半轮黄日》《美国佬》作者。TED 2009《单一故事的危险》:从她自己如何被误读、又如何误读别人讲起——TED上被课堂引用最多的演讲之一,后印成单行本。",speaker:"Chimamanda Ngozi Adichie",title:"Chimamanda Adichie — The Danger of a Single Story (TED, 2009)",sub:"19-minute TED talk · 8 beats",hookterm:"not untrue — incomplete",hook:"The problem with stereotypes is not that they are untrue, but that they are incomplete.",hooksrc:"Chimamanda Ngozi Adichie, TED (2009)",hookurl:"https://youtu.be/D9Ihs241zeg?t=786",
  intro:"She argues against the single story by refusing to tell one: she plays victim, perpetrator, and penitent in her own argument, borrows a word from Igbo to name the mechanism, and lands on a gift. The most structurally honest talk in the TED canon.",
  introzh:"她反对“单一故事”的方式,是拒绝只讲一个故事：在自己的论证里,她轮流扮演受害者、加害者与忏悔者；从伊博语借来一个词命名机制；最后收在一份馈赠上。TED 正典里结构最诚实的一场演讲。",
  beats:[
@@ -4004,7 +4013,7 @@ function enterStudy(id,keep){if(!keep)window._fromSteals=false;inSteals=false;in
 function exitStudy(){inStudy=null;renderLearn();window.scrollTo(0,0)}
 function studiesSection(){
   if(!STUDIES.length)return '';
-  return `<div class="sec">Speech Studies · 精读</div>
+  return `<div class="sec" id="sec-studies">Speech Studies · 精读</div>
   <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">One speech, read whole — what to steal.</div>`+`<div class="unit" onclick="enterSteals()">
     <div class="badge">✂</div>
     <div><div class="ut">The Steal List <span class="uz">· 场合速查</span></div><div class="um">every template, by occasion</div></div>
@@ -4021,7 +4030,7 @@ function renderStudy(){
     <span class="cat-chip">Speech Study · 精读</span>
     <div class="term" style="font-size:22px">${esc(st.title)}</div>
     <div style="font-size:13px;color:var(--muted);margin-top:2px">${esc(st.sub)}</div>
-    <div class="blk"><span class="lbl">The whole in one look · 全篇一眼</span>${esc(st.intro)}<div class="whyzh">${esc(st.introzh)}</div></div>
+    ${st.bio?`<div class="blk"><span class="lbl">The speaker · 人物与场合</span><div class="whyzh" style="margin-top:2px">${esc(st.bio)}</div></div>`:``}<div class="blk"><span class="lbl">The whole in one look · 全篇一眼</span>${esc(st.intro)}<div class="whyzh">${esc(st.introzh)}</div></div>
     <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:10px">${st.beats.map((b,i)=>`<button class="btn ghost slim" onclick="document.getElementById('bt${i}').scrollIntoView({behavior:'smooth'})">${i+1} ${esc(b.fnzh)}</button>`).join('')}</div>
   </div>`+
   st.beats.map((b,i)=>`${b.gap?`<div class="bgap">${esc(b.gap)}</div>`:``}<div class="card" id="bt${i}" style="margin-top:14px">
@@ -4056,11 +4065,12 @@ function renderLearn(){
     const cont=MAIN.find(u=>!unitDone(u)&&unitLearnedCount(u)>0)||MAIN.find(u=>!unitDone(u));
     const hero=cont?`<div class="card" style="margin-bottom:14px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="enterUnit('${cont.id}')"><div style="font-size:26px">▶</div><div><div style="font-weight:700">${unitLearnedCount(cont)>0?'Continue':'Start'}: ${esc(cont.title)}</div><div style="font-size:12.5px;color:var(--muted)">${unitLearnedCount(cont)}/${unitWords(cont).length}</div></div></div>`:'';
     const LGROUPS=[
-      {t:'Foundations · 词汇根基',s:'Days 2–4 — build the bank',ids:['u1','u2','uD4']},
-      {t:'Rhetoric · 修辞手法',s:'Days 5–7 — sound and image',ids:['u3','u8','u4','uVm','u5']},
-      {t:'Subtract · 做减法',s:'Days 8–11 — say less, mean more',ids:['u6','u9','u7']},
-      {t:'Structure & rhythm · 结构与节奏',s:'Days 12–15 — the shape of a thought',ids:['u10','u14','u11']},
-      {t:'Material · 素材架',s:'lines to read, keep, and steal',ids:['uPo','uSp']}];
+      {t:'Foundations · 词汇根基',d:'Days 2–4',ids:['u1','u2','uD4']},
+      {t:'Rhetoric · 修辞手法',d:'Days 5–7',ids:['u3','u8','u4','uVm','u5']},
+      {t:'Subtract · 做减法',d:'Days 8–11',ids:['u6','u9','u7']},
+      {t:'Structure & rhythm · 结构与节奏',d:'Days 12–15',ids:['u10','u14','u11']},
+      {t:'Material · 素材架',d:'',ids:['uPo','uSp']}];
+    const jump=`<div style="display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 2px 4px;margin-top:2px">`+LGROUPS.map((g,gi)=>`<button class="pill" style="white-space:nowrap" onclick="document.getElementById('gsec${gi}').scrollIntoView({behavior:'smooth'})">${g.t.split(' · ')[0]}</button>`).join('')+`<button class="pill" style="white-space:nowrap" onclick="document.getElementById('sec-studies').scrollIntoView({behavior:'smooth'})">Studies</button><button class="pill" style="white-space:nowrap" onclick="document.getElementById('sec-toolkit').scrollIntoView({behavior:'smooth'})">Toolkit</button></div>`;
     let _ln=0;
     const urow=u=>{
       const done=unitDone(u),n=unitLearnedCount(u);
@@ -4071,12 +4081,12 @@ function renderLearn(){
         <div><div class="ut">${esc(u.title)}${u.zh?` <span class="uz">· ${esc(u.zh)}</span>`:''}</div><div class="um">${esc(u.from)}${u.deck?' · 20 per visit':''}</div></div>
         <div class="prog">${n}/${unitWords(u).length}</div>
       </div>`;};
-    const grouped=LGROUPS.map(g=>{
+    const grouped=LGROUPS.map((g,gi)=>{
       const us=g.ids.map(id=>MAIN.find(u=>u.id===id)).filter(Boolean);
       if(!us.length)return '';
-      return `<div class="sec">${g.t}</div><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">${g.s}</div>`+us.map(urow).join('');
+      return `<div id="gsec${gi}" style="margin:26px 2px 8px;display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:11.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--wood-dk)">${g.t}</span>${g.d?`<span style="font-size:11px;color:var(--muted)">${g.d}</span>`:``}</div>`+us.map(urow).join('');
     }).join('')+MAIN.filter(u=>!LGROUPS.some(g=>g.ids.includes(u.id))).map(urow).join('');
-    area.innerHTML=hero+grouped+studiesSection()+`<div class="sec">Toolkit · 常备</div>
+    area.innerHTML=hero+jump+grouped+studiesSection()+`<div class="sec" id="sec-toolkit">Toolkit · 常备</div>
   <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Not lessons — always at hand.</div>`+TOOLS.map(u=>{
       return `<div class="unit" onclick="enterUnit('${u.id}')">
         <div class="badge">✦</div>
@@ -4109,7 +4119,7 @@ function renderLearn(){
      <div class="term">${esc(w.term)}</div>
      <div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>
      ${w.quote?`${isMethod(w)?`<div class="blk"><span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="hardw" style="font-size:14px">${esc(w.quote)}</div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}`:``}
-     ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
+     ${w.ctxzh?`<div class="blk"><span class="lbl">Context · 背景</span><div class="whyzh" style="margin-top:2px">${esc(w.ctxzh)}</div></div>`:``}${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
      <div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>
      <div class="blk"><span class="lbl">${isMethod(w)?'Try it · 怎么练':'Usage · 用法'}</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
      <div class="stepdots">${idx+1} / ${(u._sess||unitWords(u)).length}</div>
@@ -4196,7 +4206,7 @@ function renderShufCard(){
     <div class="term">${esc(w.term)}</div>
     <div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>
     ${w.quote?`${isMethod(w)?`<div class="blk"><span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="hardw" style="font-size:14px">${esc(w.quote)}</div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}`:''}
-    ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
+    ${w.ctxzh?`<div class="blk"><span class="lbl">Context · 背景</span><div class="whyzh" style="margin-top:2px">${esc(w.ctxzh)}</div></div>`:``}${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
     ${w.why?`<div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:''}</div>`:''}
     ${w.usage&&w.usage.length?`<div class="blk"><span class="lbl">${isMethod(w)?'Try it · 怎么练':'Usage · 用法'}</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
     <div class="row" style="margin-top:14px">
@@ -4301,11 +4311,15 @@ function togglePanel(which){
 let _af=null;
 async function autoFill(){
   const term=(document.getElementById('fTerm').value||'').trim();
-  if(!term){alert('Type a word or phrase first.');return;}
+  const st=document.getElementById('afStatus');
+  if(!term){if(st)st.textContent='Type a word or phrase first.';return;}
+  if(st)st.textContent='Looking it up…';
   const btn=document.getElementById('afBtn');btn.textContent='… filling';btn.disabled=true;_af=null;
   try{const key=(localStorage.getItem('bs_key')||'').trim();
-    if(SYNC_URL&&syncCfg()){await afWorker(term);}else if(key){await afClaude(term,key);}else{await afDict(term);}
-  }catch(e){alert('Auto-fill hit a snag: '+e.message+'. You can fill fields by hand.');}
+    if(SYNC_URL&&syncCfg()){await afWorker(term);if(st)st.textContent='✓ Filled — check & edit, then save.';}
+    else if(key){await afClaude(term,key);if(st)st.textContent='✓ Filled — check & edit, then save.';}
+    else{await afDict(term);}
+  }catch(e){if(st)st.textContent='✗ No luck ('+e.message+') — fill by hand, or tell Coach “记词 '+term+'” in chat.';}
   btn.textContent='✨ Auto-fill';btn.disabled=false;
 }
 async function afDict(term){
@@ -4319,10 +4333,12 @@ async function afDict(term){
   try{const r2=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(term)+'&langpair=en|zh-CN');
     if(r2.ok){const j2=await r2.json();zh=((j2.responseData||{}).translatedText||'').trim();if(zh.toLowerCase()===term.toLowerCase())zh='';}
   }catch(e){}
-  if(!def&&!zh)throw new Error('no dictionary result');
+  if(!def&&!zh)throw new Error(term.includes(' ')?'the free dictionary has no entry for most phrases':'no dictionary result');
   document.getElementById('fMeaning').value=[ipa,def,zh?('— '+zh):''].filter(Boolean).join(' ');
   if(ex)document.getElementById('fExample').value=ex;
   if(!document.getElementById('fSource').value)document.getElementById('fSource').value='Auto-filled · dictionary';
+  const st=document.getElementById('afStatus');
+  if(st)st.textContent=def?'✓ Filled from the dictionary — check & edit, then save.':'⚠ Dictionary had no entry — machine translation only; please check it, or fill by hand.';
 }
 async function afClaude(term,key){
   const body={model:'claude-haiku-4-5',max_tokens:600,messages:[{role:'user',content:'You are VocabularyGPT (per the BetterSpeak course prompts): rich vocabulary, clarity and precision, never needlessly complex. Create a vocabulary card for "'+term+'" for a Chinese-native academic training articulate English speech. Reply ONLY with JSON: {"ipa":"/…/","gloss_en":"one plain line","gloss_zh":"简洁中文释义","example":"one natural sentence (academic/professional life if apt)","source":"register note or who says this","why":"one line on why this word is worth owning","usage":["short line 1","short line 2"]}'}]};
@@ -4384,7 +4400,7 @@ function showCard(id){
      <div class="term" style="font-size:22px">${esc(w.term)}</div>
      ${w.gloss?`<div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>`:''}
      ${w.quote?`<div class="blk">${isMethod(w)?`<span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="hardw" style="font-size:14px">${esc(w.quote)}</div>`:`<span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${(!cus&&hasOrig(w))?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div>`}</div>`:''}
-     ${(w.hard&&w.hard.length)?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
+     ${w.ctxzh?`<div class="blk"><span class="lbl">Context · 背景</span><div class="whyzh" style="margin-top:2px">${esc(w.ctxzh)}</div></div>`:``}${(w.hard&&w.hard.length)?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
      ${w.why?`<div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>`:''}
      ${(w.usage&&w.usage.length)?`<div class="blk"><span class="lbl">${isMethod(w)?'Try it · 怎么练':'Usage · 用法'}</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}
      <div class="row">
