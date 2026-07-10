@@ -55,6 +55,7 @@
 
   .term{font-family:var(--serif);font-size:28px;font-weight:600;color:var(--ink);margin:8px 0 2px}
   .cat-chip{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--wood-dk);background:#F3ECE2;border-radius:20px;padding:3px 10px}
+  .cat-chip.m{background:#E8EDE3}
   .starbtn{position:absolute;top:4px;right:4px;padding:10px;background:none;border:none;font-size:24px;cursor:pointer;color:#D9CFC0;line-height:1;transition:transform .15s}
   .starbtn:hover{transform:scale(1.15)}
   .starbtn.on{color:var(--gold)}
@@ -327,7 +328,7 @@ const UNITS=[
    gloss:'to blind or confuse someone — 迷惑听众,让人看不清(字面：往眼里扬灰)',
    hard:[['throw dust in someone’s eyes','固定短语：迷惑、障目']],
    quote:'Anything beyond four syllables, he was convinced, would throw dust in the eyes of your listener.',
-   src:'Stephen Fry’s four-syllable rule, cited in the course',
+   src:'BetterSpeak · Stephen Fry’s four-syllable rule (paraphrased in the course)',
    why:'Fry’s point: long words blind more than they impress. And the idiom itself is worth keeping.',
    usage:['All that jargon just throws dust in the eyes of the audience.','Pair with the rule: reach for the shorter word first.']},
   {id:'u1w5',whyzh:'给本单元的失败模式起了个形象的名字：没有目的、四处乱飞的花哨大词。',term:'word shrapnel',cat:'Phrases',
@@ -538,10 +539,10 @@ const UNITS=[
    why:"The review method itself: don't read your word bank like a list — make 2–3 sentences with each word, aloud.",
    usage:['A new day is dawning for our research group — two papers out, one to go.','Drill: take any new word and improvise three sentences with it.']},
   {id:'u2w6',whyzh:'给自己状态最好的时段起个两词好名——附赠 g 头韵(golden / grudging / going)。',term:"the golden time",cat:'Phrases',
-   gloss:"黄金时光 —— 给“最好的那段时间”一个郑重的名字",
+   gloss:"『黄金时光』—— 给“最好的那段时间”一个郑重的名字",
    hard:[["grudge","吝惜、不情愿地给(grudging its going = 舍不得它流走)"]],
    quote:"She had no room for gaiety and ease. She had spent the golden time in grudging its going.",
-   src:'BetterSpeak · Rhetorical Devices worksheet (authorship unverified — reads literary)',
+   src:'Unverified literary line — Rhetorical Devices worksheet',
    why:"A resonant two-word name for your best hours — plus the g-sounds (golden / grudging / going).",
    usage:["Guard your golden time — mornings are for writing.","What’s YOUR golden time? Name it, then defend it."]},
   {id:'u2w7',whyzh:'一次漂亮的“降格”：把一项技术的使命抽掉,它就只剩零件。讲 AI 时极好用。',term:"wires and lights in a box",cat:'Quotes',
@@ -594,10 +595,10 @@ const UNITS=[
    why:"The collector’s stance: same inputs, different posture — passive listening becomes mining.",
    usage:["Watching becomes active the moment you carry a notebook.","‘记词 X’ — this app is your magnet drops what it catches."]},
   {id:'u2w14',whyzh:'全课程最美的一句——写遗忘,也正是词库存在的理由。',term:'a handful of water across the desert',cat:'Phrases',
-   gloss:"想记住好句子却一路漏光——这种感觉,课程叫“捧着一掬水穿越沙漠”",
+   gloss:"『捧着一掬水穿越沙漠』—— 想记住好句子却一路漏光的感觉,也是词库存在的理由",
    hard:[["cracked, dry palms","干裂的手掌"]],
    quote:"It often feels as if we’re attempting to carry a handful of water across the desert, only to arrive at the other end with cracked, dry palms.",
-   src:"BetterSpeak · Day 3",
+   src:"Joseph Tsar, BetterSpeak · Day 3",
    why:"The most beautiful sentence in the whole course — about forgetting, and the reason word banks exist.",
    usage:["Notes are canteens: stop carrying water in your hands.","An image to describe any leaky memory system."]},
   {id:'u2w15',whyzh:'这个 app 进度条背后的数字——把耐心量化。',term:'the 38-use rule',cat:'Phrases',
@@ -654,10 +655,10 @@ const UNITS=[
    why:"The unit’s thesis in two words — inputs become outputs.",
    usage:["My language diet this month: papers, podcasts, and one poem a week.","Audit yours: what do you hear >10 min/day?"]},
   {id:'uD4w2',whyzh:'为整套“语言饮食”辩护的一句——值得原样记住。',term:'you cannot speak extraordinarily on ordinary inputs',cat:'Quotes',
-   gloss:"输入平庸,输出不可能非凡",
+   gloss:"『输入平庸,输出不可能非凡』—— 语言饮食的立论句",
    hard:[],
    quote:"The harsh truth is you cannot expect to speak extraordinarily when your inputs are ordinary.",
-   src:"BetterSpeak · Day 4",
+   src:"Joseph Tsar, BetterSpeak · Day 4",
    why:"The line that justifies the whole diet — worth keeping verbatim.",
    usage:["Before blaming your mouth, check your ears.","Applies to writing too: read above your level."]},
   {id:'uD4w3',whyzh:'复习为什么存在：不管不问,圈子默认会缩小。真正意义上的用进废退。',term:'the shrinking circle',cat:'Phrases',
@@ -889,10 +890,10 @@ const UNITS=[
    why:"A ready-made pair for serious analysis — sounds thorough because it is balanced.",
    usage:["The committee grasped the depths and dimensions of the data issue.","Perfect for academic registers."]},
   {id:'u3w15',whyzh:'层层音对(moans/merged、sickening/smell/summer)——用声音运送悲伤。',term:"green leaves wilting over yellow flowers",cat:'Alliterations',
-   gloss:'头韵藏在引文里：moans/merged、sickening/smell/summer、woolen/worn/weather —— 标题是画面,音对在句中',
+   gloss:'『绿叶在黄花上枯萎』—— 头韵藏在句中：moans/merged、sickening/smell/summer、woolen/worn/weather',
    hard:[["wilt","枯萎、蔫掉"]],
    quote:"Up the aisle, the moans and screams merged with the sickening smell of woolen black clothes worn in summer weather and green leaves wilting over yellow flowers.",
-   src:"BetterSpeak · Rhetorical Devices worksheet (Maya Angelou’s prose)",
+   src:"Maya Angelou — prose, on the Rhetorical Devices worksheet",
    why:"Layered pairs (moans/merged, sickening/smell/summer, woolen/worn/weather) carrying grief through sound.",
    usage:["Read it aloud slowly — count the sound pairs.","Density like this is for writing; borrow one pair at a time in speech."]},
   {id:'u3w16',whyzh:'副词成对(steadily / solidly)映照僵局——声音在讲故事。',term:"swimming steadily… braced solidly",cat:'Alliterations',
@@ -969,7 +970,7 @@ const UNITS=[
    src:'Steve Jobs, Stanford commencement (2005)',
    why:'The everyday form of anaphora: extend a thought with "to… to…" instead of closing the sentence.',
    usage:['Tenure means to build a record. It means to pick your battles. It means to protect your mornings.','Casual version: "Do you remember what it feels like to… to…?"']},
-  {id:'u8w6',whyzh:'纯模板式首语反复——同一个开头,三个层层加深的结尾。',term:"when the rain speaks…",cat:'Quotes',
+  {id:'u8w6',whyzh:'纯模板式首语反复——同一个开头,三个层层加深的结尾。',term:"when the rain speaks…",cat:'Phrases',
    gloss:"句首三连的模板:“当雨开口……”",
    hard:[],
    quote:"When the rain speaks, the earth listens. When the rain speaks, life pauses. When the rain speaks, we understand silence.",
@@ -997,7 +998,7 @@ const UNITS=[
    src:"Psalm 136 — from the worksheet",
    why:'The refrain closes every verse — epistrophe, repetition at line-ends — while the openers (Give thanks to…) carry the anaphora. Three thousand years of proof that repetition binds listeners.',
    usage:["A recurring closing line can become YOUR refrain.","Note how the openers vary while the refrain holds."]},
-  {id:'u8w10',whyzh:'温柔语域里的首语反复——它并不需要讲台。',term:"with each page turned…",cat:'Quotes',
+  {id:'u8w10',whyzh:'温柔语域里的首语反复——它并不需要讲台。',term:"with each page turned…",cat:'Phrases',
    gloss:"温和的句首三连:“每翻一页……”",
    hard:[],
    quote:"With each page turned, a journey begins. With each page turned, a mind expands. With each page turned, a new world awaits.",
@@ -1995,8 +1996,8 @@ const UNITS=[
    src:'BetterSpeak · Thought Wrappers worksheet — invented example in the style of Ayn Rand',
    why:"“Facets” beats “aspects”: it implies one gem turned three ways.",
    usage:["Three facets of the identification problem: data, timing, and incentives.","Name all three up front, then walk them."]},
-  {id:'u10w10',whyzh:'交接词(final)把两个句子焊成一个思想。',term:"success is not final — final is the beginning",cat:'Quotes',
-   gloss:'尾词接力示范:“成功不是终点;终点是新旅程的开始”',
+  {id:'u10w10',whyzh:'交接词(final)把两个句子焊成一个思想。',term:"success is not final — final is the beginning",cat:'Phrases',
+   gloss:'尾词接力示范:“成功不是终点；终点是新旅程的开始”',
    hard:[],
    quote:"Success is not final. Final is the beginning of a new journey.",
    src:"BetterSpeak · Day 12 (anadiplosis examples)",
@@ -3402,14 +3403,14 @@ const UNITS=[
    gloss:"十条军规 —— 全课程压缩成十句(锁屏壁纸版);例：#3 更好的词就在几秒外；#8 沉默最难；#9 删空词句子更满；#10 草率的结尾毁掉一切",
    hard:[],
    quote:"Articulacy increases when you consciously select your words… A better word is seconds away… Silence is the hardest part… A sentence grows fuller when empty words are stripped away… Careless final words can erode a great many careful ones.",
-   src:"The 10 Rules of Articulacy (course wallpaper)",
+   src:"BetterSpeak · The 10 Rules of Articulacy (course wallpaper)",
    why:"The reference card for everything you’ve learned — worth keeping on the lock screen.",
    usage:["Pick ONE rule per week to enforce.","Rule #8 is the one to master last — and most."]},
   {id:'u15w6',whyzh:'intention(有意选择,不是自动驾驶)+ invention(自己的,不是借来的)——两个词装下整门课。',term:'full of intention and invention',cat:'Quotes',
-   gloss:'课程的告别祝福——愿你的言语,从此刻直到最后一句,都充满意图与创造',
+   gloss:'『愿你的言语,从此刻直到最后一句,都充满意图与创造』—— 课程的告别祝福',
    hard:[["invention","创造、发明；此处指语言上的原创"]],
    quote:"May your words, from now until your last, be full of intention and invention — for though we have nothing great to say, we can at least say it well.",
-   src:"BetterSpeak · the final lecture’s closing line",
+   src:"Joseph Tsar, BetterSpeak — the final lecture’s closing line",
    why:"Intention (chosen, not autopilot) + invention (yours, not borrowed) — the course in two words.",
    usage:["A toast-worthy line for any ending.","The standard: was that sentence intended and invented?"]},
  ]},
@@ -3489,7 +3490,7 @@ function load(){
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state))}
 function qHtml(q){q=String(q||'');return q.startsWith('(')?'<span class="q" style="font-style:normal;color:var(--muted)">'+esc(q)+'</span>':'<span class="q">“'+esc(q)+'”</span>';}
-function isMethod(w){return /^BetterSpeak/.test(String((w&&w.src)||''));}
+function isMethod(w){return /^(?:From [^·]*· )?BetterSpeak/.test(String((w&&w.src)||''));}
 function esc(s){return (s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
 function ws(id){if(!state.words[id])state.words[id]={learned:false,star:false,uses:0,next:0};return state.words[id]}
 
@@ -3502,7 +3503,7 @@ function addXP(n){const t=today();state.xp=(state.xp||0)+n;state.hist=state.hist
 /* ============ TODAY ============ */
 function tl(){const t=today();if(!state.tl||state.tl.day!==t)state.tl={day:t,learned:0,sessions:0,line:false};return state.tl;}
 function todayLine(){
-  const pool=ALLWORDS.filter(w=>CLIPS[w.id])||[];
+  const pool=ALLWORDS.filter(w=>CLIPS[w.id]&&!isMethod(w))||[];
   const p2=pool.length?pool:ALLWORDS.filter(hasOrig);
   return p2[(Math.floor(today()/DAY)*37)%p2.length];
 }
@@ -3582,7 +3583,7 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
        if(r.kind==='word')return `<div style="font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">${esc(r.tag||'')}</div>
      <div class="term" style="font-size:19px">${esc(r.w.term)}</div>
      <div style="font-size:13.5px;color:var(--muted)">${esc(r.w.gloss)}</div>
-     <textarea id="repIn" oninput="window._repDraft=this.value" placeholder="Use it in one sentence from your week — say it aloud, then type it.">${esc(window._repDraft||'')}</textarea>
+     <textarea id="repIn" oninput="window._repDraft=this.value" placeholder="${isMethod(r.w)?'Apply it in one sentence from your week — say it aloud, then type it.':'Use it in one sentence from your week — say it aloud, then type it.'}">${esc(window._repDraft||'')}</textarea>
      <div id="repHint" style="font-size:12.5px;color:var(--terra);margin-top:4px"></div>
      <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button>${((T.repN||0)===0&&!T.repSwap)?`<button class="btn ghost slim" onclick="repSwap()">Swap ↻</button>`:``}</div>`;
        return `<div style="font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">humor mold</div>
@@ -4120,10 +4121,10 @@ function renderLearn(){
   const w=(u._sess||unitWords(u))[idx], s=w._cus?w:ws(w.id);
   area.innerHTML=`<div class="card">
      <button class="starbtn ${s.star?'on':''}" onclick="toggleStar('${w.id}')" title="focus">★</button>
-     <span class="cat-chip">${esc(w.cat)}</span>
+     <span class="cat-chip${isMethod(w)?' m':''}">${esc(w.cat)}</span>
      <div class="term">${esc(w.term)}</div>
      <div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>
-     ${isMethod(w)?`<div class="blk"><span class="lbl">In full · 展开</span><div class="quote"><span class="q" style="font-style:normal;color:var(--muted)">${esc(w.quote)}</span></div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}
+     ${isMethod(w)?`<div class="blk"><span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="quote"><span class="q" style="font-style:normal;color:var(--muted)">${esc(w.quote)}</span></div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}
      ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
      <div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>
      <div class="blk"><span class="lbl">${isMethod(w)?'Try it · 怎么练':'Usage · 用法'}</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
@@ -4207,10 +4208,10 @@ function renderShufCard(){
   const w=shufCur, st=cardState(w);
   document.getElementById('pracArea').innerHTML=`<div class="card">
     <button class="starbtn ${st.star?'on':''}" onclick="shufToggleStar()" title="focus">★</button>
-    <span class="cat-chip">${esc(w.cat||'Card')}</span><span style="font-size:11.5px;color:var(--muted);margin-left:8px">${esc((UNITS.find(u=>u.id===w.unit)||{title:'My Pickups'}).title)}</span>
+    <span class="cat-chip${isMethod(w)?' m':''}">${esc(w.cat||'Card')}</span><span style="font-size:11.5px;color:var(--muted);margin-left:8px">${esc((UNITS.find(u=>u.id===w.unit)||{title:'My Pickups'}).title)}</span>
     <div class="term">${esc(w.term)}</div>
     <div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>
-    ${w.quote?`${isMethod(w)?`<div class="blk"><span class="lbl">In full · 展开</span><div class="quote"><span class="q" style="font-style:normal;color:var(--muted)">${esc(w.quote)}</span></div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}`:''}
+    ${w.quote?`${isMethod(w)?`<div class="blk"><span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="quote"><span class="q" style="font-style:normal;color:var(--muted)">${esc(w.quote)}</span></div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}`:''}
     ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
     ${w.why?`<div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:''}</div>`:''}
     ${w.usage&&w.usage.length?`<div class="blk"><span class="lbl">${isMethod(w)?'Try it · 怎么练':'Usage · 用法'}</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
@@ -4287,7 +4288,7 @@ const CLIPS={
  u1w16:'https://youtu.be/QXqlziZV63k?t=591',  // because they are hard — JFK Rice
  uD4w8:'https://youtu.be/QXqlziZV63k?t=405',  // banner of freedom
 };
-function hasOrig(w){return w&&w.quote&&w.src&&!/^BetterSpeak|worksheet|Index|canon supplement$/.test(w.src)&&!w.src.startsWith('BetterSpeak')&&!w.src.startsWith('Picked up');}
+function hasOrig(w){if(!w||!w.quote||!w.src)return false;if(isMethod(w)||String(w.src).startsWith('Picked up')||String(w.src).startsWith('From '))return false;return !/BetterSpeak|worksheet|Index|canon supplement|unverified/i.test(String(w.src).split('—')[0]);}
 function origUrl(w){
   if(CLIPS[w.id])return CLIPS[w.id];
   const who=(w.src||'').split('—')[0].split(',')[0].replace(/[“”"]/g,'').trim();
@@ -4395,7 +4396,7 @@ function showCard(id){
   const s=cus?state.custom.find(x=>x.id===id):ws(id);
   document.getElementById('srchOut').innerHTML=`
    <div class="card" style="box-shadow:none;border-style:dashed">
-     <span class="cat-chip">${esc(w.cat)}</span>
+     <span class="cat-chip${isMethod(w)?' m':''}">${esc(w.cat)}</span>
      <div class="term" style="font-size:22px">${esc(w.term)}</div>
      ${w.gloss?`<div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>`:''}
      ${w.quote?`<div class="blk"><div class="quote">${isMethod(w)?'<span class="q" style="font-style:normal;color:var(--muted)">'+esc(w.quote)+'</span>':qHtml(w.quote)}${isMethod(w)?'':`<span class="src">— ${esc(srcClean(w.src))}${(!cus&&hasOrig(w))?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span>`}</div></div>`:''}
