@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
   :root{
-    --bg:#F7F4EF; --card:#FFFFFF; --ink:#2E2A26; --muted:#8A8178; --hair:#E7E0D6;
+    --bg:#F7F4EF; --card:#FFFFFF; --ink:#2E2A26; --muted:#756A5F; --hair:#E7E0D6;
     --wood:#B07D56; --wood-dk:#8C5E3C; --cognac:#9C5B3B; --sage:#EEF0E7; --green:#6E7E5B;
     --terra:#B4462F; --gold:#C8A24A;
     --shadow:0 2px 10px rgba(60,45,30,.06),0 8px 30px rgba(60,45,30,.05);
@@ -36,7 +36,7 @@
   nav button .ico{font-size:14px;opacity:.55;filter:grayscale(35%)}
   nav button.on .ico{opacity:1;filter:none}
 
-  h2.sec{font-family:var(--serif);font-size:21px;font-weight:600;color:var(--wood-dk);margin:26px 0 4px}
+  h2.sec{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--wood-dk);margin:24px 0 4px}
   .sub{font-size:13.5px;color:var(--muted);margin-bottom:16px}
 
   .card{background:var(--card);border:1px solid var(--hair);border-radius:16px;box-shadow:var(--shadow);padding:20px;position:relative}
@@ -55,7 +55,6 @@
 
   .term{font-family:var(--serif);font-size:28px;font-weight:600;color:var(--ink);margin:8px 0 2px}
   .cat-chip{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--wood-dk);background:#F3ECE2;border-radius:20px;padding:3px 10px}
-  .cat-chip.m{background:#E8EDE3}
   .starbtn{position:absolute;top:4px;right:4px;padding:10px;background:none;border:none;font-size:24px;cursor:pointer;color:#D9CFC0;line-height:1;transition:transform .15s}
   .starbtn:hover{transform:scale(1.15)}
   .starbtn.on{color:var(--gold)}
@@ -63,7 +62,7 @@
   .blk{margin-top:13px;font-size:14.5px}
   .blk .lbl{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--wood);display:block;margin-bottom:3px}
   .quote{background:var(--sage);border-radius:12px;padding:12px 14px;font-size:14.5px}
-  .quote .q{font-style:italic}
+  .quote .q{font-style:italic;font-family:var(--serif);font-size:15.5px}
   .quote .src{display:block;font-size:12.5px;color:var(--green);margin-top:6px;font-weight:600}
   .hardw{background:#FBF7EF;border:1px dashed var(--hair);border-radius:12px;padding:10px 13px;font-size:13.5px}
   .hardw div{margin:2px 0}
@@ -71,11 +70,8 @@
   .ipa{color:var(--muted);font-size:12px;font-style:italic;margin-left:5px}
   .usage li{margin:4px 0 4px 18px;font-size:14px}
 
-  .prompt{font-size:14px;color:var(--ink);margin:16px 0 8px;font-weight:600}
-  textarea{width:100%;min-height:74px;border:1px solid var(--hair);border-radius:12px;padding:12px;font-family:var(--sans);font-size:15px;color:var(--ink);resize:vertical;background:#FCFAF6}
+  textarea{width:100%;min-height:74px;border:1px solid var(--hair);border-radius:12px;padding:12px;font-family:var(--sans);font-size:16px;color:var(--ink);resize:vertical;background:#FCFAF6}
   textarea:focus{outline:none;border-color:var(--wood)}
-  .reveal{display:none;margin-top:4px}
-  .reveal.show{display:block}
 
   .row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
   .btn{border:none;border-radius:12px;padding:11px 18px;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;flex:1;min-width:96px;line-height:1.2}
@@ -85,16 +81,9 @@
   .btn.slim{flex:0 0 auto}
   .pill{border:1px solid var(--hair);background:#fff;border-radius:999px;padding:7px 14px;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;flex:0 0 auto}
   .pill.on{background:var(--wood-dk);border-color:var(--wood-dk);color:#fff}
-  .opt{display:block;width:100%;text-align:left;margin-top:8px;padding:12px 14px;border:1px solid var(--hair);border-radius:12px;background:#fff;font-family:var(--sans);font-size:14.5px;color:var(--ink);cursor:pointer;transition:background .15s}
-  .opt:hover{background:#FCFAF6}
-  .opt.ok{background:var(--sage);border-color:var(--green);color:var(--green);font-weight:700}
-  .opt.bad{background:#F7E5DF;border-color:var(--terra);color:var(--terra)}
-  .opt:disabled{cursor:default;opacity:.9}
   .tin{width:100%;margin-top:12px;border:1px solid var(--hair);border-radius:12px;padding:12px 14px;font-family:var(--sans);font-size:16px;background:#FCFAF6}
   .tin:focus{outline:none;border-color:var(--wood)}
-  .sessbar{height:8px;background:var(--sage);border-radius:20px;margin:2px 0 14px;overflow:hidden}
-  .sessbar i{display:block;height:100%;background:var(--wood);border-radius:20px;transition:width .3s}
-  .sayb{background:none;border:none;font-size:17px;cursor:pointer;vertical-align:middle;margin-left:6px;opacity:.65}
+  .sayb{background:none;border:none;font-size:17px;cursor:pointer;vertical-align:middle;padding:10px;margin:-10px -4px -10px -4px;opacity:.65}
   .sayb:hover{opacity:1}
   .xp{color:var(--gold);font-weight:700}
   .hicon{background:none;border:1px solid var(--hair);border-radius:10px;width:38px;height:38px;font-size:17px;cursor:pointer;color:var(--ink)}
@@ -109,37 +98,17 @@
   .srchit b{font-size:14.5px}
   .srchit span{display:block;font-size:12.5px;color:var(--muted)}
 
-  .meter{height:7px;background:var(--sage);border-radius:20px;overflow:hidden;margin:14px 0 4px}
-  .meter i{display:block;height:100%;background:var(--wood);border-radius:20px}
-  .meter-lbl{font-size:11.5px;color:var(--muted)}
   .stepdots{font-size:12px;color:var(--muted);margin-top:4px}
 
   .done-msg{text-align:center;padding:34px 10px;color:var(--muted)}
   .done-msg .big{font-family:var(--serif);font-size:24px;color:var(--wood-dk);margin-bottom:6px}
 
-  .addbar{display:flex;gap:8px;margin-bottom:8px}
-  .addbar input{flex:1;border:1px solid var(--hair);border-radius:12px;padding:11px 13px;font-size:15px;font-family:var(--sans);background:#fff}
-  .addbar input:focus{outline:none;border-color:var(--wood)}
   .miniform{background:var(--card);border:1px solid var(--hair);border-radius:16px;box-shadow:var(--shadow);padding:16px;margin-bottom:16px;display:none}
   .miniform.show{display:block}
   .miniform label{font-size:12px;font-weight:600;color:var(--muted);display:block;margin:8px 0 3px}
-  .miniform input,.miniform select,.miniform textarea{width:100%;border:1px solid var(--hair);border-radius:10px;padding:9px 11px;font-size:14.5px;font-family:var(--sans);background:#FCFAF6}
+  .miniform input,.miniform select,.miniform textarea{width:100%;border:1px solid var(--hair);border-radius:10px;padding:9px 11px;font-size:16px;font-family:var(--sans);background:#FCFAF6}
   .miniform textarea{min-height:48px}
-  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 14px}
-  .fchip{border:1px solid var(--hair);background:#fff;border-radius:20px;padding:5px 13px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
-  .fchip.on{background:var(--wood-dk);border-color:var(--wood-dk);color:#fff}
   .grp-title{font-family:var(--serif);font-size:16px;color:var(--wood-dk);margin:22px 0 8px}
-  .entry{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid var(--hair)}
-  .entry:last-child{border-bottom:none}
-  .entry .t{font-weight:600;font-size:15.5px}
-  .entry .mm{font-size:13px;color:var(--muted);margin-top:2px}
-  .entry .uses{font-size:11px;color:var(--wood);margin-top:3px}
-  .entry .estar{background:none;border:none;font-size:18px;cursor:pointer;color:#D9CFC0;line-height:1;padding-top:2px}
-  .entry .estar.on{color:var(--gold)}
-  .entry .x{background:none;border:none;color:var(--hair);font-size:18px;cursor:pointer;line-height:1;padding-top:2px}
-  .entry .x:hover{color:var(--terra)}
-  .grad{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.5px}
-  .newtag{font-size:10px;font-weight:700;color:var(--terra);letter-spacing:.5px}
 
   .empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:14px}
 .whyzh{margin-top:5px;color:var(--wood-dk);font-size:13.5px}
@@ -3550,7 +3519,10 @@ function doRep(){
   if(!txt)return;
   const r=currentRep(); if(!r)return;
   if(r.kind==='word'){
-    const kw=(String(r.w.term).toLowerCase().match(/[a-z']{4,}/g)||[String(r.w.term).toLowerCase()]);
+    const side=String(r.w.term).includes('→')?String(r.w.term).split('→').slice(1).join(' '):String(r.w.term);
+    let kw=(side.toLowerCase().match(/[a-z']{3,}/g)||[side.toLowerCase()]);
+    const kwf=kw.filter(k=>k!=='the'&&k!=='and');
+    if(kwf.length)kw=kwf;
     if(!kw.some(k=>txt.toLowerCase().includes(k))){const h=document.getElementById('repHint');if(h)h.textContent='Use the phrase itself in your sentence.';return;}
     const s=r.w._cus?(state.custom.find(c=>c.id===r.w.id)||{}):ws(r.w.id); s.iv=(s.iv||0)+1; s.next=today()+[4,7,15,30][Math.min(s.iv-1,3)]*DAY;
     const T=tl(); T.repIds=(T.repIds||[]); T.repIds.push(r.w.id);
@@ -3571,9 +3543,6 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
      <div style="font-size:14px;margin-top:8px">A private word bank for articulate speech. <b>Lessons</b> to study, <b>Shuffle</b> to browse — and here, one rep, one line, one speech a day.</div>
      <div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn ghost slim" onclick="state.welcomed=1;save();renderToday()">Got it</button></div>
    </div>`}<div class="card">
-     <div style="font-size:13px;color:var(--muted)">${T.learned} learned · ${T.sessions} flipped today · any card keeps the 🔥</div>
-   </div>
-   <div class="card" style="margin-top:14px">
      <span class="cat-chip">Daily rep</span>${(T.repN||0)>0?`<span style="font-size:11.5px;color:var(--muted);margin-left:8px">${Math.min(T.repN,3)}/3${dueCards().length?` · ${dueCards().length} due`:``}</span>`:``}
      ${(function(){
        const r=currentRep();
@@ -3594,8 +3563,9 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
      <div id="repHint" style="font-size:12.5px;color:var(--terra);margin-top:4px"></div>
      <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button></div>`;
      })()}
+     <div style="font-size:12px;color:var(--muted);margin-top:12px;border-top:1px solid var(--hair);padding-top:10px">${T.learned} learned · ${T.sessions} flipped — any card counts toward the streak</div>
    </div>
-   <div class="card" style="margin-top:14px">
+   <div class="card" style="margin-top:14px;cursor:pointer" onclick="todayOpen=!todayOpen;renderToday()">
      <span class="cat-chip">Line of the day</span>
      <div class="term" style="font-size:19px">${esc(w.term)}</div>
      <div class="quote" style="margin-top:10px">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" onclick="event.stopPropagation()" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div>
@@ -3603,7 +3573,7 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
      ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
      ${w.why?`<div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>`:''}
      ${w.usage&&w.usage.length?`<div class="blk"><span class="lbl">${isMethod(w)?'Try it · 怎么练':'Usage · 用法'}</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}`:``}
-     <div style="text-align:right;font-size:12px;margin-top:8px"><a href="javascript:void(0)" onclick="todayOpen=!todayOpen;renderToday()" style="color:var(--muted)">${todayOpen?'less ↑':'full card →'}</a></div>
+     <div style="text-align:right;font-size:12px;color:var(--muted);margin-top:8px">${todayOpen?'less ↑':'more ↓'}</div>
      </div>${speechOfDay()}${friendsCard()}
 `;
 }
@@ -3994,7 +3964,7 @@ function renderLines(){
   area.innerHTML=`<div class="card"><span class="cat-chip">My Lines · 我的句子</span>
    <div style="font-size:13.5px;color:var(--muted);margin-top:6px">Every Daily-rep sentence you have written — your half of the commonplace book.</div>
    <div class="row" style="margin-top:12px"><button class="btn ghost slim" onclick="exitLines()">⌂ Lessons</button></div></div>`+
-  (s.length?s.map(x=>`<div class="card" style="margin-top:14px"><span class="cat-chip">${esc(x.term)}</span>
+  (s.length?s.map(x=>`<div class="card" style="margin-top:14px"><div class="term" style="font-size:15px">${esc(x.term)}</div>
    <div style="font-size:15px;margin-top:8px">“${esc(x.t)}”</div>
    <div style="font-size:12px;color:var(--muted);margin-top:6px">${new Date(+x.d).toLocaleDateString()}</div></div>`).join('')
    :`<div class="card done-msg" style="margin-top:14px">No lines yet — write today's rep on the Today tab.</div>`);
@@ -4028,11 +3998,11 @@ function beatVid(i,url){
   if(!m){window.open(url,'_blank');return;}
   d.innerHTML='<div style="position:relative;padding-top:56.25%;margin-top:10px;border-radius:12px;overflow:hidden"><iframe src="https://www.youtube-nocookie.com/embed/'+m[1]+'?start='+m[2]+'&autoplay=1&rel=0" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>';
 }
-function enterStudy(id,keep){if(!keep)window._fromSteals=false;inStudy=STUDIES.find(s=>s.id===id);inUnit=null;idx=-1;renderLearn();window.scrollTo(0,0)}
+function enterStudy(id,keep){if(!keep)window._fromSteals=false;inSteals=false;inLines=false;inStudy=STUDIES.find(s=>s.id===id);inUnit=null;idx=-1;renderLearn();window.scrollTo(0,0)}
 function exitStudy(){inStudy=null;renderLearn();window.scrollTo(0,0)}
 function studiesSection(){
   if(!STUDIES.length)return '';
-  return `<div style="margin:24px 0 4px;font-family:var(--serif);font-size:17px;color:var(--wood-dk)">Speech Studies · 精读</div>
+  return `<div class="sec">Speech Studies · 精读</div>
   <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">One speech, read whole — what to steal.</div>`+`<div class="unit" onclick="enterSteals()">
     <div class="badge">✂</div>
     <div><div class="ut">The Steal List <span class="uz">· 场合速查</span></div><div class="um">every template, by occasion</div></div>
@@ -4053,7 +4023,7 @@ function renderStudy(){
     <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:10px">${st.beats.map((b,i)=>`<button class="btn ghost slim" onclick="document.getElementById('bt${i}').scrollIntoView({behavior:'smooth'})">${i+1} ${esc(b.fnzh)}</button>`).join('')}</div>
   </div>`+
   st.beats.map((b,i)=>`${b.gap?`<div class="bgap">${esc(b.gap)}</div>`:``}<div class="card" id="bt${i}" style="margin-top:14px">
-    <span class="cat-chip">Beat ${i+1} / ${st.beats.length} · ${esc(b.fn)} · ${esc(b.fnzh)}</span>
+    <span class="cat-chip">Beat ${i+1} · ${esc(b.fnzh)}</span>
     <div class="quote" style="margin-top:10px"><span class="q">“${esc(b.quote)}”</span><span class="src">— ${esc(st.speaker||'')} · ${b.exact?`<a href="javascript:void(0)" onclick="beatVid(${i},'${b.url}')" style="color:var(--green);text-decoration:none">▶</a>`:`<a href="${b.url}" target="_blank" style="color:var(--green);text-decoration:none">↗</a>`}</span></div>
     <div id="bv${i}"></div>
     <div class="blk"><span class="lbl">Craft · 手法</span>${esc(b.craft)}<div class="whyzh">${esc(b.craftzh)}</div></div>
@@ -4092,7 +4062,7 @@ function renderLearn(){
         <div><div class="ut">${esc(u.title)}${u.zh?` <span class="uz">· ${esc(u.zh)}</span>`:''}</div><div class="um">${esc(u.from)}${u.deck?' · 20 per visit':''}</div></div>
         <div class="prog">${n}/${unitWords(u).length}</div>
       </div>`;
-    }).join('')+studiesSection()+`<div style="margin:24px 0 4px;font-family:var(--serif);font-size:17px;color:var(--wood-dk)">Toolkit · 常备</div>
+    }).join('')+studiesSection()+`<div class="sec">Toolkit · 常备</div>
   <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Not lessons — always at hand.</div>`+TOOLS.map(u=>{
       return `<div class="unit" onclick="enterUnit('${u.id}')">
         <div class="badge">✦</div>
@@ -4103,7 +4073,7 @@ function renderLearn(){
         <div class="badge">✎</div>
         <div><div class="ut">My Lines <span class="uz">· 我的句子</span></div><div class="um">your Daily-rep sentences</div></div>
         <div class="prog">${(state.sents||[]).length}</div>
-      </div>`+`<div style="margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted)"><a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted)">Start over</a></div>`;
+      </div>`+`<div style="margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted)"><a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted);text-decoration:none">Start over</a></div>`;
     return;
   }
   const u=inUnit;
@@ -4111,7 +4081,7 @@ function renderLearn(){
     area.innerHTML=`<div class="card">
       <span class="cat-chip">${UNITS.filter(x=>!x.tool).indexOf(u)>=0?('UNIT '+(UNITS.filter(x=>!x.tool).indexOf(u)+1)+' · '):''}${esc(u.from)}</span>
       <div class="term" style="font-size:22px">${esc(u.title)}${u.zh?`<br><span style="font-size:17px;color:var(--wood-dk)">${esc(u.zh)}</span>`:''}</div>
-      <div class="blk"><span class="lbl">Why this matters</span>${u.essence}</div>
+      <div class="blk"><span class="lbl">Why this matters · 为什么值得学</span>${u.essence}</div>
       <div class="row">
         <button class="btn ghost slim" onclick="exitUnit()">⌂ Lessons</button>
         <button class="btn primary" onclick="go(0)">Start →</button>
@@ -4121,10 +4091,10 @@ function renderLearn(){
   const w=(u._sess||unitWords(u))[idx], s=w._cus?w:ws(w.id);
   area.innerHTML=`<div class="card">
      <button class="starbtn ${s.star?'on':''}" onclick="toggleStar('${w.id}')" title="focus">★</button>
-     <span class="cat-chip${isMethod(w)?' m':''}">${esc(w.cat)}</span>
+     <span class="cat-chip">${esc(w.cat)}</span>
      <div class="term">${esc(w.term)}</div>
      <div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>
-     ${isMethod(w)?`<div class="blk"><span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="quote"><span class="q" style="font-style:normal;color:var(--muted)">${esc(w.quote)}</span></div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}
+     ${isMethod(w)?`<div class="blk"><span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="hardw" style="font-size:14px">${esc(w.quote)}</div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}
      ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
      <div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>
      <div class="blk"><span class="lbl">${isMethod(w)?'Try it · 怎么练':'Usage · 用法'}</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
@@ -4206,12 +4176,12 @@ function shufDraw(award){
 function shufToggleStar(){ if(!shufCur)return; const st=cardState(shufCur); st.star=!st.star; save(); renderShufCard();  }
 function renderShufCard(){
   const w=shufCur, st=cardState(w);
-  document.getElementById('pracArea').innerHTML=`<div class="card">
+  document.getElementById('pracArea').innerHTML=`<div class="card viewin">
     <button class="starbtn ${st.star?'on':''}" onclick="shufToggleStar()" title="focus">★</button>
-    <span class="cat-chip${isMethod(w)?' m':''}">${esc(w.cat||'Card')}</span><span style="font-size:11.5px;color:var(--muted);margin-left:8px">${esc((UNITS.find(u=>u.id===w.unit)||{title:'My Pickups'}).title)}</span>
+    <span class="cat-chip">${esc(w.cat||'Card')}</span><span style="font-size:11.5px;color:var(--muted);margin-left:8px">${esc((UNITS.find(u=>u.id===w.unit)||{title:'My Pickups'}).title)}</span>
     <div class="term">${esc(w.term)}</div>
     <div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>
-    ${w.quote?`${isMethod(w)?`<div class="blk"><span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="quote"><span class="q" style="font-style:normal;color:var(--muted)">${esc(w.quote)}</span></div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}`:''}
+    ${w.quote?`${isMethod(w)?`<div class="blk"><span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="hardw" style="font-size:14px">${esc(w.quote)}</div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}`:''}
     ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
     ${w.why?`<div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:''}</div>`:''}
     ${w.usage&&w.usage.length?`<div class="blk"><span class="lbl">${isMethod(w)?'Try it · 怎么练':'Usage · 用法'}</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
@@ -4234,7 +4204,7 @@ function renderPrac(){
 
 
 
-function checkPrac(){document.getElementById('reveal').classList.add('show');document.getElementById('pRow1').style.display='none';document.getElementById('pRow2').style.display='flex';}
+
 
 
 function bumpStreak(){const t=today(); if(state.lastDay!==t){const d=new Date(t),y=new Date(d.getFullYear(),d.getMonth(),d.getDate()-1).getTime();state.streak=(state.lastDay===y)?state.streak+1:1; state.lastDay=t; renderStreak();}}
@@ -4366,8 +4336,8 @@ function saveForm(){
   if(dup&&!confirm('“'+term+'” is already in the bank. Add anyway?'))return;
   state.custom.push({id:'c'+Date.now(),term,meaning:document.getElementById('fMeaning').value.trim(),example:document.getElementById('fExample').value.trim(),source:document.getElementById('fSource').value.trim(),cat:'Words',why:(_af&&_af.why)||'',usage:(_af&&_af.usage)||[],star:false,learned:true,uses:0,next:today()});_af=null;
   ['fTerm','fMeaning','fExample','fSource'].forEach(i=>document.getElementById(i).value='');
-  togglePanel('add');save();
-  alert('Saved to My Pickups ✓');
+  togglePanel('add');state.notices=(state.notices||[]);state.notices.push('✓ Saved “'+term+'” to My Pickups');save();
+  if(currentView()==='today')renderToday();
 }
 function del(id){if(!confirm('Delete this pickup? This cannot be undone.'))return;state.custom=state.custom.filter(c=>c.id!==id);save();doSearch(document.getElementById('srchQ').value||'');}
 
@@ -4396,10 +4366,10 @@ function showCard(id){
   const s=cus?state.custom.find(x=>x.id===id):ws(id);
   document.getElementById('srchOut').innerHTML=`
    <div class="card" style="box-shadow:none;border-style:dashed">
-     <span class="cat-chip${isMethod(w)?' m':''}">${esc(w.cat)}</span>
+     <span class="cat-chip">${esc(w.cat)}</span>
      <div class="term" style="font-size:22px">${esc(w.term)}</div>
      ${w.gloss?`<div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>`:''}
-     ${w.quote?`<div class="blk"><div class="quote">${isMethod(w)?'<span class="q" style="font-style:normal;color:var(--muted)">'+esc(w.quote)+'</span>':qHtml(w.quote)}${isMethod(w)?'':`<span class="src">— ${esc(srcClean(w.src))}${(!cus&&hasOrig(w))?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span>`}</div></div>`:''}
+     ${w.quote?`<div class="blk">${isMethod(w)?`<span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="hardw" style="font-size:14px">${esc(w.quote)}</div>`:`<span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${(!cus&&hasOrig(w))?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div>`}</div>`:''}
      ${(w.hard&&w.hard.length)?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
      ${w.why?`<div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>`:''}
      ${(w.usage&&w.usage.length)?`<div class="blk"><span class="lbl">${isMethod(w)?'Try it · 怎么练':'Usage · 用法'}</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}
