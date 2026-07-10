@@ -3504,6 +3504,27 @@ function todayLine(){
   const p2=pool.length?pool:ALLWORDS.filter(hasOrig);
   return p2[Math.floor(today()/DAY)%p2.length];
 }
+const MOLDS=[
+ {name:"The comic triple",zh:"喜剧三连",tpl:"Two earnest items, then one absurd: “A, B, and [the wrong thing].”",ex:"Trustees, deans, faculty… and that Uber Eats driver delivering mimosas. — Conan"},
+ {name:"The inversion toast",zh:"反转致敬",tpl:"They are here for X; I am merely here for Y.",ex:"…nominated for their amazing work — while I'm here to receive a prize for being alive. — Ford"},
+ {name:"Quote, deflate, restate",zh:"引用即拆台",tpl:"Quote someone grand; puncture it with something tiny; restate it in your own image.",ex:"Whitman wrote “I contain multitudes.” Well, I contain a breakfast sandwich and an iced coffee. — Conan"},
+ {name:"The undercut turn",zh:"活板门转折",tpl:"Say the sincere thing; undercut it once; then mean it.",ex:"I did not come here simply to toss off jokes. I mean, that was the main reason. But I really do love this school. — Conan"},
+ {name:"The understatement landing",zh:"克制收尾",tpl:"After the big moment, land on a five-word understatement.",ex:"…This is very encouraging. — Ford"},
+ {name:"The absurd list item",zh:"清单彩蛋",tpl:"Any obligatory list will carry one absurd item at the end.",ex:"…music, literature, art, cuisine… and the forbidden Lutheran Lambada. — Conan"}];
+function dueCards(){
+  const t=today(),ids=(tl().repIds||[]);
+  return ALLWORDS.filter(w=>{const s=ws(w.id);return s.learned&&s.next&&s.next<=t&&!ids.includes(w.id);})
+    .sort((a,b)=>ws(a.id).next-ws(b.id).next);
+}
+function currentRep(){
+  const T=tl(),n=T.repN||0,t=today();
+  if(n>=3)return null;
+  if(n===0){const w=repCard();return (T.repIds||[]).includes(w.id)&&dueCards().length?{kind:'word',w:dueCards()[0],tag:'review · due'}:{kind:'word',w,tag:'today\u2019s card'};}
+  if(n===1){const d=dueCards();return d.length?{kind:'word',w:d[0],tag:'review · due'}:{kind:'mold',m:MOLDS[Math.floor(t/DAY)%MOLDS.length]};}
+  const d=dueCards();
+  if((T.molded)&&d.length)return {kind:'word',w:d[0],tag:'review · due'};
+  return {kind:'mold',m:MOLDS[Math.floor(t/DAY)%MOLDS.length]};
+}
 function repCard(){
   const t=today();
   const starred=ALLWORDS.filter(x=>ws(x.id).star);
@@ -3518,12 +3539,20 @@ function repSwap(){tl().repSwap=1;save();renderToday();}
 function doRep(){
   const txt=(document.getElementById('repIn').value||'').trim();
   if(!txt)return;
-  const w=repCard();
-  const kw=(String(w.term).toLowerCase().match(/[a-z']{4,}/g)||[String(w.term).toLowerCase()]);
-  if(!kw.some(k=>txt.toLowerCase().includes(k))){const h=document.getElementById('repHint');if(h)h.textContent='Use the phrase itself in your sentence.';return;}
-  state.sents=state.sents||[]; state.sents.push({d:today(),term:w.term,t:txt});
+  const r=currentRep(); if(!r)return;
+  if(r.kind==='word'){
+    const kw=(String(r.w.term).toLowerCase().match(/[a-z']{4,}/g)||[String(r.w.term).toLowerCase()]);
+    if(!kw.some(k=>txt.toLowerCase().includes(k))){const h=document.getElementById('repHint');if(h)h.textContent='Use the phrase itself in your sentence.';return;}
+    const s=ws(r.w.id); s.iv=(s.iv||0)+1; s.next=today()+[2,4,7,15,30][Math.min(s.iv-1,4)]*DAY;
+    const T=tl(); T.repIds=(T.repIds||[]); T.repIds.push(r.w.id);
+    state.sents=state.sents||[]; state.sents.push({d:today(),term:r.w.term,t:txt});
+  }else{
+    tl().molded=true;
+    state.sents=state.sents||[]; state.sents.push({d:today(),term:r.m.name,t:txt});
+  }
   if(state.sents.length>100)state.sents.shift();
-  tl().rep=true; addXP(10); bumpStreak(); save(); renderToday(); syncNow();
+  const T=tl(); T.rep=true; T.repN=(T.repN||0)+1; window._repOpen=false;
+  addXP(10); bumpStreak(); save(); renderToday(); syncNow();
 }
 function renderToday(){
   const T=tl(),w=todayLine(),rw=repCard();
@@ -3536,13 +3565,26 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
      <div style="font-size:13px;color:var(--muted)">${T.learned} learned · ${T.sessions} flipped today · any card keeps the 🔥</div>
    </div>
    <div class="card" style="margin-top:14px">
-     <span class="cat-chip">Daily rep</span>
-     ${T.rep?`<div style="font-size:14px;margin-top:8px">✓ ${esc(rw.term)} — used, not just seen.</div><div style="font-size:13px;color:var(--muted);margin-top:6px">“${esc((state.sents&&state.sents.length)?state.sents[state.sents.length-1].t:'')}”</div>`
-     :`<div class="term" style="font-size:19px">${esc(rw.term)}</div>
-     <div style="font-size:13.5px;color:var(--muted)">${esc(rw.gloss)}</div>
+     <span class="cat-chip">Daily rep</span>${(T.repN||0)>0?`<span style="font-size:11.5px;color:var(--muted);margin-left:8px">${Math.min(T.repN,3)}/3</span>`:``}
+     ${(function(){
+       const r=currentRep();
+       const showForm=(T.repN||0)===0||window._repOpen;
+       if(!r)return `<div style="font-size:14px;margin-top:8px">✓ 3/3 — a word, a review, a mold. That was the workout.</div>`;
+       if(!showForm)return `<div style="font-size:14px;margin-top:8px">✓ used, not just seen.</div><div style="font-size:13px;color:var(--muted);margin-top:6px">“${esc((state.sents&&state.sents.length)?state.sents[state.sents.length-1].t:'')}”</div><div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="window._repOpen=true;renderToday()">Another rep (${(T.repN||0)+1}/3) →</button></div>`;
+       if(r.kind==='word')return `<div style="font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">${esc(r.tag||'')}</div>
+     <div class="term" style="font-size:19px">${esc(r.w.term)}</div>
+     <div style="font-size:13.5px;color:var(--muted)">${esc(r.w.gloss)}</div>
      <textarea id="repIn" placeholder="Use it in one sentence from your week — say it aloud, then type it."></textarea>
      <div id="repHint" style="font-size:12.5px;color:var(--terra);margin-top:4px"></div>
-     <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button>${T.repSwap?``:`<button class="btn ghost slim" onclick="repSwap()">Swap ↻</button>`}</div>`}
+     <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button>${((T.repN||0)===0&&!T.repSwap)?`<button class="btn ghost slim" onclick="repSwap()">Swap ↻</button>`:``}</div>`;
+       return `<div style="font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">humor mold</div>
+     <div class="term" style="font-size:19px">${esc(r.m.name)} <span class="uz">· ${esc(r.m.zh)}</span></div>
+     <div style="font-size:13.5px;margin-top:4px">${esc(r.m.tpl)}</div>
+     <div style="font-size:12.5px;color:var(--muted);margin-top:4px">${esc(r.m.ex)}</div>
+     <textarea id="repIn" placeholder="Build one for your week — a standup, an email, a toast."></textarea>
+     <div id="repHint" style="font-size:12.5px;color:var(--terra);margin-top:4px"></div>
+     <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button></div>`;
+     })()}
    </div>
    <div class="card" style="margin-top:14px;cursor:pointer" onclick="todayOpen=!todayOpen;renderToday()">
      <span class="cat-chip">Line of the day</span>
@@ -4053,7 +4095,7 @@ function exitUnit(){inUnit=null;idx=-1;renderLearn()}
 function go(i){ if(i<-1)i=-1; idx=i; if(inUnit&&!inUnit.deck){state.upos=state.upos||{};state.upos[inUnit.id]=Math.max(0,idx+1);save();} renderLearn(); window.scrollTo(0,0)}
 function learnNext(){
   const u=inUnit,uw=(u._sess||unitWords(u)),w=uw[idx];
-  if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.next=today();addXP(5);bumpStreak();tl().learned++;syncNow();}}
+  if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.iv=0;s.next=today()+2*DAY;addXP(5);bumpStreak();tl().learned++;syncNow();}}
   save();
   if(idx+1<uw.length){go(idx+1);}
   else{
