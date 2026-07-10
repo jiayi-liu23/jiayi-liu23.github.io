@@ -3559,7 +3559,7 @@ function renderToday(){
   document.getElementById('todayArea').innerHTML=`${noticesHtml()}
 ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
      <span class="cat-chip">Welcome</span>
-     <div style="font-size:14px;margin-top:8px">A private word bank for articulate speech, distilled from a speaking course — you don't need the course; every card stands alone. <b>Lessons</b> to study, <b>Shuffle</b> to browse; here — one rep, one line, one speech a day. Progress saves on this device.</div>
+     <div style="font-size:14px;margin-top:8px">A private word bank for articulate speech. <b>Lessons</b> to study, <b>Shuffle</b> to browse — and here, one rep, one line, one speech a day.</div>
      <div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn ghost slim" onclick="state.welcomed=1;save();renderToday()">Got it</button></div>
    </div>`}<div class="card">
      <div style="font-size:13px;color:var(--muted)">${T.learned} learned · ${T.sessions} flipped today · any card keeps the 🔥</div>
@@ -3917,7 +3917,53 @@ const STUDIES=[
   craftzh:"和 Jobs 用《全球概览》一样,她收在一句收藏来的引文上——塞内加——然后补上自己温暖的一句。又一次 commonplace book 式结尾：分量交给经典,祝福留给自己。",
   steal:"Close on a borrowed classic plus one plain sentence of your own blessing."}],
  arc:"Confess the nerves, lower the bar, announce two heresies, swap the expected fear for the real one, inventory the ruin flatly, flip the basement into a foundation, spend the brand once at the summit, and let Seneca land the plane. The failure narrative, definitively told.",
- arczh:"先认怯场,再降期待；预告两记悖论；把人人以为的恐惧换成真实的恐惧；平铺直叙地清点废墟,再把地下室翻成地基；在顶点把自己的品牌兑现一次；最后让塞内加降落。失败叙事的定版讲法。"}
+ arczh:"先认怯场,再降期待；预告两记悖论；把人人以为的恐惧换成真实的恐惧；平铺直叙地清点废墟,再把地下室翻成地基；在顶点把自己的品牌兑现一次；最后让塞内加降落。失败叙事的定版讲法。"},
+{id:"st8",speaker:"Chimamanda Ngozi Adichie",title:"Chimamanda Adichie — The Danger of a Single Story (TED, 2009)",sub:"19-minute TED talk · 8 beats",hookterm:"not untrue — incomplete",hook:"The problem with stereotypes is not that they are untrue, but that they are incomplete.",hooksrc:"Chimamanda Ngozi Adichie, TED (2009)",hookurl:"https://youtu.be/D9Ihs241zeg?t=786",
+ intro:"She argues against the single story by refusing to tell one: she plays victim, perpetrator, and penitent in her own argument, borrows a word from Igbo to name the mechanism, and lands on a gift. The most structurally honest talk in the TED canon.",
+ introzh:"她反对“单一故事”的方式,是拒绝只讲一个故事:在自己的论证里,她轮流扮演受害者、加害者与忏悔者;从伊博语借来一个词命名机制;最后收在一份馈赠上。TED 正典里结构最诚实的一场演讲。",
+ beats:[
+ {fn:"The two-sentence opening",fnzh:"两句开场",exact:true,url:"https://youtu.be/D9Ihs241zeg?t=8",
+  quote:"I'm a storyteller. And I would like to tell you a few personal stories about what I like to call “the danger of the single story.”",
+  craft:"Identity in three words, thesis in one sentence — no throat-clearing, and the talk's title is spoken aloud in its second breath. Compare Jobs: the map arrives before the audience can wonder where this is going.",
+  craftzh:"三个词报出身份,一句话点出命题——零寒暄,演讲标题在第二口气里被亲口说出。和 Jobs 一样:地图在听众开始疑惑之前就已到手。",
+  steal:"Open with who you are in three words, then name your talk's thesis out loud in sentence two."},
+ {fn:"The self-exhibit",fnzh:"自证第一案",exact:true,url:"https://youtu.be/D9Ihs241zeg?t=28",
+  quote:"All my characters were white and blue-eyed. They played in the snow. They ate apples. And they talked a lot about the weather… My characters also drank a lot of ginger beer — never mind that I had no idea what ginger beer was.",
+  craft:"Her first case study of the disease is herself, at seven — a Nigerian child writing snow she had never seen. Ginger beer is the comic detail that makes the colonization of imagination concrete and forgivable at once.",
+  craftzh:"这个病的第一个病例是她自己,七岁——一个写雪的尼日利亚孩子,而她从未见过雪。ginger beer 这个喜剧细节,让“想象力被殖民”一下子具体、又一下子可以原谅。",
+  steal:"Make yourself the first exhibit of the problem — the audience lowers its defenses when the finger points inward first."},
+ {fn:"The pattern repeats",fnzh:"模式复现",exact:true,url:"https://youtu.be/D9Ihs241zeg?t=198",
+  quote:"All I had heard about them was how poor they were… their poverty was my single story of them.",
+  craft:"Fide the houseboy: the disease she caught from British books, she now transmits onto a poorer family — the argument advances by showing the pattern is structural, not personal.",
+  craftzh:"男仆 Fide:她从英国童书那里染上的病,如今传给了更穷的一家人——论证的推进方式,是证明这个模式是结构性的,不是个人品行问题。",
+  steal:"Show the same failure twice — once done to you, once done by you — and it stops being an accusation and becomes a mechanism."},
+ {fn:"The mirror",fnzh:"镜像翻转",exact:true,url:"https://youtu.be/D9Ihs241zeg?t=255",
+  quote:"My American roommate was shocked by me. She asked where I had learned to speak English so well… She asked if she could listen to what she called my “tribal music,” and was consequently very disappointed when I produced my tape of Mariah Carey.",
+  craft:"Now she is on the receiving end — and the weapon is a prop: Mariah Carey. One cassette tape does what a paragraph of indignation could not. Note the register: amused, never wounded.",
+  craftzh:"这回轮到她被“单一故事”——武器是一件道具:Mariah Carey 的磁带。一盘磁带做到了一整段控诉做不到的事。注意语气:好笑,而非受伤。",
+  steal:"When you are the wronged party, reach for the funniest true detail, not the angriest one."},
+ {fn:"The confession",fnzh:"忏悔完成三角",exact:true,url:"https://youtu.be/D9Ihs241zeg?t=546",
+  quote:"I remember walking around Guadalajara, watching the people, going to work, rolling up tortillas in the marketplace… I felt overwhelmed with shame. I realized that I had been so immersed in the media coverage of Mexicans that they had become one thing in my mind: the abject immigrant.",
+  craft:"Victim, perpetrator — and now penitent. The triangle closes: nobody in the room is exempt, including the speaker at her most celebrated. This confession is what buys the thesis its authority.",
+  craftzh:"受害者、加害者——现在是忏悔者。三角闭合:全场无人豁免,包括讲台上最受敬仰的她自己。正是这次忏悔,为论点买来了权威。",
+  steal:"Before you indict the room, indict yourself with a specific, dated memory — shame confessed converts to authority."},
+ {fn:"Naming the mechanism",fnzh:"命名机制",exact:true,url:"https://youtu.be/D9Ihs241zeg?t=576",
+  quote:"There is a word, an Igbo word, that I think about whenever I think about the power structures of the world, and it is “nkali”… How they are told, who tells them, when they're told, how many stories are told, are really dependent on power. … Start the story with the arrows of the Native Americans, and not with the arrival of the British, and you have an entirely different story.",
+  craft:"She borrows a word from her own language to name the invisible force — then proves it with one editing decision: where you START a story determines the story. A whole theory of narrative power in a single cut.",
+  craftzh:"她从母语里借来一个词,给看不见的力量命名——然后用一个剪辑决定完成证明:故事从哪里开始,故事就是什么。一整套叙事权力理论,压缩成一次剪辑。",
+  steal:"Name your mechanism with a borrowed or coined word, then demonstrate it with one before/after edit."},
+ {fn:"The thesis lands",fnzh:"论点落地",exact:true,url:"https://youtu.be/D9Ihs241zeg?t=786",
+  quote:"The single story creates stereotypes, and the problem with stereotypes is not that they are untrue, but that they are incomplete. They make one story become the only story.",
+  craft:"The not-X-but-Y correction, aimed at the century's laziest debate: the flaw of a stereotype is incompleteness, not falsehood — which survives fact-checking and changes how you argue forever.",
+  craftzh:"一记 not-X-but-Y 修正,对准本世纪最偷懒的辩论:刻板印象的病不在失真,而在不全——这个论断经得起事实核查,并从此改变你吵架的方式。",
+  steal:"Aim your critique at incompleteness rather than falsehood — it is the version that cannot be fact-checked away."},
+ {fn:"The gift ending",fnzh:"馈赠收尾",exact:true,url:"https://youtu.be/D9Ihs241zeg?t=1051",
+  quote:"Stories matter. Many stories matter… when we reject the single story, when we realize that there is never a single story about any place, we regain a kind of paradise.",
+  craft:"Two two-word sentences (Stories matter. Many stories matter.) — the thesis compressed to a heartbeat — then the reward is named: not correctness, paradise. She ends by giving the audience something, not asking of them.",
+  craftzh:"两个两词短句(Stories matter. Many stories matter.)——论点压缩成心跳——然后点出报酬:不是“正确”,是乐园。她的结尾是给予听众,而不是要求听众。",
+  steal:"Compress your thesis to two tiny sentences near the end, then name what the audience gains — end on the gift."}],
+ arc:"Identity, thesis, then a triangle — wronged, wrongdoer, penitent — each corner a personal story; a borrowed word names the mechanism, one editing decision proves it, the not-untrue-but-incomplete correction lands the argument, and paradise pays the audience out. She defeats the single story by structure alone: she never tells one.",
+ arczh:"先报身份、点命题,再走完一个三角——被冤枉者、冤枉人者、忏悔者——每个角都是亲身故事;借来的词命名机制,一次剪辑完成证明,“不是失真而是不全”落定论点,最后用“乐园”付给听众报酬。她战胜单一故事的方式是结构本身:她从头到尾没有只讲一个故事。"}
 ];
 const STEAL_OCC={st1:[['opening','humor'],['toast','humor'],['story'],['toast','review','meetings'],['toast','endings'],['endings'],['endings','humor']],
  st2:[['opening','humor'],['opening','review','meetings'],['story','review'],['story','qa'],['review'],['endings','story'],['endings'],['endings','toast']],
@@ -3925,7 +3971,8 @@ const STEAL_OCC={st1:[['opening','humor'],['toast','humor'],['story'],['toast','
  st4:[['opening','story'],['story'],['review','story','meetings'],['review','meetings'],['review','story'],['review'],['endings','story']],
  st5:[['opening'],['opening','review','meetings'],['opening','story'],['review'],['story','humor'],['story','endings'],['story'],['endings']],
  st6:[['opening','humor'],['humor','opening'],['humor'],['story','qa'],['humor','review','meetings'],['qa','meetings'],['review','meetings'],['endings']],
- st7:[['opening','humor'],['opening','humor'],['opening','review'],['story','qa','meetings'],['story'],['story','qa'],['endings'],['endings','toast']]};
+ st7:[['opening','humor'],['opening','humor'],['opening','review'],['story','qa','meetings'],['story'],['story','qa'],['endings'],['endings','toast']],
+ st8:[['opening','review','meetings'],['story','opening'],['story'],['story','humor'],['story','qa'],['review','meetings'],['review','qa','meetings'],['endings']]};
 const OCCS=[['all','All'],['star','Starred'],['meetings','Meetings'],['opening','Openings'],['humor','Humor'],['story','Storytelling'],['review','Talks & presentations'],['qa','Q&A'],['toast','Toasts & thanks'],['endings','Endings']];
 let inSteals=false, stealOcc='all', inLines=false;
 function stealsList(){const out=[];STUDIES.forEach(st=>{(st.beats||[]).forEach((b,i)=>{if(b.steal)out.push({t:b.steal,sid:st.id,bi:i,title:st.title,fn:b.fn,occ:(STEAL_OCC[st.id]||[])[i]||[]});});});return out;}
