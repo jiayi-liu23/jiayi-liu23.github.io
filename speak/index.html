@@ -2058,7 +2058,7 @@ const UNITS=[
   {id:'u10w23',whyzh:'练习页的十个填空句干:念出 not only 半句,把 but also 的空当场补上——空位逼你即席找出第二个角度。',term:'the parallelism drill',cat:'Phrases',
    gloss:'平行结构填空操——把 not only 半句读出声,补完 but also',
    hard:[],
-   quote:"(From the Parallelism worksheet — ten fill-in stems, e.g. “Not only does this city boast beautiful parks, but it also offers ___.” Model answer: “She not only sings beautifully, but also plays the piano with great skill.”)",
+   quote:"(From the Parallelism worksheet — complete each aloud: 1. Not only does this city boast beautiful parks, but it also offers ___. 2. The course not only covers basic principles of economics, but it also delves into ___. 3. Not only did she win the championship, but she also set ___. 4. Our new software not only simplifies data analysis, but it also enhances ___. 5. The museum not only displays ancient artifacts, but it also features ___. 6. He is not only an excellent writer, but he also has a talent for ___. 7. Not only do these exercises help improve strength, but they also promote ___. 8. The policy not only aims to reduce pollution, but it also seeks to improve ___. 9. Not only does the charity provide food and shelter, but it also offers ___. 10. This novel not only captivates the reader with its intriguing plot, but it also explores ___. Model: “She not only sings beautifully, but also plays the piano with great skill.”)",
    src:"BetterSpeak · Parallelism worksheet (Day 13)",
    why:"Read the “not only” half aloud and your mouth owes the room an exhale — the blank is where the second angle gets invented, on the spot.",
    usage:["Not only did the pilot run clean, but it also ___ — finish it aloud.","Two stems before a talk: balance warms up with the voice."]},
@@ -3331,7 +3331,7 @@ const UNITS=[
    why:"An appeal for aid framed as a division of labor — you supply, we deliver. Dependence rewritten as partnership, dignity intact.",
    usage:["Give us the data access and we will finish the analysis.","Frame every ask as a handshake: their input, your delivery."]},
  ]},
-{id:'uR',ordered:true,title:'The 10 Rules of Articulacy',zh:'十条军规',from:'Course capstone · the lock-screen rules · 全课压缩',
+{id:'uR',tool:true,ordered:true,title:'The 10 Rules of Articulacy',zh:'十条军规',from:'Course capstone · the lock-screen rules · 全课压缩',
  essence:'The whole program compressed into ten principles (the course ships them as phone wallpaper). Each rule is a memory handle for a unit you’ve already trained — <b>enforce one rule per week.</b><br><span style="color:var(--muted)">全课压缩成十条军规；一周执行一条。</span>',
  words:[
   {id:'uRw1',whyzh:'总开关：其余每条规则都假设你是清醒地握着方向盘。',term:'Rule 1 — consciously select your words',cat:'Phrases',gloss:"口才始于“有意识地选词”—— 对抗嘴的自动驾驶",hard:[],quote:"Articulacy increases when you consciously select your words.",src:"BetterSpeak · The 10 Rules",why:"The master switch: every other rule assumes you are awake at the wheel.",usage:["One conversation a day in full manual mode.","Autopilot words are borrowed; chosen words are yours."]},
@@ -3496,7 +3496,7 @@ function repPool(){
 }
 function dueCards(){
   const t=today(),ids=(tl().repIds||[]);
-  return repPool().filter(x=>x.s.learned&&x.s.next&&x.s.next<=t&&!ids.includes(x.w.id))
+  return repPool().filter(x=>x.s.learned&&!REF_UNITS.has(x.w.unit)&&x.s.next&&x.s.next<=t&&!ids.includes(x.w.id))
     .sort((a,b)=>a.s.next-b.s.next).map(x=>x.w);
 }
 function currentRep(){
@@ -3513,7 +3513,7 @@ function repCard(){
   const t=today();
   const P=repPool();
   const starred=P.filter(x=>x.s.star).map(x=>x.w);
-  const learned=P.filter(x=>x.s.learned).map(x=>x.w);
+  const learned=P.filter(x=>x.s.learned&&!REF_UNITS.has(x.w.unit)).map(x=>x.w);
   const base=learned.length?learned:ALLWORDS.filter(w=>!REF_UNITS.has(w.unit));
   let pool=starred.length>=3?starred:(starred.length?starred.concat(base.filter(w=>!starred.some(s=>s.id===w.id))):base);
   const ld=todayLine();
@@ -3522,31 +3522,55 @@ function repCard(){
   return pool[(Math.floor(t/DAY)+off)%pool.length];
 }
 function repSwap(){tl().repSwap=1;window._repDraft='';save();renderToday();}
+function repQuick(ok){
+  const r=currentRep(); if(!r||r.kind!=='word')return;
+  const s=r.w._cus?(state.custom.find(c=>c.id===r.w.id)||{}):ws(r.w.id);
+  if(ok){s.iv=(s.iv||0)+1;s.next=today()+[4,7,15,30][Math.min(s.iv-1,3)]*DAY;}
+  else{s.iv=0;s.next=today()+2*DAY;}
+  const T=tl(); T.repIds=(T.repIds||[]); T.repIds.push(r.w.id);
+  window._repDraft=''; save(); renderToday();
+}
 function doRep(){
   const txt=(document.getElementById('repIn').value||'').trim();
   if(!txt)return;
   const r=currentRep(); if(!r)return;
+  const hint=m=>{const h=document.getElementById('repHint');if(h)h.textContent=m;};
+  const STOP=new Set(['the','and','for','you','your','not','but','with','that','this','from','are','was','has','have','can','will','into','when','each','all','out','one','more','its']);
   if(r.kind==='word'){
+    const tlow=txt.toLowerCase();
+    const wb=k=>new RegExp("(^|[^a-z'])"+k.replace(/[^a-z']/g,'')+"([^a-z']|$)").test(tlow);
+    const wc=txt.trim().split(/\s+/).length;
     const isLine=!isMethod(r.w)&&!String(r.w.term).includes('→')&&(String(r.w.term).trim().split(/\s+/).length>=4||/[,!?]/.test(String(r.w.term)));
-    if(isLine){
+    if(String(r.w.term).includes('→')){
+      const parts=String(r.w.term).split('→');
+      const right=parts.slice(1).join(' ');
+      const lp=parts[0].toLowerCase().split('·').map(s=>s.replace(/[^a-z\s']/g,' ').replace(/\s+/g,' ').trim()).filter(s=>s.length>3);
+      if(lp.some(p=>tlow.includes(p))){hint('That\u2019s the old phrase — this card swaps it out. Say it the new way.');return;}
+      const rw=(right.toLowerCase().match(/[a-z']{3,}/g)||[]).filter(k=>!STOP.has(k));
+      const literal=!right.trim().startsWith('(')&&rw.length>0&&(rw.length===1||right.includes('·'));
+      if(literal&&!rw.some(wb)){hint('Use the replacement itself in your sentence.');return;}
+      if(!literal&&wc<5){hint('Do what the card says, in a real sentence — five words or more.');return;}
+    }else if(isLine){
       const norm=s=>String(s).toLowerCase().replace(/[^a-z\s']/g,' ').replace(/\s+/g,' ').trim();
       const tt=norm(txt);
-      if(txt.trim().split(/\s+/).length<4||norm(r.w.quote||'').includes(tt)||norm(r.w.term).includes(tt)){const h=document.getElementById('repHint');if(h)h.textContent='Make it yours — your own version of the shape, not the original words.';return;}
+      if(wc<4){hint('A little more — give it a whole line, four words or up.');return;}
+      if(norm(r.w.quote||'').includes(tt)||norm(r.w.term).includes(tt)){hint('Make it yours — your own version of the shape, not the original words.');return;}
+    }else if(isMethod(r.w)){
+      if(wc<5){hint('Apply the rule in a real sentence — five words or more.');return;}
     }else{
-      const side=String(r.w.term).includes('→')?String(r.w.term).split('→').slice(1).join(' '):String(r.w.term);
-      let kw=(side.toLowerCase().match(/[a-z']{3,}/g)||[side.toLowerCase()]);
-      const kwf=kw.filter(k=>k!=='the'&&k!=='and');
-      if(kwf.length)kw=kwf;
-      if(!side.trim().startsWith('(')&&!kw.some(k=>txt.toLowerCase().includes(k))){const h=document.getElementById('repHint');if(h)h.textContent='Use the phrase itself in your sentence.';return;}
+      let kw=(String(r.w.term).toLowerCase().match(/[a-z']{4,}/g)||[]).filter(k=>!STOP.has(k));
+      if(!kw.length)kw=[String(r.w.term).toLowerCase().trim()];
+      if(!kw.some(wb)&&!tlow.includes(kw[0])){hint('Use the phrase itself in your sentence.');return;}
     }
-    const s=r.w._cus?(state.custom.find(c=>c.id===r.w.id)||{}):ws(r.w.id); s.iv=(s.iv||0)+1; s.next=today()+[4,7,15,30][Math.min(s.iv-1,3)]*DAY;
+    const s=r.w._cus?(state.custom.find(c=>c.id===r.w.id)||{}):ws(r.w.id); s.iv=(s.iv||0)+1; s.uses=(s.uses||0)+1; s.next=today()+[4,7,15,30][Math.min(s.iv-1,3)]*DAY;
     const T=tl(); T.repIds=(T.repIds||[]); T.repIds.push(r.w.id); T.lastRep=r.w.id;
     state.sents=state.sents||[]; state.sents.push({d:today(),term:r.w.term,t:txt});
   }else{
+    if(txt.trim().split(/\s+/).length<4){hint('Give the mold a real attempt — four words or more.');return;}
     tl().molded=true;
     state.sents=state.sents||[]; state.sents.push({d:today(),term:r.m.name,t:txt});
   }
-  if(state.sents.length>500)state.sents.shift();
+  if(state.sents.length>1000)state.sents.shift();
   const T=tl(); T.rep=true; T.repN=(T.repN||0)+1; window._repOpen=false;
   window._repDraft=''; addXP(r.extra?5:10); bumpStreak(); save(); renderToday(); syncNow();
 }
@@ -3558,20 +3582,20 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
      <div style="font-size:14px;margin-top:8px">A private word bank for articulate speech. <b>Lessons</b> to study, <b>Shuffle</b> to browse — and here, one rep, one line, one speech a day.</div>
      <div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn ghost slim" onclick="state.welcomed=1;save();renderToday()">Got it</button></div>
    </div>`}<div class="card">
-     <span class="cat-chip">Daily rep</span>${(T.repN||0)>0?`<span style="font-size:11.5px;color:var(--muted);margin-left:8px">${Math.min(T.repN,3)}/3${dueCards().length?` · ${dueCards().length} due`:``}</span>`:``}
+     <span class="cat-chip">Daily rep</span>${((T.repN||0)>0||dueCards().length>0)?`<span style="font-size:11.5px;color:var(--muted);margin-left:8px">${(T.repN||0)>0?`${Math.min(T.repN,3)}/3`:``}${dueCards().length?`${(T.repN||0)>0?` · `:``}${dueCards().length} due`:``}</span>`:``}
      ${(function(){
        const r=currentRep();
        const showForm=(T.repN||0)===0||window._repOpen;
        const isLine=r&&r.kind==='word'&&!isMethod(r.w)&&!String(r.w.term).includes('→')&&(String(r.w.term).trim().split(/\s+/).length>=4||/[,!?]/.test(String(r.w.term)));
        if(!r)return `<div style="font-size:14px;margin-top:8px">✓ All clear — reps done and the review queue is empty.</div>`;
-       if(!showForm){const lw=T.lastRep&&ALLWORDS.find(x=>x.id===T.lastRep);const cmp=(lw&&lw.usage&&lw.usage.length)?`<div style="font-size:12.5px;color:var(--muted);margin-top:8px"><span style="font-weight:600;color:var(--wood-dk)">Compare · 参照</span> — ${esc(lw.usage[0])}</div>`:'';return `<div style="font-size:14px;margin-top:8px">✓ used, not just seen.</div><div style="font-size:13px;color:var(--muted);margin-top:6px">“${esc((state.sents&&state.sents.length)?state.sents[state.sents.length-1].t:'')}”</div>${cmp}<div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="window._repOpen=true;renderToday()">${(T.repN||0)<3?`Another rep (${(T.repN||0)+1}/3) →`:`Keep reviewing · ${dueCards().length} due →`}</button></div>`;}
+       if(!showForm){const lw=T.lastRep&&ALLWORDS.find(x=>x.id===T.lastRep);const cmp=((lw&&lw.usage&&lw.usage.length)?`<div style="font-size:12.5px;color:var(--muted);margin-top:8px"><span style="font-weight:600;color:var(--wood-dk)">Compare · 参照</span> — ${esc(lw.usage[0])}</div>`:'')+(lw?`<div style="font-size:11.5px;color:var(--muted);margin-top:4px">“${esc(lw.term)}” — used ${ws(lw.id).uses||0}/38. 38 makes it yours.</div>`:'');return `<div style="font-size:14px;margin-top:8px">✓ used, not just seen.</div><div style="font-size:13px;color:var(--muted);margin-top:6px">“${esc((state.sents&&state.sents.length)?state.sents[state.sents.length-1].t:'')}”</div>${cmp}${((T.repN||0)<3||dueCards().length>0)?`<div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="window._repOpen=true;renderToday()">${(T.repN||0)<3?`Another rep (${(T.repN||0)+1}/3) →`:`Keep reviewing · ${dueCards().length} due →`}</button></div>`:``}`;}
        if(r.kind==='word')return `<div style="font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">${esc(r.tag||'')}</div>
      <div class="term" style="font-size:19px">${esc(r.w.term)}</div>
      <div style="font-size:13.5px;color:var(--muted)">${esc(r.w.gloss)}</div>
      <div style="font-size:12.5px;color:var(--wood-dk);margin-top:10px">${isMethod(r.w)?'Apply the rule in one sentence from your week — say it aloud first.':isLine?'This one is already a whole line — steal its shape for a moment from your week.':'Use it in one sentence from your week — say it aloud first.'}</div>
      <textarea id="repIn" style="min-height:56px;margin-top:8px" oninput="window._repDraft=this.value" placeholder="${isLine?'Your version…':'One sentence…'}">${esc(window._repDraft||'')}</textarea>
      <div id="repHint" style="font-size:12.5px;color:var(--terra);margin-top:4px"></div>
-     <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button>${((T.repN||0)===0&&!T.repSwap)?`<button class="btn ghost slim" onclick="repSwap()">Swap ↻</button>`:``}</div>`;
+     <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button>${r.extra?`<button class="btn ghost slim" onclick="repQuick(1)">Still know it ✓</button><button class="btn ghost slim" onclick="repQuick(0)">Forgot ↺</button>`:``}${((T.repN||0)===0&&!T.repSwap)?`<button class="btn ghost slim" onclick="repSwap()">Swap ↻</button>`:``}</div>`;
        return `<div style="font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">humor mold</div>
      <div class="term" style="font-size:19px">${esc(r.m.name)} <span class="uz">· ${esc(r.m.zh)}</span></div>
      <div style="font-size:13.5px;margin-top:4px">${esc(r.m.tpl)}</div>
@@ -3973,9 +3997,35 @@ const STEAL_OCC={st1:[['opening','humor'],['toast','humor'],['story'],['toast','
 const OCCS=[['all','All'],['star','Starred'],['meetings','Meetings'],['opening','Openings'],['humor','Humor'],['story','Storytelling'],['review','Talks & presentations'],['qa','Q&A'],['toast','Toasts & thanks'],['endings','Endings']];
 let inSteals=false, stealOcc='all', inLines=false;
 function stealsList(){const out=[];STUDIES.forEach(st=>{(st.beats||[]).forEach((b,i)=>{if(b.steal)out.push({t:b.steal,sid:st.id,bi:i,title:st.title,fn:b.fn,occ:(STEAL_OCC[st.id]||[])[i]||[]});});});return out;}
-function enterSteals(){inSteals=true;inLines=false;inStudy=null;inUnit=null;renderLearn();window.scrollTo(0,0)}
-function enterLines(){inLines=true;inSteals=false;inStudy=null;inUnit=null;renderLearn();window.scrollTo(0,0)}
+function enterSteals(){pushNav();inSteals=true;inLines=false;inStudy=null;inUnit=null;renderLearn();window.scrollTo(0,0)}
+function enterLines(){pushNav();inLines=true;inSteals=false;inStudy=null;inUnit=null;renderLearn();window.scrollTo(0,0)}
 function exitLines(){inLines=false;renderLearn();window.scrollTo(0,0)}
+let inMolds=false;
+function enterMolds(){pushNav();inMolds=true;inLines=false;inSteals=false;inStudy=null;inUnit=null;renderLearn();window.scrollTo(0,0);}
+function exitMolds(){inMolds=false;renderLearn();window.scrollTo(0,0);}
+function moldSave(i){
+  const el=document.getElementById('mIn'+i);const txt=(el&&el.value||'').trim();
+  const h=document.getElementById('mHint'+i);
+  if(!txt||txt.split(/\s+/).length<4){if(h)h.textContent='Four words or more — give the mold a real attempt.';return;}
+  state.sents=state.sents||[];state.sents.push({d:today(),term:MOLDS[i].name,t:txt});
+  if(state.sents.length>1000)state.sents.shift();
+  if(el)el.value='';addXP(5);bumpStreak();save();
+  if(h)h.textContent='✓ Saved to My Lines.';
+}
+function renderMolds(){
+  const area=document.getElementById('learnArea');
+  area.innerHTML=`<div class="card"><span class="cat-chip">Humor molds · 幽默模具</span>
+   <div style="font-size:13.5px;color:var(--muted);margin-top:6px">Six reusable shapes for a laugh. Fill any of them with this week\u2019s material — say it aloud, then type it.</div>
+   <div class="row" style="margin-top:12px"><button class="btn ghost slim" onclick="exitMolds()">⌂ Lessons</button></div></div>`+
+  MOLDS.map((m,i)=>`<div class="card" style="margin-top:14px">
+    <span class="cat-chip">${esc(m.name)}</span><span class="uz" style="margin-left:8px">· ${esc(m.zh)}</span>
+    <div style="font-size:14px;margin-top:8px">${esc(m.tpl)}</div>
+    <div style="font-size:12.5px;color:var(--muted);margin-top:6px">${esc(m.ex)}</div>
+    <textarea id="mIn${i}" style="min-height:52px;margin-top:8px" placeholder="Yours…"></textarea>
+    <div id="mHint${i}" style="font-size:12px;color:var(--terra);margin-top:3px"></div>
+    <div class="row" style="margin-top:6px"><button class="btn primary slim" onclick="moldSave(${i})">Save to My Lines ✓</button></div>
+  </div>`).join('');
+}
 function renderLines(){
   const area=document.getElementById('learnArea');
   const s=(state.sents||[]).slice().reverse();
@@ -3991,6 +4041,15 @@ function exitSteals(){inSteals=false;renderLearn();window.scrollTo(0,0)}
 function setOcc(o){stealOcc=o;renderLearn()}
 function toggleStealStar(sid,bi){state.stealStars=state.stealStars||{};const k=sid+'#'+bi;if(state.stealStars[k])delete state.stealStars[k];else state.stealStars[k]=1;save();renderLearn();}
 function goBeat(sid,i){inSteals=false;window._fromSteals=true;enterStudy(sid,true);const el=document.getElementById('bt'+i);if(el)el.scrollIntoView();}
+function stealWriteOpen(sid,bi){window._stealW=sid+'#'+bi;renderSteals();}
+function stealSave(sid,bi){
+  const el=document.getElementById('stIn');const txt=(el&&el.value||'').trim();
+  if(!txt||txt.split(/\s+/).length<4){const h=document.getElementById('stHint');if(h)h.textContent='Four words or more — make it a real line.';return;}
+  const it=stealsList().find(x=>x.sid===sid&&x.bi===bi);
+  state.sents=state.sents||[];state.sents.push({d:today(),term:'✂ '+(it?it.fn:'steal'),t:txt});
+  if(state.sents.length>1000)state.sents.shift();
+  window._stealW=null;addXP(5);bumpStreak();save();renderSteals();
+}
 function renderSteals(){
   const area=document.getElementById('learnArea');
   const items=stealsList().filter(x=>stealOcc==='all'?true:(stealOcc==='star'?!!(state.stealStars&&state.stealStars[x.sid+'#'+x.bi]):x.occ.includes(stealOcc)));
@@ -4004,9 +4063,20 @@ function renderSteals(){
     <div style="font-size:15px;margin-top:8px">${esc(x.t)}</div>
     <div class="row" style="margin-top:10px;justify-content:space-between;align-items:center">
       <div style="font-size:12px;color:var(--muted)">${esc(x.title)}</div>
-      <button class="btn ghost slim" onclick="goBeat('${x.sid}',${x.bi})">See it used →</button>
+      <div class="row" style="margin-top:0;gap:8px"><button class="btn ghost slim" onclick="stealWriteOpen('${x.sid}',${x.bi})">✍ Try it</button><button class="btn ghost slim" onclick="goBeat('${x.sid}',${x.bi})">See it used →</button></div>
     </div>
+    ${window._stealW===(x.sid+'#'+x.bi)?`<div style="margin-top:10px"><textarea id="stIn" style="min-height:52px" placeholder="Your version, for your next occasion…"></textarea><div id="stHint" style="font-size:12px;color:var(--terra);margin-top:3px"></div><div class="row" style="margin-top:6px"><button class="btn primary slim" onclick="stealSave('${x.sid}',${x.bi})">Save to My Lines ✓</button><button class="btn ghost slim" onclick="window._stealW=null;renderSteals()">Cancel</button></div></div>`:``}
   </div>`).join('');
+}
+function capSave(sid){
+  const el=document.getElementById('capIn');const txt=(el&&el.value||'').trim();
+  const h=document.getElementById('capHint');
+  if(!txt||txt.split(/\s+/).length<4){if(h)h.textContent='Four words or more — a real opening.';return;}
+  const st=STUDIES.find(s=>s.id===sid);
+  state.sents=state.sents||[];state.sents.push({d:today(),term:'§ '+(st?st.title:'study'),t:txt});
+  if(state.sents.length>1000)state.sents.shift();
+  if(el)el.value='';addXP(5);bumpStreak();save();
+  if(h)h.textContent='✓ Saved to My Lines.';
 }
 let inStudy=null, todayOpen=false;
 function beatVid(i,url){
@@ -4016,7 +4086,7 @@ function beatVid(i,url){
   if(!m){window.open(url,'_blank');return;}
   d.innerHTML='<div style="position:relative;padding-top:56.25%;margin-top:10px;border-radius:12px;overflow:hidden"><iframe src="https://www.youtube-nocookie.com/embed/'+m[1]+'?start='+m[2]+'&autoplay=1&rel=0" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>';
 }
-function enterStudy(id,keep){if(!keep)window._fromSteals=false;inSteals=false;inLines=false;inStudy=STUDIES.find(s=>s.id===id);inUnit=null;idx=-1;renderLearn();window.scrollTo(0,0)}
+function enterStudy(id,keep){pushNav();if(!keep)window._fromSteals=false;inSteals=false;inLines=false;inMolds=false;inStudy=STUDIES.find(s=>s.id===id);inUnit=null;idx=-1;renderLearn();window.scrollTo(0,0)}
 function exitStudy(){inStudy=null;renderLearn();window.scrollTo(0,0)}
 function studiesSection(){
   if(!STUDIES.length)return '';
@@ -4050,6 +4120,7 @@ function renderStudy(){
   `<div class="card" style="margin-top:14px">
     <span class="cat-chip">The arc · 全篇弧线</span>
     <div class="blk" style="margin-top:6px">${esc(st.arc)}<div class="whyzh">${esc(st.arczh)}</div></div>
+    <div class="blk"><span class="lbl">Your turn · 到你了</span>Steal this speech\u2019s opening move — write beat 1 of your own next talk in its shape.<div style="margin-top:8px"><textarea id="capIn" style="min-height:52px" placeholder="Your opening…"></textarea><div id="capHint" style="font-size:12px;color:var(--terra);margin-top:3px"></div><div class="row" style="margin-top:6px"><button class="btn primary slim" onclick="capSave('${st.id}')">Save to My Lines ✓</button></div></div></div>
     <div class="row" style="margin-top:10px">${window._fromSteals?`<button class="btn ghost slim" onclick="window._fromSteals=false;enterSteals()">← Steal List</button>`:``}<button class="btn ghost slim" onclick="window._fromSteals=false;exitStudy()">⌂ Lessons</button><button class="btn ghost slim" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button></div>
   </div>`;
 }
@@ -4064,6 +4135,7 @@ function unitUnlocked(i){return true}
 
 function renderLearn(){
   const area=document.getElementById('learnArea');
+  if(inMolds){renderMolds();return;}
   if(inLines){renderLines();return;}
   if(inSteals){renderSteals();return;}
   if(inStudy){renderStudy();return;}
@@ -4100,11 +4172,15 @@ function renderLearn(){
         <div><div class="ut">${esc(u.title)}${u.zh?` <span class="uz">· ${esc(u.zh)}</span>`:''}</div><div class="um">${esc(u.from)}</div></div>
         <div class="prog">${unitWords(u).length}</div>
       </div>`;
-    }).join('')+`<div class="unit" onclick="enterLines()">
+    }).join('')+`<div class="unit" onclick="enterMolds()">
+        <div class="badge">😄</div>
+        <div><div class="ut">Humor molds <span class="uz">· 幽默模具</span></div><div class="um">six shapes for a laugh — practice any, anytime</div></div>
+        <div class="prog">${MOLDS.length}</div>
+      </div>`+`<div class="unit" onclick="enterLines()">
         <div class="badge">✎</div>
         <div><div class="ut">My Lines <span class="uz">· 我的句子</span></div><div class="um">your Daily-rep sentences</div></div>
         <div class="prog">${(state.sents||[]).length}</div>
-      </div>`+`<div style="margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted)"><a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted);text-decoration:none">Start over</a></div>`;
+      </div>`+`<div style="margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted)"><a href="javascript:void(0)" onclick="exportBackup()" style="color:var(--muted);text-decoration:none">Back up ⤓</a> &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="document.getElementById(\'impFile\').click()" style="color:var(--muted);text-decoration:none">Restore</a> &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted);text-decoration:none">Start over</a><input type="file" id="impFile" accept=".json" style="display:none" onchange="importBackup(this)"></div>`;
     return;
   }
   const u=inUnit;
@@ -4136,7 +4212,7 @@ function renderLearn(){
        <button class="btn primary" onclick="learnNext()">Next →</button>
      </div></div>`;
 }
-function enterUnit(id){inUnit=UNITS.find(u=>u.id===id);const uw=unitWords(inUnit);
+function enterUnit(id){pushNav();inUnit=UNITS.find(u=>u.id===id);const uw=unitWords(inUnit);
   if(inUnit.deck){const un=uw.filter(w=>w._cus?false:!ws(w.id).learned);const pool=un.length?un:uw;inUnit._sess=[...pool].sort(()=>Math.random()-.5).slice(0,20);idx=-1;}
   else if(inUnit.ordered){inUnit._sess=[...uw];idx=(state.upos&&state.upos[id]>0)?state.upos[id]-1:-1;}
   else{
@@ -4152,7 +4228,7 @@ function exitUnit(){inUnit=null;idx=-1;renderLearn()}
 function go(i){ if(i<-1)i=-1; idx=i; if(inUnit&&!inUnit.deck){state.upos=state.upos||{};state.upos[inUnit.id]=Math.max(0,idx+1);save();} renderLearn(); window.scrollTo(0,0)}
 function learnNext(){
   const u=inUnit,uw=(u._sess||unitWords(u)),w=uw[idx];
-  if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.iv=0;s.next=today()+2*DAY;addXP(5);bumpStreak();tl().learned++;syncNow();}}
+  if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.iv=0;if(!REF_UNITS.has(u.id))s.next=today()+2*DAY;addXP(5);bumpStreak();tl().learned++;syncNow();}}
   save();
   if(idx+1<uw.length){go(idx+1);}
   else{
@@ -4200,13 +4276,21 @@ function shufDraw(award){
   if(!cand.length){shufRecent=[];cand=pool;}
   const w=cand[Math.floor(Math.random()*cand.length)];
   shufRecent.push(w.id); if(shufRecent.length>12)shufRecent.shift();
-  shufCur=w;
+  shufCur=w; window._revealed=false;
   if(award){tl().sessions++; state.reps=(state.reps||0)+1; if(tl().sessions<=30)addXP(5); bumpStreak(); syncNow();} save();
   renderShufCard(); 
 }
+function toggleRecall(){state.shufRecall=!state.shufRecall;window._revealed=false;save();renderPrac();}
 function shufToggleStar(){ if(!shufCur)return; const st=cardState(shufCur); st.star=!st.star; save(); renderShufCard();  }
 function renderShufCard(){
   const w=shufCur, st=cardState(w);
+  const hideBody=state.shufRecall&&!window._revealed;
+  if(hideBody){document.getElementById('pracArea').innerHTML=`<div class="card viewin">
+    <button class="starbtn ${st.star?'on':''}" onclick="shufToggleStar()" title="focus">★</button>
+    <span class="cat-chip">${esc(w.cat||'Card')}</span>
+    <div class="term">${esc(w.term)}</div>
+    <div style="font-size:12.5px;color:var(--muted);margin-top:6px">What does it mean — and where would you use it? Say your answer aloud, then reveal.</div>
+    <div class="row" style="margin-top:14px"><button class="btn primary" onclick="window._revealed=true;renderShufCard()">Reveal ↓</button><button class="btn ghost slim" onclick="shufDraw(true)">Next card 🔀</button></div></div>`;return;}
   document.getElementById('pracArea').innerHTML=`<div class="card viewin">
     <button class="starbtn ${st.star?'on':''}" onclick="shufToggleStar()" title="focus">★</button>
     <span class="cat-chip">${esc(w.cat||'Card')}</span><span style="font-size:11.5px;color:var(--muted);margin-left:8px">${esc((UNITS.find(u=>u.id===w.unit)||{title:'My Pickups'}).title)}</span>
@@ -4223,7 +4307,7 @@ function renderShufCard(){
 }
 function renderPrac(){
   const sc=shufScope();
-  document.getElementById('pracSub').innerHTML='<div class="row" style="flex-wrap:wrap;gap:8px;margin-top:0">'+SHUF_SCOPES.map(p=>`<button class="pill ${p[0]===sc?'on':''}" onclick="setShufScope('${p[0]}')">${p[1]}</button>`).join('')+'</div><div style="font-size:12px;color:var(--muted);margin:7px 2px 0">'+(SCOPE_DESC[sc]||'')+'</div>';
+  document.getElementById('pracSub').innerHTML='<div class="row" style="flex-wrap:wrap;gap:8px;margin-top:0">'+SHUF_SCOPES.map(p=>`<button class="pill ${p[0]===sc?'on':''}" onclick="setShufScope('${p[0]}')">${p[1]}</button>`).join('')+`<button class="pill ${state.shufRecall?'on':''}" onclick="toggleRecall()">🧠 Recall</button>`+'</div><div style="font-size:12px;color:var(--muted);margin:7px 2px 0">'+(state.shufRecall?'Recall mode: guess before you flip.':(SCOPE_DESC[sc]||''))+'</div>';
   if(!shufCur){shufDraw();}else{renderShufCard();}
 }
 
@@ -4326,7 +4410,7 @@ async function autoFill(){
     if(SYNC_URL&&syncCfg()){await afWorker(term);if(st)st.textContent='✓ Filled — check & edit, then save.';}
     else if(key){await afClaude(term,key);if(st)st.textContent='✓ Filled — check & edit, then save.';}
     else{await afDict(term);}
-  }catch(e){if(st)st.textContent='✗ No luck ('+e.message+') — fill by hand, or tell Coach “记词 '+term+'” in chat.';}
+  }catch(e){if(st)st.textContent='✗ No luck ('+e.message+') — fill the fields by hand.';}
   btn.textContent='✨ Auto-fill';btn.disabled=false;
 }
 async function afDict(term){
@@ -4505,6 +4589,16 @@ function friendsCard(){
   }).join('')+`<div class="td" style="margin-top:10px;color:var(--muted);font-size:13px">This week: you ⚡${weekSum(state.hist)}${fs.map(m=>' · '+esc(m.name)+' ⚡'+weekSum(m.stats&&m.stats.week)).join('')}</div>`:`<div style="font-size:13.5px;color:var(--muted)">No one here yet — share the app link and circle key.</div>`;
   return `<div class="card" style="margin-top:14px"><span class="cat-chip">Friends</span>${rows}</div>`;
 }
+function exportBackup(){
+  try{const data=JSON.stringify({v:1,app:'commonplace',exported:''+new Date(),state:state});
+  const a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(data);a.download='commonplace-backup.json';document.body.appendChild(a);a.click();a.remove();}catch(e){alert('Backup failed: '+e.message);}
+}
+function importBackup(inp){
+  const f=inp.files&&inp.files[0]; if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{try{const d=JSON.parse(rd.result);if(!d||!d.state)throw new Error('not a Commonplace backup');if(!confirm('Replace ALL current progress with this backup? Your current state will be overwritten.'))return;Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,d.state);save();location.reload();}catch(e){alert('Restore failed: '+e.message);}};
+  rd.readAsText(f);
+}
 function resetAll(){
   if(!confirm('Erase all progress — streak, stars, learned marks, reading positions? My Pickups and My Lines are kept. This cannot be undone.'))return;
   state.words={};ALLWORDS.forEach(w=>state.words[w.id]={learned:false,star:false,uses:0,next:0});
@@ -4522,7 +4616,15 @@ function switchTo(v){document.querySelectorAll('nav button').forEach(x=>x.classL
   const sec=document.getElementById('v-'+v);sec.classList.remove('viewin');void sec.offsetWidth;sec.classList.add('viewin');
   if(v==='today')renderToday(); if(v==='learn')renderLearn(); if(v==='practice')renderPrac();
 }
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='learn'){inLines=false;inSteals=false;inStudy=null;inUnit=null;idx=-1;window._fromSteals=false;}switchTo(b.dataset.v);});
+if(window.history&&window.history.pushState){window.addEventListener('popstate',()=>{
+  if(inMolds){exitMolds();return;}
+  if(inStudy){exitStudy();return;}
+  if(inSteals){inSteals=false;renderLearn();return;}
+  if(inLines){inLines=false;renderLearn();return;}
+  if(inUnit){exitUnit();return;}
+});}
+function pushNav(){try{if(window.history&&window.history.pushState)history.pushState({d:1},'');}catch(e){}}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='learn'){inLines=false;inSteals=false;inStudy=null;inUnit=null;inMolds=false;idx=-1;window._fromSteals=false;}switchTo(b.dataset.v);});
 
 
 /* init */
