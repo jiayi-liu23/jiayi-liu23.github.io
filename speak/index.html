@@ -118,7 +118,16 @@
 @keyframes viewin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 header{padding-top:calc(env(safe-area-inset-top, 0px))}
 body{padding-bottom:env(safe-area-inset-bottom, 0px)}
-</style>
+  @media (prefers-color-scheme: dark){
+    :root{--bg:#1B1815;--card:#252019;--ink:#E9E1D3;--muted:#A29586;--hair:#3B342C;
+      --wood:#C09468;--wood-dk:#D2A876;--cognac:#C98757;--sage:#2C312A;--green:#9DB183;
+      --terra:#D97B62;--gold:#D9BA6E;--shadow:0 2px 10px rgba(0,0,0,.35),0 8px 30px rgba(0,0,0,.25);}
+    textarea,.miniform input,.miniform select,.miniform textarea{background:#211D18;color:var(--ink);border-color:var(--hair)}
+    .cat-chip{background:#332C24;color:var(--wood-dk)}
+    .hardw{background:#231F1A;border-color:var(--hair)}
+    .hicon:hover{background:#2B2620}
+  }
+  </style>
 </head>
 <body>
 <header>
@@ -3729,17 +3738,19 @@ function load(){
   }catch(e){}
   return fresh;
 }
-function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function updateBadge(){try{if(navigator.setAppBadge){const m=dueCards().length;m?navigator.setAppBadge(m):navigator.clearAppBadge();}}catch(e){}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));try{updateBadge()}catch(e){}}
 function qHtml(q){q=String(q||'');return q.startsWith('(')?'<span class="q" style="font-style:normal;color:var(--muted)">'+esc(q)+'</span>':'<span class="q">“'+esc(q)+'”</span>';}
 function isMethod(w){return /^(?:From [^·]*· )?(?:BetterSpeak|Commonplace)/.test(String((w&&w.src)||''));}
 function esc(s){return (s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
 function ws(id){if(!state.words[id])state.words[id]={learned:false,star:false,uses:0,next:0};return state.words[id]}
 
 /* ============ AUDIO + XP ============ */
+function sayLine(t){try{if(!t)return;const u=new SpeechSynthesisUtterance(String(t));u.lang='en-US';u.rate=0.92;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
 function sayWord(t){try{if(!t)return;const u=new SpeechSynthesisUtterance(String(t).replace(/\s*\(.*?\)\s*/g,'').split('/')[0]);u.lang='en-US';u.rate=0.85;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
 
 function xpToday(){return (state.hist||{})[today()]||0;}
-function addXP(n){const t=today();state.xp=(state.xp||0)+n;state.hist=state.hist||{};state.hist[t]=(state.hist[t]||0)+n;Object.keys(state.hist).forEach(k=>{if(+k<t-7*DAY)delete state.hist[k]});save();renderStreak();}
+function addXP(n){const t=today();state.xp=(state.xp||0)+n;state.hist=state.hist||{};state.hist[t]=(state.hist[t]||0)+n;save();renderStreak();}
 
 /* ============ TODAY ============ */
 function tl(){const t=today();if(!state.tl||state.tl.day!==t)state.tl={day:t,learned:0,sessions:0,line:false};return state.tl;}
@@ -3789,14 +3800,22 @@ function repSwap(){tl().repSwap=1;window._repDraft='';save();renderToday();}
 function repQuick(ok){
   const r=currentRep(); if(!r||r.kind!=='word')return;
   const s=r.w._cus?(state.custom.find(c=>c.id===r.w.id)||{}):ws(r.w.id);
+  window._lastQuick={id:r.w.id,iv:s.iv||0,next:s.next||0,ok:ok};
   if(ok){s.iv=(s.iv||0)+1;s.next=today()+[4,7,15,30,60,120][Math.min(s.iv-1,5)]*DAY;}
   else{s.iv=0;s.next=today()+2*DAY;}
   const T=tl(); T.repIds=(T.repIds||[]); T.repIds.push(r.w.id);
   window._repDraft=''; save(); renderToday();
 }
+function undoQuick(){
+  const q=window._lastQuick; if(!q)return;
+  const s=state.custom.find(c=>c.id===q.id)||ws(q.id);
+  s.iv=q.iv; s.next=q.next;
+  const T=tl(); const ix=(T.repIds||[]).lastIndexOf(q.id); if(ix>=0)T.repIds.splice(ix,1);
+  window._lastQuick=null; save(); renderToday();
+}
 function doRep(){
   const txt=(document.getElementById('repIn').value||'').trim();
-  if(!txt)return;
+  if(!txt){const h=document.getElementById('repHint');if(h)h.textContent='Write the line first — say it aloud, then type it.';return;}
   const r=currentRep(); if(!r)return;
   const hint=m=>{const h=document.getElementById('repHint');if(h)h.textContent=m;};
   const STOP=new Set(['the','and','for','you','your','not','but','with','that','this','from','are','was','has','have','can','will','into','when','each','all','out','one','more','its']);
@@ -3857,14 +3876,14 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
        const showForm=(T.repN||0)===0||window._repOpen;
        const isLine=r&&r.kind==='word'&&!isMethod(r.w)&&!String(r.w.term).includes('→')&&(String(r.w.term).trim().split(/\s+/).length>=4||/[,!?]/.test(String(r.w.term)));
        if(!r)return `<div style="font-size:14px;margin-top:8px">✓ All clear — reps done and the review queue is empty.</div>`;
-       if(!showForm){const lw=T.lastRep&&ALLWORDS.find(x=>x.id===T.lastRep);const cmp=((lw&&lw.usage&&lw.usage.length)?`<div style="font-size:12.5px;color:var(--muted);margin-top:8px"><span style="font-weight:600;color:var(--wood-dk)">Compare · 参照</span> — ${esc(lw.usage[0])}</div>`:'')+(lw?`<div style="font-size:11.5px;color:var(--muted);margin-top:4px">“${esc(lw.term)}” — used ${ws(lw.id).uses||0}/38. 38 makes it yours.</div>`:'');return `<div style="font-size:14px;margin-top:8px">✓ used, not just seen.</div><div style="font-size:13px;color:var(--muted);margin-top:6px">“${esc((state.sents&&state.sents.length)?state.sents[state.sents.length-1].t:'')}”</div>${cmp}${((T.repN||0)<3||dueCards().length>0)?`<div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="window._repOpen=true;renderToday()">${(T.repN||0)<3?`Another rep (${(T.repN||0)+1}/3) →`:`Keep reviewing · ${dueCards().length} due →`}</button></div>`:``}`;}
+       if(!showForm){const lw=T.lastRep&&ALLWORDS.find(x=>x.id===T.lastRep);const cmp=((lw&&lw.usage&&lw.usage.length)?`<div style="font-size:12.5px;color:var(--muted);margin-top:8px"><span style="font-weight:600;color:var(--wood-dk)">Compare · 参照</span> — ${esc(lw.usage[0])}</div>`:'')+(lw?`<div style="font-size:11.5px;color:var(--muted);margin-top:4px">“${esc(lw.term)}” — used ${ws(lw.id).uses||0}/38. 38 makes it yours.</div>`:'');const _t=today();const _ln=(state.sents||[]).filter(x=>x.d===_t).length;const _tm=repPool().filter(x=>x.s.next>_t&&x.s.next<=_t+DAY&&!REF_UNITS.has(x.w.unit)).length;const _ad=Object.keys(state.hist||{}).filter(k=>+k>_t-30*DAY).length;const summ=(T.repN||0)>=3?`<div style="font-size:12px;color:var(--muted);margin-top:10px;border-top:1px solid var(--hair);padding-top:8px">Today: ${_ln} line${_ln===1?'':'s'} written · ${(T.repIds||[]).length} cards touched${_tm?` · ${_tm} due tomorrow`:''} · active ${_ad} of last 30 days</div>`:'';return `<div style="font-size:14px;margin-top:8px">✓ used, not just seen.</div><div style="font-size:13px;color:var(--muted);margin-top:6px">“${esc((state.sents&&state.sents.length)?state.sents[state.sents.length-1].t:'')}”</div>${cmp}${summ}${((T.repN||0)<3||dueCards().length>0)?`<div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="window._repOpen=true;renderToday()">${(T.repN||0)<3?`Another rep (${(T.repN||0)+1}/3) →`:`Keep reviewing · ${dueCards().length} due →`}</button></div>`:``}`;}
        if(r.kind==='word')return `<div style="font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">${esc(r.tag||'')}</div>
      <div class="term" style="font-size:19px">${esc(r.w.term)}</div>
      <div style="font-size:13.5px;color:var(--muted)">${esc(r.w.gloss)}</div>
      <div style="font-size:12.5px;color:var(--wood-dk);margin-top:10px">${isMethod(r.w)?'Apply the rule in one sentence from your week — say it aloud first.':isLine?'This one is already a whole line — steal its shape for a moment from your week.':'Use it in one sentence from your week — say it aloud first.'}</div>
      <textarea id="repIn" style="min-height:56px;margin-top:8px" oninput="window._repDraft=this.value" placeholder="${isLine?'Your version…':'One sentence…'}">${esc(window._repDraft||'')}</textarea>
      <div id="repHint" style="font-size:12.5px;color:var(--terra);margin-top:4px"></div>
-     <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button>${r.extra?`<button class="btn ghost slim" onclick="repQuick(1)">Still know it ✓</button><button class="btn ghost slim" onclick="repQuick(0)">Forgot ↺</button>`:``}${((T.repN||0)===0&&!T.repSwap)?`<button class="btn ghost slim" onclick="repSwap()">Swap ↻</button>`:``}</div>`;
+     ${(window._lastQuick&&r.extra)?`<div style="font-size:11.5px;color:var(--muted);margin-top:4px">Last card marked ${window._lastQuick.ok?"known":"forgot"} — <a href="javascript:void(0)" onclick="undoQuick()" style="color:var(--wood-dk);text-decoration:none">undo</a></div>`:``}<div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button>${r.extra?`<button class="btn ghost slim" onclick="repQuick(1)">Still know it ✓</button><button class="btn ghost slim" onclick="repQuick(0)">Forgot ↺</button>`:``}${((T.repN||0)===0&&!T.repSwap)?`<button class="btn ghost slim" onclick="repSwap()">Swap ↻</button>`:``}</div>`;
        return `<div style="font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">humor mold</div>
      <div class="term" style="font-size:19px">${esc(r.m.name)} <span class="uz">· ${esc(r.m.zh)}</span></div>
      <div style="font-size:13.5px;margin-top:4px">${esc(r.m.tpl)}</div>
@@ -3874,12 +3893,12 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
      <div id="repHint" style="font-size:12.5px;color:var(--terra);margin-top:4px"></div>
      <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button></div>`;
      })()}
-     <div style="font-size:12px;color:var(--muted);margin-top:12px;border-top:1px solid var(--hair);padding-top:10px">${T.learned} learned · ${T.sessions} flipped — any card counts toward the streak</div>
+     <div style="font-size:12px;color:var(--muted);margin-top:12px;border-top:1px solid var(--hair);padding-top:10px">${T.learned} learned · ${T.sessions} flipped${(function(){const t=today();const m=repPool().filter(x=>x.s.next>t&&x.s.next<=t+DAY&&!REF_UNITS.has(x.w.unit)).length;return m?` · ${m} due tomorrow`:''})()} — any card counts toward the streak</div>
    </div>
    <div class="card" style="margin-top:14px;cursor:pointer" onclick="todayOpen=!todayOpen;renderToday()">
      <span class="cat-chip">Line of the day</span>
      <div class="term" style="font-size:19px">${esc(w.term)}</div>
-     <div class="quote" style="margin-top:10px">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" onclick="event.stopPropagation()" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div>
+     <div class="quote" style="margin-top:10px">${qHtml(w.quote)}<button class="sayb" style="font-size:13px" data-q="${esc(w.quote)}" onclick="event.stopPropagation();sayLine(this.dataset.q)" title="hear it">🔊</button><span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" onclick="event.stopPropagation()" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div>
      ${todayOpen?`${w.ctxzh?`<div class="blk"><span class="lbl">Context · 背景</span><div class="whyzh" style="margin-top:2px">${esc(w.ctxzh)}</div></div>`:``}<div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>
      ${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
      ${w.why?`<div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>`:''}
@@ -3890,7 +3909,7 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
 }
 function speechOfDay(){
   if(typeof STUDIES==='undefined'||!STUDIES.length)return '';
-  const sd=STUDIES[Math.floor(today()/DAY)%STUDIES.length];
+  const _p=STUDIES.filter(s=>!(state.capDone&&state.capDone[s.id]));const _l=_p.length?_p:STUDIES;const sd=_l[Math.floor(today()/DAY)%_l.length];
   return `<div class="card" style="margin-top:14px;cursor:pointer" onclick="switchTo('learn');enterStudy('${sd.id}')">
    <span class="cat-chip">Speech of the day</span>
    <div class="term" style="font-size:19px">${esc(sd.hookterm||sd.title)}</div>
@@ -4484,7 +4503,7 @@ function moldSave(i){
   if(!txt||txt.split(/\s+/).length<4){if(h)h.textContent='Four words or more — give the mold a real attempt.';return;}
   state.sents=state.sents||[];state.sents.push({d:today(),term:MOLDS[i].name,t:txt});
   if(state.sents.length>1000)state.sents.shift();
-  if(el)el.value='';addXP(5);bumpStreak();save();
+  if(el)el.value='';if(window._mD)delete window._mD[i];addXP(5);bumpStreak();save();
   if(h)h.textContent='✓ Saved to My Lines.';
 }
 function renderMolds(){
@@ -4496,21 +4515,32 @@ function renderMolds(){
     <span class="cat-chip">${esc(m.name)}</span><span class="uz" style="margin-left:8px">· ${esc(m.zh)}</span>
     <div style="font-size:14px;margin-top:8px">${esc(m.tpl)}</div>
     <div style="font-size:12.5px;color:var(--muted);margin-top:6px">${esc(m.ex)}</div>
-    <textarea id="mIn${i}" style="min-height:52px;margin-top:8px" placeholder="Yours…"></textarea>
+    <textarea id="mIn${i}" style="min-height:52px;margin-top:8px" oninput="window._mD=window._mD||{};window._mD[${i}]=this.value" placeholder="Yours…">${esc((window._mD||{})[i]||'')}</textarea>
     <div id="mHint${i}" style="font-size:12px;color:var(--terra);margin-top:3px"></div>
     <div class="row" style="margin-top:6px"><button class="btn primary slim" onclick="moldSave(${i})">Save to My Lines ✓</button></div>
   </div>`).join('');
 }
+let linesF='all';
+function setLinesF(f){linesF=f;window._editLine=null;renderLines();}
+function lineKind(x){const t=String(x.term||'');if(t.startsWith('✂'))return 'steal';if(t.startsWith('§'))return 'cap';if(typeof MOLDS!=='undefined'&&MOLDS.some(m=>m.name===t))return 'mold';return 'rep';}
+function delLine(i){state.sents.splice(i,1);window._editLine=null;save();renderLines();}
+function editLine(i){window._editLine=i;renderLines();}
+function saveLine(i){const el=document.getElementById('elIn');const v=(el&&el.value||'').trim();if(!v)return;state.sents[i].t=v;window._editLine=null;save();renderLines();}
+function copyLine(i){try{if(navigator.clipboard)navigator.clipboard.writeText(state.sents[i].t);}catch(e){}}
 function renderLines(){
   const area=document.getElementById('learnArea');
-  const s=(state.sents||[]).slice().reverse();
+  const FILTERS=[['all','All'],['rep','Reps'],['steal','✂ Steals'],['cap','§ Studies'],['mold','Molds']];
+  const items=(state.sents||[]).map((x,i)=>({x,i})).reverse().filter(o=>linesF==='all'||lineKind(o.x)===linesF);
   area.innerHTML=`<div class="card"><span class="cat-chip">My Lines · 我的句子</span>
-   <div style="font-size:13.5px;color:var(--muted);margin-top:6px">Every Daily-rep sentence you have written — your half of the commonplace book.</div>
+   <div style="font-size:13.5px;color:var(--muted);margin-top:6px">Every line you have written — your half of the commonplace book.</div>
+   <div class="row" style="flex-wrap:wrap;gap:8px;margin-top:12px">${FILTERS.map(f=>`<button class="pill ${f[0]===linesF?'on':''}" onclick="setLinesF('${f[0]}')">${f[1]}</button>`).join('')}</div>
    <div class="row" style="margin-top:12px"><button class="btn ghost slim" onclick="exitLines()">⌂ Lessons</button></div></div>`+
-  (s.length?s.map(x=>`<div class="card" style="margin-top:14px"><div class="term" style="font-size:15px">${esc(x.term)}</div>
-   <div style="font-size:15px;margin-top:8px">“${esc(x.t)}”</div>
-   <div style="font-size:12px;color:var(--muted);margin-top:6px">${new Date(+x.d).toLocaleDateString()}</div></div>`).join('')
-   :`<div class="card done-msg" style="margin-top:14px">No lines yet — write today's rep on the Today tab.</div>`);
+  (items.length?items.map(o=>`<div class="card" style="margin-top:14px"><div class="term" style="font-size:15px">${esc(o.x.term)}</div>
+   ${window._editLine===o.i?`<textarea id="elIn" style="min-height:48px;margin-top:8px">${esc(o.x.t)}</textarea><div class="row" style="margin-top:6px"><button class="btn primary slim" onclick="saveLine(${o.i})">Save ✓</button><button class="btn ghost slim" onclick="window._editLine=null;renderLines()">Cancel</button></div>`
+   :`<div style="font-size:15px;margin-top:8px">“${esc(o.x.t)}”</div>
+   <div class="row" style="margin-top:8px;justify-content:space-between;align-items:center"><div style="font-size:12px;color:var(--muted)">${new Date(+o.x.d).toLocaleDateString()}</div><div style="font-size:13px"><button class="sayb" title="copy" onclick="copyLine(${o.i})">📋</button><button class="sayb" title="edit" onclick="editLine(${o.i})">✎</button><button class="sayb" title="delete" onclick="delLine(${o.i})">✕</button></div></div>`}
+  </div>`).join('')
+   :`<div class="card done-msg" style="margin-top:14px">${linesF==='all'?"No lines yet — write today's rep on the Today tab.":"Nothing in this bucket yet."}</div>`);
 }
 function exitSteals(){inSteals=false;renderLearn();window.scrollTo(0,0)}
 function setOcc(o){stealOcc=o;renderLearn()}
@@ -4523,7 +4553,7 @@ function stealSave(sid,bi){
   const it=stealsList().find(x=>x.sid===sid&&x.bi===bi);
   state.sents=state.sents||[];state.sents.push({d:today(),term:'✂ '+(it?it.fn:'steal'),t:txt});
   if(state.sents.length>1000)state.sents.shift();
-  window._stealW=null;addXP(5);bumpStreak();save();renderSteals();
+  window._stealW=null;window._stD='';addXP(5);bumpStreak();save();renderSteals();
 }
 function renderSteals(){
   const area=document.getElementById('learnArea');
@@ -4540,7 +4570,7 @@ function renderSteals(){
       <div style="font-size:12px;color:var(--muted)">${esc(x.title)}</div>
       <div class="row" style="margin-top:0;gap:8px"><button class="btn ghost slim" onclick="stealWriteOpen('${x.sid}',${x.bi})">✍ Try it</button><button class="btn ghost slim" onclick="goBeat('${x.sid}',${x.bi})">See it used →</button></div>
     </div>
-    ${window._stealW===(x.sid+'#'+x.bi)?`<div style="margin-top:10px"><textarea id="stIn" style="min-height:52px" placeholder="Your version, for your next occasion…"></textarea><div id="stHint" style="font-size:12px;color:var(--terra);margin-top:3px"></div><div class="row" style="margin-top:6px"><button class="btn primary slim" onclick="stealSave('${x.sid}',${x.bi})">Save to My Lines ✓</button><button class="btn ghost slim" onclick="window._stealW=null;renderSteals()">Cancel</button></div></div>`:``}
+    ${window._stealW===(x.sid+'#'+x.bi)?`<div style="margin-top:10px"><textarea id="stIn" style="min-height:52px" oninput="window._stD=this.value" placeholder="Your version, for your next occasion…">${esc(window._stD||'')}</textarea><div id="stHint" style="font-size:12px;color:var(--terra);margin-top:3px"></div><div class="row" style="margin-top:6px"><button class="btn primary slim" onclick="stealSave('${x.sid}',${x.bi})">Save to My Lines ✓</button><button class="btn ghost slim" onclick="window._stealW=null;renderSteals()">Cancel</button></div></div>`:``}
   </div>`).join('');
 }
 function capSave(sid){
@@ -4549,8 +4579,9 @@ function capSave(sid){
   if(!txt||txt.split(/\s+/).length<4){if(h)h.textContent='Four words or more — a real opening.';return;}
   const st=STUDIES.find(s=>s.id===sid);
   state.sents=state.sents||[];state.sents.push({d:today(),term:'§ '+(st?st.title:'study'),t:txt});
+  state.capDone=state.capDone||{}; state.capDone[sid]=1;
   if(state.sents.length>1000)state.sents.shift();
-  if(el)el.value='';addXP(5);bumpStreak();save();
+  if(el)el.value='';window._capD='';addXP(5);bumpStreak();save();
   if(h)h.textContent='✓ Saved to My Lines.';
 }
 let inStudy=null, todayOpen=false;
@@ -4573,7 +4604,7 @@ function studiesSection(){
   </div>`+STUDIES.map(st=>`<div class="unit" onclick="enterStudy('${st.id}')">
     <div class="badge">§</div>
     <div><div class="ut">${esc(st.title)}</div><div class="um">${esc(st.sub)}</div></div>
-    <div class="prog">${st.beats.length} beats</div>
+    <div class="prog">${(state.capDone&&state.capDone[st.id])?'✓ ':''}${st.beats.length} beats</div>
   </div>`).join('');
 }
 function renderStudy(){
@@ -4587,7 +4618,8 @@ function renderStudy(){
   </div>`+
   st.beats.map((b,i)=>`${b.gap?`<div class="bgap">${esc(b.gap)}</div>`:``}<div class="card" id="bt${i}" style="margin-top:14px">
     <span class="cat-chip">Beat ${i+1} · ${esc(b.fnzh)}</span>
-    <div class="quote" style="margin-top:10px"><span class="q">“${esc(b.quote)}”</span><span class="src">— ${esc(st.speaker||'')} · ${b.exact?`<a href="javascript:void(0)" onclick="beatVid(${i},'${b.url}')" style="color:var(--green);text-decoration:none">▶</a>`:`<a href="${b.url}" target="_blank" style="color:var(--green);text-decoration:none">↗</a>`}</span></div>
+    <div class="quote" style="margin-top:10px"><span class="q">“${esc(b.quote)}”</span><span class="src">— ${esc(st.speaker||'')}${b.url?` · ${b.exact?`<a href="javascript:void(0)" onclick="beatVid(${i},'${b.url}')" style="color:var(--green);text-decoration:none">▶</a>`:`<a href="${b.url}" target="_blank" style="color:var(--green);text-decoration:none">↗</a>`}`:``}</span></div>
+    ${b.exact&&b.url?`<div style="font-size:11px;color:var(--muted);margin-top:3px">▶ Shadow it — play it three times, speak over the third. 播三遍,第三遍跟着他说。</div>`:``}
     <div id="bv${i}"></div>
     <div class="blk"><span class="lbl">Craft · 手法</span>${esc(b.craft)}<div class="whyzh">${esc(b.craftzh)}</div></div>
     ${b.steal?`<div class="blk"><span class="lbl">Steal this · 拿走就用</span>${esc(b.steal)}</div>`:''}
@@ -4595,7 +4627,7 @@ function renderStudy(){
   `<div class="card" style="margin-top:14px">
     <span class="cat-chip">The arc · 全篇弧线</span>
     <div class="blk" style="margin-top:6px">${esc(st.arc)}<div class="whyzh">${esc(st.arczh)}</div></div>
-    <div class="blk"><span class="lbl">Your turn · 到你了</span>${esc(st.cap||'Steal this speech\u2019s opening move — write beat 1 of your own next talk in its shape.')}<div style="margin-top:8px"><textarea id="capIn" style="min-height:52px" placeholder="Your opening…"></textarea><div id="capHint" style="font-size:12px;color:var(--terra);margin-top:3px"></div><div class="row" style="margin-top:6px"><button class="btn primary slim" onclick="capSave('${st.id}')">Save to My Lines ✓</button></div></div></div>
+    <div class="blk"><span class="lbl">Your turn · 到你了</span>${esc(st.cap||'Steal this speech\u2019s opening move — write beat 1 of your own next talk in its shape.')}<div style="margin-top:8px"><textarea id="capIn" style="min-height:52px" oninput="window._capD=this.value" placeholder="Your opening…">${esc(window._capD||'')}</textarea><div id="capHint" style="font-size:12px;color:var(--terra);margin-top:3px"></div><div class="row" style="margin-top:6px"><button class="btn primary slim" onclick="capSave('${st.id}')">Save to My Lines ✓</button></div></div></div>
     <div class="row" style="margin-top:10px">${window._fromSteals?`<button class="btn ghost slim" onclick="window._fromSteals=false;enterSteals()">← Steal List</button>`:``}<button class="btn ghost slim" onclick="window._fromSteals=false;exitStudy()">⌂ Lessons</button><button class="btn ghost slim" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button></div>
   </div>`;
 }
@@ -4656,7 +4688,7 @@ function renderLearn(){
         <div class="badge">✎</div>
         <div><div class="ut">My Lines <span class="uz">· 我的句子</span></div><div class="um">your Daily-rep sentences</div></div>
         <div class="prog">${(state.sents||[]).length}</div>
-      </div>`+`<div style="margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted)"><a href="javascript:void(0)" onclick="exportBackup()" style="color:var(--muted);text-decoration:none">Back up ⤓</a> &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="document.getElementById(\'impFile\').click()" style="color:var(--muted);text-decoration:none">Restore</a> &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted);text-decoration:none">Start over</a><input type="file" id="impFile" accept=".json" style="display:none" onchange="importBackup(this)"></div>`;
+      </div>`+`<div style="margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted)"><a href="javascript:void(0)" onclick="exportBackup()" style="color:var(--muted);text-decoration:none">Back up ⤓</a> &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="document.getElementById(\'impFile\').click()" style="color:var(--muted);text-decoration:none">Restore</a> &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted);text-decoration:none">Start over</a><input type="file" id="impFile" accept=".json" style="display:none" onchange="importBackup(this)"></div>${(function(){const sc=(state.sents||[]).length;if(sc<20)return``;const lb=state.lastBackup;const dd=lb?Math.round((today()-lb)/DAY):null;return (!lb||dd>21)?`<div style="margin-top:6px;text-align:center;font-size:11.5px;color:var(--terra)">${lb?`Last backup ${dd} days ago`:`Never backed up`} — your lines live only on this phone.</div>`:``})()}`;
     return;
   }
   const u=inUnit;
@@ -4674,19 +4706,32 @@ function renderLearn(){
   const w=(u._sess||unitWords(u))[idx], s=w._cus?w:ws(w.id);
   area.innerHTML=`<div class="card">
      <button class="starbtn ${s.star?'on':''}" onclick="toggleStar('${w.id}')" title="focus">★</button>
-     <span class="cat-chip">${esc(w.cat)}</span>
+     <span class="cat-chip">${esc(w.cat)}</span>${(!w._cus&&(ws(w.id).uses||0)>0)?`<span style="font-size:10.5px;color:var(--muted);margin-left:8px">used ${ws(w.id).uses}/38</span>`:``}
      <div class="term">${esc(w.term)}</div>
      <div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>
-     ${w.quote?`${isMethod(w)?`<div class="blk"><span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="hardw" style="font-size:14px">${esc(w.quote)}</div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}`:``}
+     ${w.quote?`${isMethod(w)?`<div class="blk"><span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="hardw" style="font-size:14px">${esc(w.quote)}</div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<button class="sayb" style="font-size:13px" data-q="${esc(w.quote)}" onclick="event.stopPropagation();sayLine(this.dataset.q)" title="hear it">🔊</button><span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}`:``}
      ${w.ctxzh?`<div class="blk"><span class="lbl">Context · 背景</span><div class="whyzh" style="margin-top:2px">${esc(w.ctxzh)}</div></div>`:``}${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
      <div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>
      <div class="blk"><span class="lbl">${isMethod(w)?'Try it · 怎么练':'Usage · 用法'}</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+     ${(!w._cus&&(idx+1)%5===0)?`<div class="blk"><span class="lbl">Try it now · 顺手一练</span><div style="font-size:12.5px;color:var(--muted)">One line with \u201c${esc(w.term)}\u201d — say it aloud first. (Optional — Next won\u2019t wait.)</div><textarea id="utIn" style="min-height:48px;margin-top:6px" oninput="window._utD=this.value" placeholder="One line…">${esc(window._utD||'')}</textarea><div id="utHint" style="font-size:12px;color:var(--terra);margin-top:3px"></div><div class="row" style="margin-top:6px"><button class="btn soft slim" onclick="unitTry('${w.id}')">Save line ✓</button></div></div>`:``}
      <div class="stepdots">${idx+1} / ${(u._sess||unitWords(u)).length}</div>
      <div class="row">
        <button class="btn ghost slim" onclick="exitUnit()">⌂ Lessons</button>
        <button class="btn ghost slim" onclick="go(${idx-1})">← Back</button>
        <button class="btn primary" onclick="learnNext()">Next →</button>
      </div></div>`;
+}
+function unitTry(id){
+  const el=document.getElementById('utIn');const txt=(el&&el.value||'').trim();
+  const h=document.getElementById('utHint');
+  const ws_=txt.toLowerCase().replace(/[^a-z\s']/g,' ').split(/\s+/).filter(Boolean);
+  if(ws_.length<4||new Set(ws_).size<Math.min(4,ws_.length)){if(h)h.textContent='Four words or more — a real line.';return;}
+  const w=ALLWORDS.find(x=>x.id===id); if(!w)return;
+  const s=ws(id); s.uses=(s.uses||0)+1; s.iv=(s.iv||0)+1; s.next=today()+[4,7,15,30,60,120][Math.min(s.iv-1,5)]*DAY;
+  state.sents=state.sents||[]; state.sents.push({d:today(),term:w.term,t:txt});
+  if(state.sents.length>1000)state.sents.shift();
+  window._utD=''; addXP(3); bumpStreak(); save();
+  if(el)el.value=''; if(h)h.textContent='✓ Saved to My Lines — and scheduled for review.';
 }
 function enterUnit(id){pushNav();inUnit=UNITS.find(u=>u.id===id);const uw=unitWords(inUnit);
   if(inUnit.deck){const un=uw.filter(w=>w._cus?false:!ws(w.id).learned);const pool=un.length?un:uw;inUnit._sess=[...pool].sort(()=>Math.random()-.5).slice(0,20);idx=-1;}
@@ -4704,7 +4749,7 @@ function exitUnit(){inUnit=null;idx=-1;renderLearn()}
 function go(i){ if(i<-1)i=-1; idx=i; if(inUnit&&!inUnit.deck){state.upos=state.upos||{};state.upos[inUnit.id]=Math.max(0,idx+1);save();} renderLearn(); window.scrollTo(0,0)}
 function learnNext(){
   const u=inUnit,uw=(u._sess||unitWords(u)),w=uw[idx];
-  if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.iv=0;if(!REF_UNITS.has(u.id))s.next=today()+2*DAY;addXP(5);bumpStreak();tl().learned++;syncNow();}}
+  if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.iv=0;addXP(5);bumpStreak();tl().learned++;syncNow();}}
   save();
   if(idx+1<uw.length){go(idx+1);}
   else{
@@ -4769,10 +4814,10 @@ function renderShufCard(){
     <div class="row" style="margin-top:14px"><button class="btn primary" onclick="window._revealed=true;renderShufCard()">Reveal ↓</button><button class="btn ghost slim" onclick="shufDraw(true)">Next card 🔀</button></div></div>`;return;}
   document.getElementById('pracArea').innerHTML=`<div class="card viewin">
     <button class="starbtn ${st.star?'on':''}" onclick="shufToggleStar()" title="focus">★</button>
-    <span class="cat-chip">${esc(w.cat||'Card')}</span><span style="font-size:11.5px;color:var(--muted);margin-left:8px">${esc((UNITS.find(u=>u.id===w.unit)||{title:'My Pickups'}).title)}</span>
+    <span class="cat-chip">${esc(w.cat||'Card')}</span><span style="font-size:11.5px;color:var(--muted);margin-left:8px">${esc((UNITS.find(u=>u.id===w.unit)||{title:'My Pickups'}).title)}${(!w._cus&&(ws(w.id).uses||0)>0)?` · used ${ws(w.id).uses}/38`:``}</span>
     <div class="term">${esc(w.term)}</div>
     <div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>
-    ${w.quote?`${isMethod(w)?`<div class="blk"><span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="hardw" style="font-size:14px">${esc(w.quote)}</div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}`:''}
+    ${w.quote?`${isMethod(w)?`<div class="blk"><span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="hardw" style="font-size:14px">${esc(w.quote)}</div></div>`:`<div class="blk"><span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<button class="sayb" style="font-size:13px" data-q="${esc(w.quote)}" onclick="event.stopPropagation();sayLine(this.dataset.q)" title="hear it">🔊</button><span class="src">— ${esc(srcClean(w.src))}${hasOrig(w)?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div></div>`}`:''}
     ${w.ctxzh?`<div class="blk"><span class="lbl">Context · 背景</span><div class="whyzh" style="margin-top:2px">${esc(w.ctxzh)}</div></div>`:``}${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
     ${w.why?`<div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:''}</div>`:''}
     ${w.usage&&w.usage.length?`<div class="blk"><span class="lbl">${isMethod(w)?'Try it · 怎么练':'Usage · 用法'}</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
@@ -4798,7 +4843,7 @@ function renderPrac(){
 
 
 
-function bumpStreak(){const t=today(); if(state.lastDay!==t){const d=new Date(t),y=new Date(d.getFullYear(),d.getMonth(),d.getDate()-1).getTime();state.streak=(state.lastDay===y)?state.streak+1:1; state.lastDay=t; renderStreak();}}
+function bumpStreak(){const t=today(); if(state.lastDay!==t){const d=new Date(t),y=new Date(d.getFullYear(),d.getMonth(),d.getDate()-1).getTime(),y2=new Date(d.getFullYear(),d.getMonth(),d.getDate()-2).getTime();state.streak=(state.lastDay===y||state.lastDay===y2)?state.streak+1:1; state.lastDay=t; renderStreak();}}
 
 /* ============ ORIGINAL-CLIP LINKS ============ */
 const CLIPS={
@@ -4929,12 +4974,23 @@ async function afWorker(term){
 }
 function saveForm(){
   const term=(document.getElementById('fTerm').value||'').trim(); if(!term)return;
-  const dup=(state.custom||[]).some(c=>String(c.term).toLowerCase()===term.toLowerCase())||ALLWORDS.some(w=>String(w.term).toLowerCase()===term.toLowerCase());
+  const dup=!window._editId&&((state.custom||[]).some(c=>String(c.term).toLowerCase()===term.toLowerCase())||ALLWORDS.some(w=>String(w.term).toLowerCase()===term.toLowerCase()));
   if(dup&&!confirm('“'+term+'” is already in the bank. Add anyway?'))return;
+  if(window._editId){state.custom=state.custom.filter(c=>c.id!==window._editId);window._editId=null;}
   state.custom.push({id:'c'+Date.now(),term,meaning:document.getElementById('fMeaning').value.trim(),example:document.getElementById('fExample').value.trim(),source:document.getElementById('fSource').value.trim(),cat:'Words',why:(_af&&_af.why)||'',usage:(_af&&_af.usage)||[],star:false,learned:true,uses:0,next:today()});_af=null;
   ['fTerm','fMeaning','fExample','fSource'].forEach(i=>document.getElementById(i).value='');
   togglePanel('add');state.notices=(state.notices||[]);state.notices.push('✓ Saved “'+term+'” to My Pickups');save();
   if(currentView()==='today')renderToday();
+}
+function editPickup(id){
+  const c=state.custom.find(x=>x.id===id); if(!c)return;
+  window._editId=id;
+  const p=document.getElementById('addPanel'); if(p&&!p.classList.contains('show'))togglePanel('add');
+  document.getElementById('fTerm').value=c.term||'';
+  document.getElementById('fMeaning').value=c.meaning||'';
+  document.getElementById('fExample').value=c.example||'';
+  document.getElementById('fSource').value=c.source||'';
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 function del(id){if(!confirm('Delete this pickup? This cannot be undone.'))return;state.custom=state.custom.filter(c=>c.id!==id);save();doSearch(document.getElementById('srchQ').value||'');}
 
@@ -4952,7 +5008,7 @@ function doSearch(q){
   q=(q||'').trim().toLowerCase();
   if(q.length<2){out.innerHTML='';return;}
   const pool=[...ALLWORDS.map(w=>({w,cus:false})),...pickupOnly()];
-  const hits=pool.filter(x=>{const w=x.w;return (w.term+' '+(w.gloss||'')+' '+(w.quote||'')).toLowerCase().includes(q);}).slice(0,30);
+  const hits=pool.filter(x=>{const w=x.w;return (w.term+' '+(w.gloss||'')+' '+(w.quote||'')+' '+(w.why||'')+' '+(w.whyzh||'')+' '+(w.ctxzh||'')).toLowerCase().includes(q);}).slice(0,30);
   const mh=moldHits(q).slice(0,3);
   if(!hits.length&&!mh.length){out.innerHTML='<div class="empty" style="padding:14px 0">No matches.</div>';return;}
   out.innerHTML=hits.map(x=>`<div class="srchit" onclick="showCard('${x.w.id}')"><b>${esc(x.w.term)}</b><span>${esc((x.w.gloss||'').slice(0,70))}</span></div>`).join('')+mh.map(x=>`<div class="srchit" onclick="togglePanel('search');switchTo('learn');enterMolds()"><b>😄 ${esc(x.m.name)}</b><span>humor mold · ${esc(x.m.zh)} — practice in Toolkit</span></div>`).join('');
@@ -4968,13 +5024,13 @@ function showCard(id){
      <span class="cat-chip">${esc(w.cat)}</span>
      <div class="term" style="font-size:22px">${esc(w.term)}</div>
      ${w.gloss?`<div class="blk"><span class="lbl">${isMethod(w)?'The rule · 要义':'Meaning · 释义'}</span>${esc(w.gloss)}</div>`:''}
-     ${w.quote?`<div class="blk">${isMethod(w)?`<span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="hardw" style="font-size:14px">${esc(w.quote)}</div>`:`<span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<span class="src">— ${esc(srcClean(w.src))}${(!cus&&hasOrig(w))?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div>`}</div>`:''}
+     ${w.quote?`<div class="blk">${isMethod(w)?`<span class="lbl">${String(w.quote).trim().startsWith('(')?'Note · 注':'In full · 展开'}</span><div class="hardw" style="font-size:14px">${esc(w.quote)}</div>`:`<span class="lbl">Source · 出处</span><div class="quote">${qHtml(w.quote)}<button class="sayb" style="font-size:13px" data-q="${esc(w.quote)}" onclick="event.stopPropagation();sayLine(this.dataset.q)" title="hear it">🔊</button><span class="src">— ${esc(srcClean(w.src))}${(!cus&&hasOrig(w))?' · <a href="'+origUrl(w)+'" target="_blank" style="color:var(--green);text-decoration:none">'+origLabel(w)+'</a>':''}</span></div>`}</div>`:''}
      ${w.ctxzh?`<div class="blk"><span class="lbl">Context · 背景</span><div class="whyzh" style="margin-top:2px">${esc(w.ctxzh)}</div></div>`:``}${(w.hard&&w.hard.length)?`<div class="blk"><span class="lbl">${isMethod(w)?'In the text · 拆词':'In the quote · 拆词'}</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
      ${w.why?`<div class="blk"><span class="lbl">${isMethod(w)?'Why · 为什么':'Unpack · 解析'}</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>`:''}
      ${(w.usage&&w.usage.length)?`<div class="blk"><span class="lbl">${isMethod(w)?'Try it · 怎么练':'Usage · 用法'}</span><ul class="usage">${w.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}
      <div class="row">
        <button class="btn soft slim" onclick="toggleStar('${id}');showCard('${id}')">${(s&&s.star)?'★ In focus':'☆ Focus'}</button>
-       ${cus?`<button class="btn ghost slim" onclick="del('${id}')">Delete</button>`:''}
+       ${cus?`<button class="btn ghost slim" onclick="editPickup('${id}')">Edit ✎</button><button class="btn ghost slim" onclick="del('${id}')">Delete</button>`:''}
        <button class="btn ghost slim" onclick="doSearch(document.getElementById('srchQ').value)">← Results</button>
      </div>
    </div>`;
@@ -5068,6 +5124,7 @@ function friendsCard(){
   return `<div class="card" style="margin-top:14px"><span class="cat-chip">Friends</span>${rows}</div>`;
 }
 function exportBackup(){
+  state.lastBackup=today(); save();
   try{const data=JSON.stringify({v:1,app:'commonplace',exported:''+new Date(),state:state});
   const a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(data);a.download='commonplace-backup.json';document.body.appendChild(a);a.click();a.remove();}catch(e){alert('Backup failed: '+e.message);}
 }
