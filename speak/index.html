@@ -25,9 +25,10 @@
 
   header{position:sticky;top:0;z-index:20;background:rgba(247,244,239,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--hair)}
   .hbar{max-width:680px;margin:0 auto;padding:14px 18px 0;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:nowrap;gap:10px}
-  .logo{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--wood-dk);min-width:0;flex:1 1 auto}
+  .logo{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--wood-dk);min-width:0;flex:1 1 auto;overflow:hidden}
   .logo small{display:block;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
   .streak{font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap}
+  @media(max-width:374px){.logo{font-size:20px}.logo small{display:none}.streak{font-size:12px}}
   .streak b{color:var(--terra)}
   nav{max-width:680px;margin:0 auto;padding:10px 18px 0;display:flex;gap:28px}
   nav button{background:none;border:none;font-family:var(--sans);font-size:15px;font-weight:600;color:var(--muted);padding:6px 2px 13px;cursor:pointer;border-bottom:2px solid transparent;display:flex;align-items:center;gap:7px;transition:color .15s}
@@ -36,7 +37,7 @@
   nav button .ico{font-size:14px;opacity:.55;filter:grayscale(35%)}
   nav button.on .ico{opacity:1;filter:none}
 
-  h2.sec{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--wood-dk);margin:24px 0 4px}
+  .sec{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--wood-dk);margin:24px 0 4px}
   .sub{font-size:13.5px;color:var(--muted);margin-bottom:16px}
 
   .card{background:var(--card);border:1px solid var(--hair);border-radius:16px;box-shadow:var(--shadow);padding:20px;position:relative}
@@ -126,6 +127,13 @@ body{padding-bottom:env(safe-area-inset-bottom, 0px)}
   .dark .hardw{background:#231F1A;border-color:var(--hair)}
   .dark .hicon:hover{background:#2B2620}
   .dark header{background:rgba(27,24,21,.86)}
+  .dark .btn.ghost{background:var(--card)}
+  .dark .pill:not(.on){background:var(--card)}
+  .dark .btn.primary,.dark .pill.on,.dark .unit.active .badge{color:#1B1815}
+  .dark .unit.done .badge{background:#3A3426}
+  .dark .tin{background:#211D18;color:var(--ink)}
+  .dark .srchit:hover{background:#211D18}
+  .dark .starbtn:not(.on){color:#4E4436}
   </style>
 </head>
 <body>
@@ -1770,7 +1778,7 @@ const UNITS=[
    src:"Commonplace · beyond the course — meeting clichés",
    why:"“Double-click” gestures at depth without committing to any. Naming the object — the join, the cohort, the assumption — is the actual click.",
    usage:["Let\u2019s open the retention table behind that number.","Which assumption are we checking — the denominator, or the window?"]},
-  {id:'u9w31',whyzh:'本单元最深的诊断：说话起雾不是文风问题,是诚意问题。动机清了,词自己会清。',term:'like a cuttlefish spurting out ink',cat:'Quotes',
+  {id:'u9w33',whyzh:'本单元最深的诊断：说话起雾不是文风问题,是诚意问题。动机清了,词自己会清。',term:'like a cuttlefish spurting out ink',cat:'Quotes',
    gloss:"『像乌贼喷墨』—— 词不由衷时,人会本能地喷出长词和废话来遮掩",
    hard:[["cuttlefish","乌贼、墨鱼"],["insincerity","言不由衷"]],
    quote:"The great enemy of clear language is insincerity… one turns, as it were, instinctively to long words and exhausted idioms, like a cuttlefish spurting out ink.",
@@ -2373,8 +2381,8 @@ const UNITS=[
    why:'Rhythm from repetition with variation: “so” stays fixed while much / many / few rotate — a three-beat balance.',
    usage:["So much learned by so many from so few good papers.","The triple-so mold: quantify gratitude in three beats."]},
  ]},
-{id:'uQa',title:'Q&A Under Fire',zh:'高压应答',from:'Beyond the course · 提问环节的临场工具 · 新增',
- essence:'The talk is rehearsed; the questions are not. These are the moves for the five seconds after a hard question lands — buy structure, keep your dignity, keep the floor. Every card is a template you can say tomorrow.',
+{id:'uQa',title:'Q&A Under Fire',zh:'高压应答',from:'Beyond the course · 提问环节的临场工具 ',
+ essence:'The talk is rehearsed; the questions are not. These are the moves for the five seconds after a hard question lands — buy time with structure, keep your dignity, keep the floor. Every card is a template you can say tomorrow.<div class="whyzh" style="margin-top:4px">讲稿可以排练,提问不能——这一关练的是难题落地后那五秒钟的接法。</div>',
  words:[
   {id:'uQaw1',whyzh:'复述对方的问题不是拖延,是保险:既买下十秒,又确保你答的是对方问的。',term:"let me make sure I understand: you\u2019re asking…",cat:'Phrases',
    gloss:'先复述再作答——买十秒,也防止答非所问',
@@ -2432,7 +2440,7 @@ const UNITS=[
    src:"Commonplace · beyond the course — Q&A drills",
    why:"Stating your own falsification condition disarms the room: you\u2019ve made the disagreement testable instead of personal — and shown you already ran the test.",
    usage:["The most disarming sentence available to a defender.","In meetings: “what would change my mind is churn above five percent — let\u2019s check in March.”"]},
-  {id:'uQaw9',whyzh:'幽默减压的结构版:“简短的答案/中等的答案/诚实的答案”——三连自带笑点,又把结构送回你手里。',term:"the short answer, the long answer, the honest answer",cat:'Phrases',
+  {id:'uQaw9',whyzh:'幽默减压的结构版:“短答案/长答案/诚实答案”——三连自带笑点,又把结构送回你手里。',term:"the short answer, the long answer, the honest answer",cat:'Phrases',
    gloss:'三段式接招:短答/长答/诚实答——笑点与结构一次买齐',
    hard:[],
    quote:"The short answer is yes. The long answer is slide 12. The honest answer is: we\u2019ll know in June.",
@@ -2460,7 +2468,7 @@ const UNITS=[
    src:"Commonplace · beyond the course — Q&A drills",
    why:"“Let\u2019s take it offline” parks a person; this invites one. Same postponement, opposite social meaning — the asker leaves flattered instead of filed away.",
    usage:["Then actually find them — the sentence is a promissory note.","Chairs love you for it: you just returned the room its schedule."]},
-  {id:'uQaw13',whyzh:'会议名场面:五分钟的评论,结尾不带问号。接法:谢一句,从里面挑出那个可以回答的问题,大声命名它。',term:"let me take the question inside that",cat:'Phrases',
+  {id:'uQaw13',whyzh:'会议名场面:五分钟的评论,结尾不带问号。接法:谢一句,从里面挑出那个可以回答的问题,大声命名它。',term:"let me take the question inside it",cat:'Phrases',
    gloss:'把“评论假装的问题”拆出可答的那一问:其余致谢,这问作答',
    hard:[],
    quote:"There\u2019s a lot in there I agree with — let me take the question inside it: would the result survive a different control group? Yes, and here\u2019s how we checked.",
@@ -2475,8 +2483,8 @@ const UNITS=[
    why:"“Can you repeat the question” confesses a total miss; “the last part” claims the partial parse you actually have. Asking for a specific piece reads as precision, not weakness — natives do it constantly.",
    usage:["Anchor what you caught: “from the piece about the control group.”","In noisy rooms, move closer BEFORE the Q&A — half of this problem is acoustics."]},
  ]},
-{id:'uHa',title:'Hedge → Assertive',zh:'去软化',from:'Beyond the course · 软化词替换关 · 新增',
- essence:'Qualifiers protect you from being wrong by making you sound unsure of being right. This unit works like the workhorse swaps: catch the hedge, say the assertive version. The validator will refuse the old phrase — that\u2019s the point.',
+{id:'uHa',title:'Hedge → Assertive',zh:'去软化',from:'Beyond the course · 软化词替换关 ',
+ essence:'Qualifiers protect you from being wrong by making you sound unsure of being right. This unit works like the workhorse swaps: catch the hedge, say the assertive version. The validator will refuse the old phrase — that\u2019s the point.<div class="whyzh" style="margin-top:4px">软化词让你听起来先输一半;抓住旧短语,说出挺直的版本。</div>',
  words:[
   {id:'uHaw1',whyzh:'最典型的学术软化:“我觉得或许我们可以……”——换成“我的建议是X,理由有二”,立场和结构一次到位。',term:"I feel like… · maybe we could… → my recommendation is…, for two reasons",cat:'Workhorse swaps',
    gloss:'从试探到建议:立场一句立稳,理由马上跟上',
@@ -2527,7 +2535,7 @@ const UNITS=[
    src:"Commonplace · beyond the course — hedge swaps",
    why:"If it were probably nothing you wouldn\u2019t be speaking. Flagging it straight respects both the risk and your own judgment for having seen it.",
    usage:["Rooms remember who called it — and in what voice they called it.","One concern per sentence: worry, evidence, ask."]},
-  {id:'uHaw8',whyzh:'把“抱歉打扰”换成“谢谢你的时间”:同一场合,道歉出场 vs 感谢出场,气场完全不同。',term:"sorry to bother you → thank you for the time",cat:'Workhorse swaps',
+  {id:'uHaw8',whyzh:'把“抱歉打扰”换成“谢谢你的时间”:同一场合,道歉出场 vs 感谢出场,气场完全不同。',term:"sorry to bother you → thank you for your time",cat:'Workhorse swaps',
    gloss:'道歉开场换成感谢开场——姿态从欠到谢',
    hard:[],
    quote:"Thank you for making the time — I\u2019ll use ten minutes of it. Three things.",
@@ -2549,8 +2557,8 @@ const UNITS=[
    why:"Deference without a stated preference wastes your seat at the table. “Your call” at the END respects the hierarchy; a preference FIRST respects your own judgment.",
    usage:["Shape: my pick → one reason → your call.","Even when overruled, the room now knows you think in choices."]},
  ]},
-{id:'uIn',title:'The First 30 Seconds',zh:'开场三十秒',from:'Beyond the course · 自我介绍与寒暄 · 新增',
- essence:'Introductions and small talk are the most rehearsable “improvised” speech there is. Build the thirty seconds once — identity, one vivid line, a handoff — and the wine-cup moments stop being ambushes.',
+{id:'uIn',title:'The First 30 Seconds',zh:'开场三十秒',from:'Beyond the course · 自我介绍与寒暄 ',
+ essence:'Introductions and small talk are the most rehearsable “improvised” speech there is. Build the thirty seconds once — identity, one vivid line, a handoff — and the glass-in-hand moments stop being ambushes.<div class="whyzh" style="margin-top:4px">把开场三十秒提前造好——身份、一个画面、一次交棒。</div>',
  words:[
   {id:'uInw1',whyzh:'三个词先站定身份(I\u2019m a biostatistician),头衔和机构都往后放——身份比简历先到场。',term:"the three-word identity",cat:'Phrases',
    gloss:'开口第一句:三个词说清你是谁——不是头衔,是身份',
@@ -3885,8 +3893,8 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
        const r=currentRep();
        const showForm=(T.repN||0)===0||window._repOpen;
        const isLine=r&&r.kind==='word'&&!isMethod(r.w)&&!String(r.w.term).includes('→')&&(String(r.w.term).trim().split(/\s+/).length>=4||/[,!?]/.test(String(r.w.term)));
-       if(!r)return `<div style="font-size:14px;margin-top:8px">✓ All clear — reps done and the review queue is empty.</div>`;
-       if(!showForm){const lw=T.lastRep&&ALLWORDS.find(x=>x.id===T.lastRep);const cmp=((lw&&lw.usage&&lw.usage.length)?`<div style="font-size:12.5px;color:var(--muted);margin-top:8px"><span style="font-weight:600;color:var(--wood-dk)">Compare · 参照</span> — ${esc(lw.usage[0])}</div>`:'')+(lw?`<div style="font-size:11.5px;color:var(--muted);margin-top:4px">“${esc(lw.term)}” — used ${ws(lw.id).uses||0}/38. 38 makes it yours.</div>`:'');const _t=today();const _ln=(state.sents||[]).filter(x=>x.d===_t).length;const _tm=repPool().filter(x=>x.s.next>_t&&x.s.next<=_t+DAY&&!REF_UNITS.has(x.w.unit)).length;const _ad=Object.keys(state.hist||{}).filter(k=>+k>_t-30*DAY).length;const summ=(T.repN||0)>=3?`<div style="font-size:12px;color:var(--muted);margin-top:10px;border-top:1px solid var(--hair);padding-top:8px">Today: ${_ln} line${_ln===1?'':'s'} written · ${(T.repIds||[]).length} cards touched${_tm?` · ${_tm} due tomorrow`:''} · active ${_ad} of last 30 days</div>`:'';return `<div style="font-size:14px;margin-top:8px">✓ used, not just seen.</div><div style="font-size:13px;color:var(--muted);margin-top:6px">“${esc((state.sents&&state.sents.length)?state.sents[state.sents.length-1].t:'')}”</div>${cmp}${summ}${((T.repN||0)<3||dueCards().length>0)?`<div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="window._repOpen=true;renderToday()">${(T.repN||0)<3?`Another rep (${(T.repN||0)+1}/3) →`:`Keep reviewing · ${dueCards().length} due →`}</button></div>`:``}`;}
+       if(!r)return `<div style="font-size:14px;margin-top:8px">✓ All clear — reps done and the review queue is empty.</div>${window._lastQuick?`<div style="font-size:11.5px;color:var(--muted);margin-top:4px">Last card marked ${window._lastQuick.ok?'known':'forgot'} — <a href="javascript:void(0)" onclick="undoQuick()" style="color:var(--wood-dk);text-decoration:none">undo</a></div>`:``}`;
+       if(!showForm){const lw=T.lastRep&&ALLWORDS.find(x=>x.id===T.lastRep);const cmp=((lw&&lw.usage&&lw.usage.length)?`<div style="font-size:12.5px;color:var(--muted);margin-top:8px"><span style="font-weight:600;color:var(--wood-dk)">Compare · 参照</span> — ${esc(lw.usage[0])}</div>`:'')+(lw?`<div style="font-size:11.5px;color:var(--muted);margin-top:4px">“${esc(lw.term)}” — used ${ws(lw.id).uses||0}/38. 38 makes it yours.</div>`:'');const _t=today();const _ln=(state.sents||[]).filter(x=>x.d===_t).length;const _tm=repPool().filter(x=>x.s.next>_t&&x.s.next<=_t+DAY&&!REF_UNITS.has(x.w.unit)).length;const _ad=Object.keys(state.hist||{}).filter(k=>+k>_t-30*DAY).length;const summ=(T.repN||0)>=3?`<div style="font-size:12px;color:var(--muted);margin-top:10px;border-top:1px solid var(--hair);padding-top:8px">Today: ${_ln} line${_ln===1?'':'s'} written · ${(T.repIds||[]).length} cards touched${_tm?` · ${_tm} due tomorrow`:''} · active ${_ad} of the last 30 days</div>`:'';const _lsx=(state.sents||[])[(state.sents||[]).length-1];return `<div style="font-size:14px;margin-top:8px">✓ used, not just seen.</div>${(_lsx&&_lsx.d===today())?`<div style="font-size:13px;color:var(--muted);margin-top:6px">“${esc(_lsx.t)}”</div>`:``}${cmp}${summ}${((T.repN||0)<3||dueCards().length>0)?`<div class="row" style="margin-top:10px"><button class="btn ghost slim" onclick="window._repOpen=true;renderToday()">${(T.repN||0)<3?`Another rep (${(T.repN||0)+1}/3) →`:`Keep reviewing · ${dueCards().length} due →`}</button></div>`:``}`;}
        if(r.kind==='word')return `<div style="font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">${esc(r.tag||'')}</div>
      <div class="term" style="font-size:19px">${esc(r.w.term)}</div>
      <div style="font-size:13.5px;color:var(--muted)">${esc(r.w.gloss)}</div>
@@ -3895,7 +3903,7 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
      <div id="repHint" style="font-size:12.5px;color:var(--terra);margin-top:4px"></div>
      <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button><button class="btn ghost slim" onclick="window._repWrite=false;renderToday()">Cancel</button></div>`
      :`<div id="repHint" style="font-size:12.5px;color:var(--terra);margin-top:4px"></div>
-     ${(window._lastQuick&&r.extra)?`<div style="font-size:11.5px;color:var(--muted);margin-top:4px">Last card marked ${window._lastQuick.ok?"known":"forgot"} — <a href="javascript:void(0)" onclick="undoQuick()" style="color:var(--wood-dk);text-decoration:none">undo</a></div>`:``}<div class="row"><button class="btn primary" onclick="repSaid()">Said it aloud ✓</button><button class="btn ghost slim" onclick="window._repWrite=true;renderToday()">✍ Write it</button>${r.extra?`<button class="btn ghost slim" onclick="repQuick(0)">Forgot ↺</button>`:``}${((T.repN||0)===0&&!T.repSwap)?`<button class="btn ghost slim" onclick="repSwap()">Swap ↻</button>`:``}</div>`}`;
+     ${(window._lastQuick&&r.extra)?`<div style="font-size:11.5px;color:var(--muted);margin-top:4px">Last card marked ${window._lastQuick.ok?"known":"forgot"} — <a href="javascript:void(0)" onclick="undoQuick()" style="color:var(--wood-dk);text-decoration:none">undo</a></div>`:``}<div class="row"><button class="btn primary" onclick="repSaid()">Said it aloud ✓</button><button class="btn ghost slim" onclick="window._repWrite=true;renderToday()">✍ Write it</button>${(r.tag&&String(r.tag).indexOf('due')>=0)?`<button class="btn ghost slim" onclick="repQuick(0)">Forgot ↺</button>`:``}${((T.repN||0)===0&&!T.repSwap)?`<button class="btn ghost slim" onclick="repSwap()">Swap ↻</button>`:``}</div>`}`;
        return `<div style="font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">humor mold</div>
      <div class="term" style="font-size:19px">${esc(r.m.name)} <span class="uz">· ${esc(r.m.zh)}</span></div>
      <div style="font-size:13.5px;margin-top:4px">${esc(r.m.tpl)}</div>
@@ -3906,7 +3914,7 @@ ${state.welcomed?``:`<div class="card" style="margin-bottom:14px">
      <div class="row"><button class="btn primary" onclick="doRep()">Done ✓</button><button class="btn ghost slim" onclick="window._repWrite=false;renderToday()">Cancel</button></div>`
      :`<div class="row"><button class="btn primary" onclick="repSaid()">Said it aloud ✓</button><button class="btn ghost slim" onclick="window._repWrite=true;renderToday()">✍ Write it</button></div>`}`;
      })()}
-     <div style="font-size:12px;color:var(--muted);margin-top:12px;border-top:1px solid var(--hair);padding-top:10px">${T.learned} learned · ${T.sessions} flipped${(function(){const t=today();const m=repPool().filter(x=>x.s.next>t&&x.s.next<=t+DAY&&!REF_UNITS.has(x.w.unit)).length;return m?` · ${m} due tomorrow`:''})()} — any card counts toward the streak</div>
+     <div style="font-size:12px;color:var(--muted);margin-top:12px;border-top:1px solid var(--hair);padding-top:10px">${T.learned} learned · ${T.sessions} flipped${(function(){if((T.repN||0)>=3)return '';const t=today();const m=repPool().filter(x=>x.s.next>t&&x.s.next<=t+DAY&&!REF_UNITS.has(x.w.unit)).length;return m?` · ${m} due tomorrow`:''})()} — any card counts toward the streak</div>
    </div>
    <div class="card" style="margin-top:14px;cursor:pointer" onclick="todayOpen=!todayOpen;renderToday()">
      <span class="cat-chip">Line of the day</span>
@@ -4020,7 +4028,7 @@ const STUDIES=[
   steal:"End on a collected line, with its provenance — the credit does not weaken the ending, it doubles it."}],
  arc:"A joke buys the room, a map relaxes it, three stories each pay off in one imaged principle, three don'ts clear the ground for one do, and a collected quote — credited — carries the landing. Structure so clean it became the template for every commencement since.",
  arczh:"一个笑点买下全场,一张地图让人松弛；三个故事各自兑付一条带画面的原则；三个 don't 清场,托出一个 do;最后由一句注明出处的收藏名言完成着陆。结构干净到成了此后所有毕业演讲的模板。"},
-{id:"st3",cap:"Write a cold open for your dryest topic: one deadpan observation that smuggles your real thesis.",learn:"幽默运送论点的教科书:每个笑点都在替论证干活——冷开场赢许可、反转句保悬念、一个故事扛起全部证据。任何怕闷的学术报告都该偷这套配比。",bio:"肯·罗宾逊爵士(1950–2020),英国教育学者,创造力教育的头号布道者。2006年TED大会演讲《学校扼杀创造力吗?》,TED网站上线时的首批六支演讲之一——如今是TED史上观看量第一(6500万+),每分钟两个笑点,用脱口秀的皮讲教育改革的骨。",speaker:"Ken Robinson",title:"Ken Robinson — Do Schools Kill Creativity? (TED, 2006)",sub:"18-minute TED talk · 7 beats · the most-watched TED ever",hookterm:"prepared to be wrong",hook:"If you're not prepared to be wrong, you'll never come up with anything original.",hooksrc:"Ken Robinson, TED (2006)",hookurl:"https://youtu.be/iG9CE55wbtY?t=340",
+{id:"st3",cap:"Write a cold open for your driest topic: one deadpan observation that smuggles your real thesis.",learn:"幽默运送论点的教科书:每个笑点都在替论证干活——冷开场赢许可、反转句保悬念、一个故事扛起全部证据。任何怕闷的学术报告都该偷这套配比。",bio:"肯·罗宾逊爵士(1950–2020),英国教育学者,创造力教育的头号布道者。2006年TED大会演讲《学校扼杀创造力吗?》,TED网站上线时的首批六支演讲之一——如今是TED史上观看量第一(6500万+),每分钟两个笑点,用脱口秀的皮讲教育改革的骨。",speaker:"Ken Robinson",title:"Ken Robinson — Do Schools Kill Creativity? (TED, 2006)",sub:"18-minute TED talk · 7 beats · the most-watched TED ever",hookterm:"prepared to be wrong",hook:"If you're not prepared to be wrong, you'll never come up with anything original.",hooksrc:"Ken Robinson, TED (2006)",hookurl:"https://youtu.be/iG9CE55wbtY?t=340",
  intro:"The most-watched TED talk in history, and it has no slides — only stories and roughly two laughs a minute, every one of them carrying the argument. This is the master file for humor in service of a thesis.",
  introzh:"史上观看量最高的 TED,没有一页 PPT——只有故事和平均每分钟两个笑点,而且每个笑点都在运送论点。这是“幽默为论点服务”的范本。",
  beats:[
@@ -4345,7 +4353,7 @@ const STUDIES=[
  arc:"Mock the genre → heresy one (no dream) with a coinage → simile-driven advice → humble the winners at their proudest → one sincere plea amid the irony → two concrete acts of love → mortality reframed as romance → the exciting, meaningless life.",
  arczh:"先嘲讽文体本身;第一条异端(不必有梦想)配一个新造词;明喻运载建议;在最得意的时刻给赢家卸妆;满场反讽里只花一次真诚(请去当老师);热爱落成两个具体动作;把必死重构为浪漫;最后把全篇焊成一个矛盾修辞:激动人心的、毫无意义的一生。"},
 {id:"st11",cap:"Confess the gap: write the first line that says out loud what your audience is politely ignoring about you.",learn:"讲亲身低谷的第二种模板(与 Rowling 对照):喜剧节奏运载悲剧内容——平叙悲剧、谷底立誓、说出最坏然后活过它、给自己的论点松绑(“除非你在森林里迷了路”)、用在地梗收尾。artist talk 或任何“我如何走到今天”的场合。",
- bio:"艾伦·德杰尼勒斯,脱口秀主持人,新奥尔良人。1997年公开出柜后节目被砍、事业冰封三年,2003年凭日间脱口秀翻身。2009年回家乡对图兰大学“卡特里娜届”毕业生演讲——这一届入学第一周就被飓风打散、各地借读;她讲自己的版本:失去一切之后,“对自己诚实”是唯一带得走的东西。",
+ bio:"艾伦·德杰尼勒斯,脱口秀主持人,新奥尔良人。1997年公开出柜后节目被砍、事业冰封三年,2003年凭日间脱口秀翻身。2009年回家乡对杜兰大学“卡特里娜届”毕业生演讲——这一届入学第一周就被飓风打散、各地借读;她讲自己的版本:失去一切之后,“对自己诚实”是唯一带得走的东西。",
  speaker:"Ellen DeGeneres",title:"Ellen DeGeneres — The Katrina Class (Tulane, 2009)",sub:"10-minute commencement (her cut) · 8 beats",
  hookterm:"never follow someone else\u2019s path",hook:"Follow your passion. Stay true to yourself. Never follow someone else\u2019s path — unless you\u2019re in the woods, and you\u2019re lost, and you see a path. Then, by all means, you should follow that.",hooksrc:"Ellen DeGeneres, Tulane Commencement (2009)",hookurl:"https://youtu.be/M6pPBqfrAnI?t=474",
  intro:"Tragedy told deadpan, a vow made in a flea-infested basement, a career lost on purpose — all of it carried on talk-show timing.",
@@ -4364,7 +4372,7 @@ const STUDIES=[
   {fn:"The flat tragedy",fnzh:"平叙悲剧",exact:true,url:"https://youtu.be/M6pPBqfrAnI?t=232",
    quote:"I was maybe 19, and my girlfriend at the time was killed in a car accident. And I passed the accident, and I didn\u2019t know it was her… I was living in a basement apartment. I had no money, no heat, no air. I had a mattress on the floor, and the apartment was infested with fleas.",
    craft:"No violins: the worst year of her life delivered as a flat inventory — accident, basement, mattress, fleas. The same refuse-to-flinch move as Rowling\u2019s ruin catalogue, in stand-up cadence.",
-   craftzh:"没有煽情配乐:人生最坏的一年被平铺成清单——车祸、地下室、地垫、跳蚤。和 Rowling 清点废墟同一招,只是换成了脱口秀的呼吸。",
+   craftzh:"没有煽情配乐:人生最坏的一年被平铺成清单——车祸、地下室、打地铺的床垫、跳蚤。和 Rowling 清点废墟同一招,只是换成了脱口秀的呼吸。",
    steal:"Inventory your worst season in flat nouns — the refusal to flinch is what moves people."},
   {gap:"— in that basement she starts writing: an imaginary conversation with God about why her girlfriend is gone while fleas live on —",
    fn:"The vow from the bottom",fnzh:"谷底立誓",exact:true,url:"https://youtu.be/M6pPBqfrAnI?t=272",
@@ -4407,17 +4415,17 @@ const STUDIES=[
    craft:"The joke aims at herself and the room at once: her school needs Harvard\u2019s name to describe itself. Self-deprecation that flatters the audience is the safest laugh in any room.",
    craftzh:"这个玩笑同时瞄准自己和全场:她的母校要借哈佛的名字才能自我介绍。既自嘲又抬举听众,是任何房间里最安全的笑点。",
    steal:"Aim the joke at yourself in a way that flatters the room — the double target is the safety."},
-  {gap:"— more jokes: how to spot a spy in your dorm, and \u201cif The Rock shows up, they\u2019re on to you\u201d; then: the Class of 2011 didn\u2019t invite me here to tell jokes —",
-   fn:"Bridge the generations",fnzh:"代际搭桥",exact:true,url:"https://youtu.be/7WvdxgGpNVU?t=494",
-   quote:"Your formative teenage years were filled with orange alerts and rogue waves and unaccomplished missions. For my generation, it was AIDS. We all grow up afraid of something.",
-   craft:"She names THEIR fears in their vocabulary, then hers, then joins them in one plain clause. Empathy done with nouns, not adverbs.",
-   craftzh:"她先用他们的词汇点出他们的恐惧,再说出自己那代的,最后用一个平句把两代焊在一起。共情靠名词完成,不靠副词。",
-   steal:"Name their fear in their words, then yours in yours — then join them in one plain sentence."},
-  {fn:"The confessed-limit thesis",fnzh:"承认边界再给论点",exact:true,url:"https://youtu.be/7WvdxgGpNVU?t=394",
+  {gap:"— more jokes: how to spot a spy in your dorm, and “if The Rock shows up, they’re on to you”; then: the Class of 2011 didn’t invite me here to tell jokes —",
+   fn:"The confessed-limit thesis",fnzh:"承认边界再给论点",exact:true,url:"https://youtu.be/7WvdxgGpNVU?t=394",
    quote:"All I can tell you today is what I\u2019ve learned, what I have discovered as a person in this world. And that is this: you can\u2019t do it alone. As you navigate through the rest of your life, be open to collaboration.",
    craft:"\u201cAll I can tell you\u201d shrinks the claim before making it — so the thesis, when it comes, sounds like testimony instead of doctrine.",
    craftzh:"“我能告诉你们的只有……”先把主张收窄再说出口——于是论点出场时听起来是证词,不是教义。",
    steal:"Shrink the claim before you make it: \u201call I can tell you is what I\u2019ve learned\u201d — testimony beats doctrine."},
+  {fn:"Bridge the generations",fnzh:"代际搭桥",exact:true,url:"https://youtu.be/7WvdxgGpNVU?t=494",
+   quote:"Your formative teenage years were filled with orange alerts and rogue waves and unaccomplished missions. For my generation, it was AIDS. We all grow up afraid of something.",
+   craft:"She names THEIR fears in their vocabulary, then hers, then joins them in one plain clause. Empathy done with nouns, not adverbs.",
+   craftzh:"她先用他们的词汇点出他们的恐惧,再说出自己那代的,最后用一个平句把两代焊在一起。共情靠名词完成,不靠副词。",
+   steal:"Name their fear in their words, then yours in yours — then join them in one plain sentence."},
   {fn:"Borrow your craft\u2019s rules",fnzh:"把行规借给人生",exact:true,url:"https://youtu.be/7WvdxgGpNVU?t=536",
    quote:"I moved to Chicago in the early 1990s, and I studied improvisation there. I learned some rules that I try to apply still today: listen, say yes, live in the moment, and make sure you play with people who have your back.",
    craft:"Her profession\u2019s technical rules become the speech\u2019s moral argument. Everyone owns one craft — the move is transplanting its rules to life, verbatim.",
@@ -4443,8 +4451,8 @@ const STUDIES=[
    craft:"Two conditions, one instruction. The mirror says the thesis one last time — need people in fear AND in triumph — in a shape small enough to memorize on first hearing.",
    craftzh:"两种境况,同一个指令。镜像结构把论点最后说了一遍——恐惧时需要人,得意时同样需要——形状小到听一遍就能背下。",
    steal:"End on two conditions, one instruction: \u201cwhen X, do it; and when opposite-of-X, do the same thing.\u201d"}],
- arc:"Roast your own credentials → bridge the generations by their fears → shrink the claim, then state it → transplant improv\u2019s rules → one physical prescription → plant the hand-holding image → the action-figure heart → the mirrored landing.",
- arczh:"先拿自己的母校和主场互涮;用两代人的恐惧搭桥;把主张收窄成证词再说出论点;即兴喜剧的行规原样搬进人生;落一个今晚就能做的动作;中途预埋“牵手”的画面;塑封手办的心;最后镜像对句降落。"},
+ arc:"Roast your own credentials → shrink the claim, then state it → bridge the generations by their fears → transplant improv\u2019s rules → one physical prescription → plant the hand-holding image → the action-figure heart → the mirrored landing.",
+ arczh:"先拿自己的母校和主场互涮;把主张收窄成证词再说出论点;再用两代人的恐惧搭桥;即兴喜剧的行规原样搬进人生;落一个今晚就能做的动作;中途预埋“牵手”的画面;塑封手办的心;最后镜像对句降落。"},
 {id:"st13",cap:"Write one line of advice in her shape: imperative + the smallest concrete noun + one twist. Then a “trust me” to close.",learn:"单句密度之王:一篇全部由“可偷单句”组成的毕业演讲(专栏文,从未真正登台)。学三件事:开头自贬权威反而赢得信任(“除了防晒,其余建议并无依据”)、长清单靠语气与节奏的变化保持活力、金句的通用形状(祈使句+具体名词+一记转折)。",
  bio:"玛丽·施米奇,《芝加哥论坛报》专栏作家。1997年6月1日,她写了一篇“如果让我给毕业生演讲”的专栏——随即被讹传为冯内古特在MIT的演讲而病毒式传播,1999年被 Baz Luhrmann 谱成热门单曲《Everybody\u2019s Free (To Wear Sunscreen)》。它从未被真正“讲”过,却成了被引用最多的毕业演讲之一。",
  speaker:"Mary Schmich",title:"Mary Schmich — Wear Sunscreen (1997, written)",sub:"a newspaper-column commencement · 7 beats · 无现场视频",
@@ -4460,7 +4468,7 @@ const STUDIES=[
   {fn:"The daily dare",fnzh:"每日一吓",exact:false,
    quote:"Do one thing every day that scares you.",
    craft:"Seven words, imperative, unqualified. The shortest lines in the piece are the ones people tattooed — brevity is what makes advice adoptable.",
-   craftzh:"七个词,祈使句,不加任何限定。全篇最短的句子恰恰是被人纹在身上的那些——简短才可被收养。",
+   craftzh:"七个词,祈使句,不加任何限定。全篇最短的句子恰恰是被人纹在身上的那些——简短才揣得走。",
    steal:"Cut the qualifier, keep the dare: verb + object + \u201cthat scares you.\u201d"},
   {fn:"Redefine the race",fnzh:"重定义赛道",exact:false,
    quote:"Don\u2019t waste your time on jealousy. Sometimes you\u2019re ahead, sometimes you\u2019re behind. The race is long and, in the end, it\u2019s only with yourself.",
@@ -4494,7 +4502,7 @@ const STEAL_OCC={st1:[['opening','humor'],['toast','humor'],['story'],['toast','
  st9:[['opening','humor'],['review','meetings','opening'],['story','review'],['review','qa'],['story','humor'],['review','story'],['qa','review'],['endings']],
  st10:[['opening','humor'],['review','humor'],['humor','story'],['review','story'],['review'],['review','meetings'],['story','endings'],['endings','humor']],
  st11:[['opening','humor'],['opening','humor'],['story'],['story'],['story','qa'],['story','review'],['endings','humor'],['endings']],
- st12:[['opening','humor'],['opening','story'],['review','meetings'],['review','story','meetings'],['review','meetings'],['story','endings'],['story','humor'],['endings','toast']],
+ st12:[['opening','humor'],['review','meetings'],['opening','story'],['review','story','meetings'],['review','meetings'],['story','endings'],['story','humor'],['endings','toast']],
  st13:[['opening','review'],['review'],['review','story'],['humor','review'],['qa','story'],['story','endings'],['endings']],
  st2:[['opening','humor'],['opening','review','meetings'],['story','review'],['story','qa'],['review'],['endings','story'],['endings'],['endings','toast']],
  st3:[['opening','humor'],['review','humor'],['qa','meetings'],['humor','story'],['qa','review','meetings'],['story'],['endings']],
@@ -4517,7 +4525,7 @@ function moldSave(i){
   state.sents=state.sents||[];state.sents.push({d:today(),term:MOLDS[i].name,t:txt});
   if(state.sents.length>1000)state.sents.shift();
   if(el)el.value='';if(window._mD)delete window._mD[i];addXP(5);bumpStreak();save();
-  if(h)h.textContent='✓ Saved to My Lines.';
+  if(h){h.style.color='var(--green)';h.textContent='✓ Saved to My Lines.';}
 }
 function renderMolds(){
   const area=document.getElementById('learnArea');
@@ -4536,7 +4544,7 @@ function renderMolds(){
 let linesF='all';
 function setLinesF(f){linesF=f;window._editLine=null;renderLines();}
 function lineKind(x){const t=String(x.term||'');if(t.startsWith('✂'))return 'steal';if(t.startsWith('§'))return 'cap';if(typeof MOLDS!=='undefined'&&MOLDS.some(m=>m.name===t))return 'mold';return 'rep';}
-function delLine(i){state.sents.splice(i,1);window._editLine=null;save();renderLines();}
+function delLine(i){if(!confirm('Delete this line? This cannot be undone.'))return;state.sents.splice(i,1);window._editLine=null;save();renderLines();}
 function editLine(i){window._editLine=i;renderLines();}
 function saveLine(i){const el=document.getElementById('elIn');const v=(el&&el.value||'').trim();if(!v)return;state.sents[i].t=v;window._editLine=null;save();renderLines();}
 function copyLine(i){try{if(navigator.clipboard)navigator.clipboard.writeText(state.sents[i].t);}catch(e){}}
@@ -4559,7 +4567,7 @@ function exitSteals(){inSteals=false;renderLearn();window.scrollTo(0,0)}
 function setOcc(o){stealOcc=o;renderLearn()}
 function toggleStealStar(sid,bi){state.stealStars=state.stealStars||{};const k=sid+'#'+bi;if(state.stealStars[k])delete state.stealStars[k];else state.stealStars[k]=1;save();renderLearn();}
 function goBeat(sid,i){inSteals=false;window._fromSteals=true;enterStudy(sid,true);const el=document.getElementById('bt'+i);if(el)el.scrollIntoView();}
-function stealWriteOpen(sid,bi){window._stealW=sid+'#'+bi;renderSteals();}
+function stealWriteOpen(sid,bi){window._stealW=sid+'#'+bi;window._stD='';renderSteals();}
 function stealSave(sid,bi){
   const el=document.getElementById('stIn');const txt=(el&&el.value||'').trim();
   if(!txt||txt.split(/\s+/).length<4){const h=document.getElementById('stHint');if(h)h.textContent='Four words or more — make it a real line.';return;}
@@ -4595,7 +4603,7 @@ function capSave(sid){
   state.capDone=state.capDone||{}; state.capDone[sid]=1;
   if(state.sents.length>1000)state.sents.shift();
   if(el)el.value='';window._capD='';addXP(5);bumpStreak();save();
-  if(h)h.textContent='✓ Saved to My Lines.';
+  if(h){h.style.color='var(--green)';h.textContent='✓ Saved to My Lines.';}
 }
 let inStudy=null, todayOpen=false;
 function beatVid(i,url){
@@ -4605,7 +4613,7 @@ function beatVid(i,url){
   if(!m){window.open(url,'_blank');return;}
   d.innerHTML='<div style="position:relative;padding-top:56.25%;margin-top:10px;border-radius:12px;overflow:hidden"><iframe src="https://www.youtube-nocookie.com/embed/'+m[1]+'?start='+m[2]+'&autoplay=1&rel=0" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>';
 }
-function enterStudy(id,keep){pushNav();if(!keep)window._fromSteals=false;inSteals=false;inLines=false;inMolds=false;inStudy=STUDIES.find(s=>s.id===id);inUnit=null;idx=-1;renderLearn();window.scrollTo(0,0)}
+function enterStudy(id,keep){pushNav();window._capD='';if(!keep)window._fromSteals=false;inSteals=false;inLines=false;inMolds=false;inStudy=STUDIES.find(s=>s.id===id);inUnit=null;idx=-1;renderLearn();window.scrollTo(0,0)}
 function exitStudy(){inStudy=null;renderLearn();window.scrollTo(0,0)}
 function studiesSection(){
   if(!STUDIES.length)return '';
@@ -4626,13 +4634,13 @@ function renderStudy(){
     <span class="cat-chip">Speech Study · 精读</span>
     <div class="term" style="font-size:22px">${esc(st.title)}</div>
     <div style="font-size:13px;color:var(--muted);margin-top:2px">${esc(st.sub)}</div>
-    ${st.learn?`<div class="blk"><span class="lbl">What this teaches · 这篇学什么</span><div class="whyzh" style="margin-top:2px">${esc(st.learn)}</div></div>`:``}${st.bio?`<div class="blk"><span class="lbl">The speaker · 人物与场合</span><div class="whyzh" style="margin-top:2px">${esc(st.bio)}</div></div>`:``}<div class="blk"><span class="lbl">The whole in one look · 全篇一眼</span>${esc(st.intro)}<div class="whyzh">${esc(st.introzh)}</div></div>
-    <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:10px">${st.beats.map((b,i)=>`<button class="btn ghost slim" onclick="document.getElementById('bt${i}').scrollIntoView({behavior:'smooth'})">${i+1} ${esc(b.fnzh)}</button>`).join('')}</div>
+    ${st.learn?`<div class="blk"><span class="lbl">What this teaches · 这篇学什么</span><div class="whyzh" style="margin-top:2px">${esc(st.learn)}</div></div>`:``}${st.bio?`<div class="blk"><span class="lbl">Speaker & occasion · 人物与场合</span><div class="whyzh" style="margin-top:2px">${esc(st.bio)}</div></div>`:``}<div class="blk"><span class="lbl">At a glance · 全篇一眼</span>${esc(st.intro)}<div class="whyzh">${esc(st.introzh)}</div></div>
+    <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:10px">${st.beats.map((b,i)=>`<button class="pill" onclick="document.getElementById('bt${i}').scrollIntoView({behavior:'smooth'})">${i+1} ${esc(b.fnzh)}</button>`).join('')}</div>
   </div>`+
   st.beats.map((b,i)=>`${b.gap?`<div class="bgap">${esc(b.gap)}</div>`:``}<div class="card" id="bt${i}" style="margin-top:14px">
     <span class="cat-chip">Beat ${i+1} · ${esc(b.fnzh)}</span>
     <div class="quote" style="margin-top:10px"><span class="q">“${esc(b.quote)}”</span><span class="src">— ${esc(st.speaker||'')}${b.url?` · ${b.exact?`<a href="javascript:void(0)" onclick="beatVid(${i},'${b.url}')" style="color:var(--green);text-decoration:none">▶</a>`:`<a href="${b.url}" target="_blank" style="color:var(--green);text-decoration:none">↗</a>`}`:``}</span></div>
-    ${b.exact&&b.url?`<div style="font-size:11px;color:var(--muted);margin-top:3px">▶ Shadow it — play it three times, speak over the third. 播三遍,第三遍跟着他说。</div>`:``}
+    ${b.exact&&b.url?`<div style="font-size:11px;color:var(--muted);margin-top:3px">▶ Shadow it — play it three times, speak over the third. 播三遍,第三遍跟着一起说。</div>`:``}
     <div id="bv${i}"></div>
     <div class="blk"><span class="lbl">Craft · 手法</span>${esc(b.craft)}<div class="whyzh">${esc(b.craftzh)}</div></div>
     ${b.steal?`<div class="blk"><span class="lbl">Steal this · 拿走就用</span>${esc(b.steal)}</div>`:''}
@@ -4699,9 +4707,9 @@ function renderLearn(){
         <div class="prog">${MOLDS.length}</div>
       </div>`+`<div class="unit" onclick="enterLines()">
         <div class="badge">✎</div>
-        <div><div class="ut">My Lines <span class="uz">· 我的句子</span></div><div class="um">your Daily-rep sentences</div></div>
+        <div><div class="ut">My Lines <span class="uz">· 我的句子</span></div><div class="um">every line you\u2019ve written — reps, steals, studies</div></div>
         <div class="prog">${(state.sents||[]).length}</div>
-      </div>`+`<div style="margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted)"><a href="javascript:void(0)" onclick="exportBackup()" style="color:var(--muted);text-decoration:none">Back up ⤓</a> &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="document.getElementById(\'impFile\').click()" style="color:var(--muted);text-decoration:none">Restore</a> &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="toggleDark()" style="color:var(--muted);text-decoration:none">${state.dark?'☀️ Light mode':'🌙 Dark mode'}</a> &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted);text-decoration:none">Start over</a><input type="file" id="impFile" accept=".json" style="display:none" onchange="importBackup(this)"></div>${(function(){const sc=(state.sents||[]).length;if(sc<20)return``;const lb=state.lastBackup;const dd=lb?Math.round((today()-lb)/DAY):null;return (!lb||dd>21)?`<div style="margin-top:6px;text-align:center;font-size:11.5px;color:var(--terra)">${lb?`Last backup ${dd} days ago`:`Never backed up`} — your lines live only on this phone.</div>`:``})()}`;
+      </div>`+`<div style="margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted)"><a href="javascript:void(0)" onclick="exportBackup()" style="color:var(--muted);text-decoration:none">Back up ⤓</a> &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="document.getElementById(\'impFile\').click()" style="color:var(--muted);text-decoration:none">Restore</a> &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="toggleDark()" style="color:var(--muted);text-decoration:none">${state.dark?'☀️ Light mode':'🌙 Dark mode'}</a> &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="resetAll()" style="color:var(--muted);text-decoration:none">Start over</a><input type="file" id="impFile" accept=".json" style="display:none" onchange="importBackup(this)"></div>${(function(){const sc=(state.sents||[]).length;if(sc<20)return``;const lb=state.lastBackup;const dd=lb?Math.round((today()-lb)/DAY):null;return (!lb||dd>21)?`<div style="margin-top:6px;text-align:center;font-size:11.5px;color:var(--terra)">${lb?`Last backup ${dd} days ago`:`Never backed up`} — your lines live only on this device.</div>`:``})()}`;
     return;
   }
   const u=inUnit;
@@ -4726,7 +4734,7 @@ function renderLearn(){
      ${w.ctxzh?`<div class="blk"><span class="lbl">Context · 背景</span><div class="whyzh" style="margin-top:2px">${esc(w.ctxzh)}</div></div>`:``}${w.hard&&w.hard.length?`<div class="blk"><span class="lbl">Breakdown · 拆词</span><div class="hardw">${w.hard.map(h=>`<div><b>${esc(h[0])}</b>${PRON[h[0]]?`<span class="ipa">${PRON[h[0]]}</span>`:''}<button class="sayb" style="font-size:14px" data-w="${esc(h[0])}" onclick="sayWord(this.dataset.w)" title="pronounce">🔊</button> — ${esc(h[1])}</div>`).join('')}</div></div>`:''}
      <div class="blk"><span class="lbl">Unpack · 解析</span>${esc(w.why)}${w.whyzh?`<div class="whyzh">${esc(w.whyzh)}</div>`:``}</div>
      <div class="blk"><span class="lbl">${isMethod(w)?'Practice · 练习':'Usage · 用法'}</span><ul class="usage">${w.usage.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
-     ${(!w._cus&&(idx+1)%5===0)?`<div class="blk"><span class="lbl">Quick practice · 顺手一练</span><div style="font-size:12.5px;color:var(--muted)">One line with \u201c${esc(w.term)}\u201d — say it aloud first. (Optional — Next won\u2019t wait.)</div><textarea id="utIn" style="min-height:48px;margin-top:6px" oninput="window._utD=this.value" placeholder="One line…">${esc(window._utD||'')}</textarea><div id="utHint" style="font-size:12px;color:var(--terra);margin-top:3px"></div><div class="row" style="margin-top:6px"><button class="btn soft slim" onclick="unitTry('${w.id}')">Save line ✓</button></div></div>`:``}
+     ${(!w._cus&&(idx+1)%5===0)?`<div class="blk"><span class="lbl">Quick practice · 顺手一练</span><div style="font-size:12.5px;color:var(--muted)">One line with \u201c${esc(w.term)}\u201d — say it aloud first. (Optional — you can move on anytime.)</div><textarea id="utIn" style="min-height:48px;margin-top:6px" oninput="window._utD=this.value" placeholder="One line…">${esc(window._utD||'')}</textarea><div id="utHint" style="font-size:12px;color:var(--terra);margin-top:3px"></div><div class="row" style="margin-top:6px"><button class="btn soft slim" onclick="unitTry('${w.id}')">Save line ✓</button></div></div>`:``}
      <div class="stepdots">${idx+1} / ${(u._sess||unitWords(u)).length}</div>
      <div class="row">
        <button class="btn ghost slim" onclick="exitUnit()">⌂ Lessons</button>
@@ -4738,13 +4746,13 @@ function unitTry(id){
   const el=document.getElementById('utIn');const txt=(el&&el.value||'').trim();
   const h=document.getElementById('utHint');
   const ws_=txt.toLowerCase().replace(/[^a-z\s']/g,' ').split(/\s+/).filter(Boolean);
-  if(ws_.length<4||new Set(ws_).size<Math.min(4,ws_.length)){if(h)h.textContent='Four words or more — a real line.';return;}
+  if(ws_.length<4||new Set(ws_).size<Math.min(4,ws_.length)){if(h){h.style.color='var(--terra)';h.textContent='Four words or more — a real line.';}return;}
   const w=ALLWORDS.find(x=>x.id===id); if(!w)return;
   const s=ws(id); s.uses=(s.uses||0)+1; s.iv=(s.iv||0)+1; s.next=today()+[4,7,15,30,60,120][Math.min(s.iv-1,5)]*DAY;
   state.sents=state.sents||[]; state.sents.push({d:today(),term:w.term,t:txt});
   if(state.sents.length>1000)state.sents.shift();
   window._utD=''; addXP(3); bumpStreak(); save();
-  if(el)el.value=''; if(h)h.textContent='✓ Saved to My Lines — and scheduled for review.';
+  if(el)el.value=''; if(h){h.style.color='var(--green)';h.textContent='✓ Saved to My Lines — and scheduled for review.';}
 }
 function enterUnit(id){pushNav();inUnit=UNITS.find(u=>u.id===id);const uw=unitWords(inUnit);
   if(inUnit.deck){const un=uw.filter(w=>w._cus?false:!ws(w.id).learned);const pool=un.length?un:uw;inUnit._sess=[...pool].sort(()=>Math.random()-.5).slice(0,20);idx=-1;}
@@ -4759,7 +4767,7 @@ function enterUnit(id){pushNav();inUnit=UNITS.find(u=>u.id===id);const uw=unitWo
   }
   renderLearn();window.scrollTo(0,0)}
 function exitUnit(){inUnit=null;idx=-1;renderLearn()}
-function go(i){ if(i<-1)i=-1; idx=i; if(inUnit&&!inUnit.deck){state.upos=state.upos||{};state.upos[inUnit.id]=Math.max(0,idx+1);save();} renderLearn(); window.scrollTo(0,0)}
+function go(i){ if(i<-1)i=-1; window._utD=''; idx=i; if(inUnit&&!inUnit.deck){state.upos=state.upos||{};state.upos[inUnit.id]=Math.max(0,idx+1);save();} renderLearn(); window.scrollTo(0,0)}
 function learnNext(){
   const u=inUnit,uw=(u._sess||unitWords(u)),w=uw[idx];
   if(!w._cus){const s=ws(w.id);if(!s.learned){s.learned=true;s.iv=0;addXP(5);bumpStreak();tl().learned++;syncNow();}}
@@ -4814,7 +4822,7 @@ function shufDraw(award){
   if(award){tl().sessions++; state.reps=(state.reps||0)+1; if(tl().sessions<=30)addXP(5); bumpStreak(); syncNow();} save();
   renderShufCard(); 
 }
-function applyDark(){try{document.documentElement.classList.toggle('dark',!!state.dark);}catch(e){}}
+function applyDark(){try{document.documentElement.classList.toggle('dark',!!state.dark);const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',state.dark?'#1B1815':'#F7F4EF');}catch(e){}}
 function toggleDark(){state.dark=!state.dark;save();applyDark();renderLearn();}
 function toggleRecall(){state.shufRecall=!state.shufRecall;window._revealed=false;save();renderPrac();}
 function shufToggleStar(){ if(!shufCur)return; const st=cardState(shufCur); st.star=!st.star; save(); renderShufCard();  }
