@@ -59,7 +59,7 @@ body{
 }
 .hero::after{
   content:"";display:block;width:44px;height:2px;
-  background:var(--slate);opacity:.55;margin:44px auto 0;
+  background:var(--slate);opacity:.55;margin:36px auto 0;
 }
 .hero h1{
   font-family:var(--serif);
@@ -70,6 +70,7 @@ body{
   font-size:14.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
   color:#565b61;margin:18px 0 0;
 }
+.hero .role-dot{color:var(--muted);}
 .socials{display:flex;justify-content:center;gap:16px;margin:26px 0 0;}
 .socials a{
   display:inline-flex;align-items:center;justify-content:center;
@@ -81,7 +82,7 @@ body{
 .socials a:hover{background:var(--slate);color:#fff;border-color:var(--slate);transform:translateY(-2px);}
 
 /* ---- Content ---- */
-main{max-width:780px;margin:0 auto;padding:52px 30px 100px;}
+main{max-width:780px;margin:0 auto;padding:44px 30px 100px;}
 main p{margin:0 0 18px;color:var(--body);}
 main em,main i{font-style:italic;}
 .page-title{
@@ -117,7 +118,9 @@ main em,main i{font-style:italic;}
   .topbar nav{gap:18px;}
   .hero{padding:48px 20px 6px;}
   .hero h1{font-size:40px;}
-  .hero .role{font-size:12.5px;letter-spacing:.08em;}
+  .hero .role{font-size:12.5px;letter-spacing:.08em;
+    display:flex;flex-direction:column;align-items:center;gap:2px;}
+  .hero .role-dot{display:none;}
   main{padding:40px 22px 76px;}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important;}}
