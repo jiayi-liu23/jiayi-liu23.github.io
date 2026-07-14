@@ -60,7 +60,7 @@ a:focus-visible{outline:2px solid var(--slate);outline-offset:3px;border-radius:
 .topbar nav a.active{color:#fff;border-bottom-color:rgba(255,255,255,.85);}
 
 /* ---- Home hero ---- */
-.hero{text-align:center;padding:104px 24px 8px;}
+.hero{text-align:center;padding:72px 24px 8px;}
 .hero .avatar{
   position:relative;
   width:162px;height:162px;border-radius:50%;
@@ -77,7 +77,7 @@ a:focus-visible{outline:2px solid var(--slate);outline-offset:3px;border-radius:
 }
 .hero h1{
   font-family:var(--serif);
-  font-size:58px;font-weight:500;letter-spacing:-0.022em;text-wrap:balance;
+  font-size:50px;font-weight:500;letter-spacing:-0.022em;text-wrap:balance;
   color:var(--ink);margin:0;line-height:1.0;
 }
 .hero .role{
