@@ -35,8 +35,14 @@ a:focus-visible{outline:2px solid var(--slate);outline-offset:3px;border-radius:
 .topbar{
   position:sticky;top:0;z-index:20;
   display:flex;align-items:center;justify-content:space-between;
-  background:var(--slate);
+  background:rgba(94,116,128,.82);
+  backdrop-filter:saturate(160%) blur(16px);
+  -webkit-backdrop-filter:saturate(160%) blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.10);
   padding:0 32px;height:64px;
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .topbar{background:var(--slate);}
 }
 .topbar .brand{
   font-family:var(--serif);
