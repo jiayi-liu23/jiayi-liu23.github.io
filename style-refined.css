@@ -4,7 +4,7 @@
   --slate-deep:#516571;
   --ink:#26282b;
   --body:#474b50;
-  --muted:#8c9197;
+  --muted:#6b7178;       /* soft gray — WCAG AA (4.6:1) on --bg */
   --rule:#e7e4dc;
   --serif:"Newsreader",Georgia,"Times New Roman",serif;
   --sans:"Inter",system-ui,-apple-system,"Helvetica Neue",sans-serif;
@@ -63,7 +63,7 @@ body{
 }
 .hero h1{
   font-family:var(--serif);
-  font-size:50px;font-weight:500;letter-spacing:-0.012em;
+  font-size:50px;font-weight:500;letter-spacing:-0.022em;
   color:var(--ink);margin:0;line-height:1.0;
 }
 .hero .role{
@@ -86,7 +86,7 @@ main p{margin:0 0 18px;color:var(--body);}
 main em,main i{font-style:italic;}
 .page-title{
   font-family:var(--serif);
-  font-size:33px;font-weight:500;letter-spacing:-0.01em;
+  font-size:33px;font-weight:500;letter-spacing:-0.016em;
   color:var(--ink);margin:0 0 26px;
 }
 
@@ -100,23 +100,24 @@ main em,main i{font-style:italic;}
   border-bottom:1px solid var(--rule);
 }
 
-.pub{margin:0 0 24px;}
+.pub{margin:0 0 22px;}
 .pub .title{
   display:block;font-family:var(--serif);
-  font-size:20px;font-weight:600;color:var(--ink);line-height:1.4;margin:0 0 4px;
+  font-size:20px;font-weight:600;color:var(--ink);line-height:1.32;margin:0 0 5px;
 }
 .pub a.title{color:var(--slate-deep);text-decoration:none;transition:color .2s ease;}
 .pub a.title:hover{color:var(--ink);text-decoration:underline;}
-.pub .authors{color:var(--body);font-size:15px;margin:0 0 1px;}
+.pub .authors{color:var(--body);font-size:15px;margin:0 0 2px;}
 .pub .authors .me{font-weight:600;color:var(--ink);}
-.pub .venue{color:var(--muted);font-size:14px;}
+.pub .venue{color:var(--muted);font-size:14px;margin-top:1px;}
 
 @media (max-width:560px){
   .topbar{padding:0 20px;height:56px;}
   .topbar .brand{font-size:18px;}
   .topbar nav{gap:18px;}
   .hero{padding:48px 20px 6px;}
-  .hero h1{font-size:38px;}
+  .hero h1{font-size:40px;}
+  .hero .role{font-size:12.5px;letter-spacing:.08em;}
   main{padding:40px 22px 76px;}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important;}}
