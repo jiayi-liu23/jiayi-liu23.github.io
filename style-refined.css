@@ -118,7 +118,7 @@ main em,main i{font-style:italic;}
 .pub{margin:0 0 24px;}
 .pub .title{
   display:block;font-family:var(--serif);
-  font-size:20px;font-weight:600;letter-spacing:-0.006em;color:var(--ink);line-height:1.32;margin:0 0 4px;text-wrap:balance;
+  font-size:20px;font-weight:600;letter-spacing:-0.006em;color:var(--ink);line-height:1.32;margin:0 0 4px;text-wrap:pretty;
 }
 .pub a.title{color:var(--slate-deep);text-decoration:none;transition:color .2s var(--ease);}
 .pub a.title:hover{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;}
