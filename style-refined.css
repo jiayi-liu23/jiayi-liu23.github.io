@@ -2,10 +2,15 @@
   --bg:#f7f6f2;          /* warm off-white */
   --slate:#5e7480;       /* refined slate accent */
   --slate-deep:#516571;
-  --ink:#26282b;
-  --body:#474b50;
-  --body-strong:#565b61; /* role / subhead ink */
-  --muted:#6b7178;       /* soft gray — WCAG AA (4.6:1) on --bg */
+  /* Ink warmed to match the paper (2026-08-26). Ground was 44-48deg warm while the
+     whole ink ramp sat at 212-216deg cool — a ~170deg split between the two things
+     touching on every line, which is what made it read screen-default rather than
+     printed. Same lightness, so contrast holds. --muted is nudged darker than a
+     naive hue-rotation (#78746b would drop to 4.31 and fail AA on .venue at 14px). */
+  --ink:#2b2926;
+  --body:#504d47;
+  --body-strong:#615d56; /* role / subhead ink */
+  --muted:#746f67;       /* soft gray — WCAG AA (4.6:1) on --bg */
   --rule:#e7e4dc;
   --serif:"Newsreader",Georgia,"Times New Roman",serif;
   --sans:"Inter",system-ui,-apple-system,"Helvetica Neue",sans-serif;
@@ -35,14 +40,19 @@ a:focus-visible{outline:2px solid var(--slate);outline-offset:3px;border-radius:
 .topbar{
   position:sticky;top:0;z-index:20;
   display:flex;align-items:center;justify-content:space-between;
-  background:rgba(94,116,128,.82);
+  /* --slate-deep at .94, not --slate at .82. The old alpha let 18% of the warm
+     paper bleed through, compositing to rgb(122,139,149) — which capped nav
+     contrast at 3.52:1 even with PURE WHITE text. The bar was the binding
+     constraint, not the text, so raising the text opacity could never fix it.
+     Now composites to rgb(91,110,121): nav 4.56:1, active 5.33:1 — both AA. */
+  background:rgba(81,101,113,.94);
   backdrop-filter:saturate(160%) blur(16px);
   -webkit-backdrop-filter:saturate(160%) blur(16px);
   border-bottom:1px solid rgba(255,255,255,.10);
   padding:0 32px;height:64px;
 }
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-  .topbar{background:var(--slate);}
+  .topbar{background:var(--slate-deep);}  /* keep the fallback compliant too */
 }
 .topbar .brand{
   font-family:var(--serif);
@@ -127,8 +137,9 @@ main em,main i{font-style:italic;}
 .pub .venue{color:var(--muted);font-size:14px;margin-top:1px;font-variant-numeric:oldstyle-figures proportional-nums;}
 
 /* ---- Large screens ----------------------------------------------------
-   At 18px in a 780px column the measure is already ~72 characters, which is
-   the readable optimum. Widening ALONE would push it past 85 and make the eye
+   At 18px in a 780px column the measure measures ~80 characters (NOT 72 — an
+   earlier version of this comment said 72 and was simply wrong; don't reason
+   from that number). 66-75 is the optimum, so this is already a touch long. Widening ALONE would push it past 85 and make the eye
    lose its place on the return sweep. So scale type and column together: the
    measure stays put, and the page stops looking marooned on a big monitor. */
 @media (min-width:1200px){
@@ -139,7 +150,13 @@ main em,main i{font-style:italic;}
   .topbar nav a{font-size:13.5px;}
 }
 
+/* Leading scales INVERSELY with measure: 1.72 was tuned for ~80 characters; at
+   390px the column is ~38 characters, where that leading makes paragraphs read as
+   loose disconnected strips instead of prose. */
 @media (max-width:560px){
+  body{line-height:1.58;}
+  main{padding:40px 20px 76px;}
+  main p{margin:0 0 18px;}
   .topbar{padding:0 20px;height:56px;}
   .topbar .brand{font-size:18px;}
   .topbar nav{gap:18px;}
