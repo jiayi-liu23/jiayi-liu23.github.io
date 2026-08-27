@@ -66,7 +66,7 @@ a:focus-visible{outline:2px solid var(--slate);outline-offset:3px;border-radius:
   padding:4px 0;border-bottom:1px solid transparent;
   transition:color .2s var(--ease),border-color .2s var(--ease);
 }
-.topbar nav a:hover{color:#fff;}
+@media (hover:hover){ .topbar nav a:hover{color:#fff;} }
 .topbar nav a.active{color:#fff;border-bottom-color:rgba(255,255,255,.85);}
 
 /* ---- Home hero ---- */
@@ -82,8 +82,8 @@ a:focus-visible{outline:2px solid var(--slate);outline-offset:3px;border-radius:
   width:100%;height:100%;object-fit:cover;display:block;
 }
 .hero::after{
-  content:"";display:block;width:44px;height:2px;
-  background:var(--slate);opacity:.55;margin:32px auto 0;
+  content:"";display:block;width:44px;height:1px;
+  background:var(--slate);opacity:.85;margin:32px auto 0;
 }
 .hero h1{
   font-family:var(--serif);
@@ -103,7 +103,12 @@ a:focus-visible{outline:2px solid var(--slate);outline-offset:3px;border-radius:
   color:var(--slate);font-size:16px;text-decoration:none;
   transition:background .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease),transform .25s var(--ease-out);
 }
-.socials a:hover{background:var(--slate);color:#fff;border-color:var(--slate);transform:translateY(-2px);}
+/* Touch devices have no hover, so the browser fakes one: a tapped icon stays
+   filled until you tap elsewhere, which reads as a stuck button. Invisible on
+   a Mac. The :active below gives the press somewhere to go — until now a click
+   produced the lift and never the push. */
+@media (hover:hover){ .socials a:hover{background:var(--slate);color:#fff;border-color:var(--slate);transform:translateY(-2px);} }
+.socials a:active{background:var(--slate);color:#fff;border-color:var(--slate);transform:translateY(0);transition-duration:.06s;}
 
 /* ---- Content ---- */
 main{max-width:780px;margin:0 auto;padding:48px 32px 96px;}
@@ -126,15 +131,19 @@ main em,main i{font-style:italic;}
 }
 
 .pub{margin:0 0 24px;}
+/* balance (equalise a short run) not pretty (orphan control on a long run) —
+   this is a heading, and it was getting the body-copy algorithm. */
 .pub .title{
   display:block;font-family:var(--serif);
-  font-size:20px;font-weight:600;letter-spacing:-0.006em;color:var(--ink);line-height:1.32;margin:0 0 4px;text-wrap:pretty;
+  font-size:20px;font-weight:600;letter-spacing:-0.006em;color:var(--ink);line-height:1.32;margin:0 0 4px;text-wrap:balance;
 }
 .pub a.title{color:var(--slate-deep);text-decoration:none;transition:color .2s var(--ease);}
-.pub a.title:hover{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;}
+@media (hover:hover){ .pub a.title:hover{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;} }
 .pub .authors{color:var(--body);font-size:15px;margin:0 0 2px;}
 .pub .authors .me{font-weight:600;color:var(--ink);}
-.pub .venue{color:var(--muted);font-size:14px;margin-top:1px;font-variant-numeric:oldstyle-figures proportional-nums;}
+/* No font-variant-numeric here: Google's subset of Newsreader ships no `onum`,
+   so the oldstyle-figures declaration that used to sit on this line did nothing. */
+.pub .venue{color:var(--muted);font-size:14px;margin-top:1px;}
 
 /* ---- Large screens ----------------------------------------------------
    At 18px in a 780px column the measure measures ~80 characters (NOT 72 — an
@@ -165,6 +174,5 @@ main em,main i{font-style:italic;}
   .hero .role{font-size:12.5px;letter-spacing:.08em;
     display:flex;flex-direction:column;align-items:center;gap:2px;}
   .hero .role-dot{display:none;}
-  main{padding:40px 22px 76px;}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important;}}
