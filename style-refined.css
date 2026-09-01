@@ -176,3 +176,34 @@ main em,main i{font-style:italic;}
   .hero .role-dot{display:none;}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important;}}
+
+/* ---- Single-page anchor navigation (2026-09-01) ----
+   research.html was folded into index.html as #research. Three things this needs:
+   1. smooth scrolling, so a nav click reads as movement down one page rather than
+      a page load — which is the whole point of the change;
+   2. scroll-margin-top on the targets, or the 64px sticky bar lands on top of the
+      heading it just scrolled to;
+   3. a rule above the Research section, so the two halves of the page separate
+      without needing a second heading weight.
+   prefers-reduced-motion is honoured: smooth scrolling is vestibular, not decorative. */
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto;} }
+
+main > section{scroll-margin-top:88px;}
+#top{scroll-margin-top:0;}
+
+#research{
+  margin-top:64px;padding-top:56px;
+  border-top:1px solid var(--rule);
+}
+/* .page-title inside a section is a section heading, not a page heading — it sits
+   closer to what follows than a standalone page title would. */
+#research .page-title{margin-bottom:20px;}
+/* The first .sec-label after the facts list already carries 48px of top margin;
+   without this it stacks with the section padding and opens a hole. */
+#research .sec-label:first-of-type{margin-top:40px;}
+
+@media (max-width:560px){
+  main > section{scroll-margin-top:76px;}
+  #research{margin-top:48px;padding-top:40px;}
+}
